@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 
-export default function FormularioProductos() {
+export default function FormularioProductos({ onClose }) {
   const [producto, setProducto] = useState({
     id_categoria: "",
     nombre: "",
@@ -115,6 +115,7 @@ export default function FormularioProductos() {
     console.log("Producto listo para enviar:", productoFormateado);
 
     alert("Producto registrado correctamente.");
+    onClose(); // Cierra el modal después de guardar
 
     // Reset del formulario
     setProducto({
@@ -152,7 +153,7 @@ export default function FormularioProductos() {
   }, []);
 
   return (
-    <div className="page">
+    <div>
       <div className="card">
         <h2 className="card-title">Registrar Producto</h2>
 
