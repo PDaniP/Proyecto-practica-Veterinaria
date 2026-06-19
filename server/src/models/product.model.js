@@ -43,6 +43,32 @@ const añadirProductoADB = async (categoria,nombre,marca,descripcion,codigo_barr
 
 }
 
+const añadirLote = async (producto, codigo, stock_inicial, stock_actual, fecha_ingreso, fecha_vencimiento,activo) => {
+    const query = `
+    INSERT INTO lotes (
+    id_producto,
+    codigo_lote,
+    stock_inicial,
+    stock_actual,
+    fecha_vencimiento,
+    activo
+    )
+    VALUES ($1,$2,$3,$4,$5,$6)
+    RETURNING *
+    `;
+    const result = await db.query(query,[
+        producto,
+        codigo,
+        stock_inicial,
+        stock_actual,
+        fecha_vencimiento,
+        activo
+    ])
+    
+    return result.rows[0]
+
+}
+
 const eliminarProductoEnDB = async (id) => {
         const result = await db.query(
         'DELETE FROM productos WHERE id = $1 RETURNING *',
@@ -55,5 +81,5 @@ const editarProductoEnDB = async (precio_costo,precio_venta,stock_actual,fecha_d
 
 }
 
-export default {obtenerProductoPorId, obtenerProductos, añadirProductoADB, eliminarProductoEnDB}
+export default {obtenerProductoPorId, obtenerProductos, añadirProductoADB, eliminarProductoEnDB, añadirLote}
 

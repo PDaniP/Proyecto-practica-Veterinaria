@@ -15,6 +15,20 @@ const añadirProducto = async (req,res) => {
 
 }
 
+const añadirLote = async (req,res) => {
+    const {id_producto, codigo_lote, stock_inicial,stock_actual, fecha_vencimiento, activo} = req.body
+
+    if (!id_producto || !codigo_lote || !stock_actual || !stock_inicial || !fecha_vencimiento || !activo){
+        return res.status(401).json({message:"Error al añadir, existen campos vacios"})
+    }
+    const datos = await productModel.añadirLote(Number(id_producto),codigo_lote,Number(stock_inicial),Number(stock_actual),fecha_vencimiento,activo)
+    console.log(datos)
+    if(!datos) {
+        res.status(401).json({message: 'Error al añadir producto'})
+    }
+    res.status(200).json({message:'Lote añadido con exito'})
+    }
+
 const editarProducto = () => {
 
 }
@@ -57,5 +71,6 @@ export default {listaProducto,
                 productoPorId,
                 eliminarProducto,
                 editarProducto,
-                añadirProducto
+                añadirProducto,
+                añadirLote
 }
