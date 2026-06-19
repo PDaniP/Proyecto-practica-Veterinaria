@@ -1,14 +1,13 @@
 import { useState } from "react";
 import FormularioProductos from "../../components/FormularioProductos";
-import axios from "axios";
+import { useNavigate } from "react-router-dom";
+
 
 
 export default function Productos() {
   const [mostrarFormulario, setMostrarFormulario] = useState(false);
-  const [producto, setProducto] = useState([])
-
-  axios.get('http://localhost:3000/products',{withCredentials:true})
-            .then((Response)=> setProducto(Response.data))
+  const navigate = useNavigate()
+ 
 
   return (
     <section className="page-shell">
@@ -18,7 +17,7 @@ export default function Productos() {
     
       <button
         type="button"
-        onClick={() => setMostrarFormulario((prev) => !prev)}
+        onClick={() =>navigate('/productos/añadir') }
       >
         {mostrarFormulario ? "Ocultar formulario" : "Agregar producto"}
       </button>

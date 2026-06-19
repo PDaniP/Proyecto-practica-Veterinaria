@@ -3,7 +3,7 @@ import productModel from "../models/product.model.js";
 const añadirProducto = async (req,res) => {
     const {id_categoria, nombre,descripcion,codigo_barras,precio_costo,precio_venta,stock_actual,stock_minimo,venta_al_publico, fecha_de_vencimiento} = req.body
     if(!id_categoria || !nombre || !descripcion || !codigo_barras || !precio_costo || !precio_venta || !stock_actual || !stock_minimo || !venta_al_publico || !fecha_de_vencimiento){
-        res.status(401).json({message: "Error al añadir, existen campos vacios"})
+        return res.status(401).json({message: "Error al añadir, existen campos vacios"})
     }
     const datos = await productModel.añadirProductoADB(Number(id_categoria),nombre,descripcion,Number(codigo_barras),Number(precio_costo),Number(precio_venta),Number(stock_actual),Number(stock_minimo),venta_al_publico, fecha_de_vencimiento)
     console.log(datos)

@@ -1,8 +1,9 @@
 import { useState } from "react";
 import axios from 'axios'
-
+import { useNavigate } from "react-router-dom";
 
 export default function FormularioProductos() {
+  const navegar = useNavigate()
   const [producto, setProducto] = useState({
     id_categoria: "",
     nombre: "",
@@ -130,12 +131,14 @@ export default function FormularioProductos() {
       fecha_vencimiento: "",
 //      proveedor: "",
     });
-
+    navegar('/productos')
     setErrores({});
+    
   }
 
   return (
-    <form onSubmit={handleSubmit} style={{ maxWidth: "500px", margin: "auto" }}>
+    <>
+    <form  style={{ maxWidth: "500px", margin: "auto" }}>
       <h2>Registrar Producto</h2>
 
       {/* Categoría */}
@@ -252,7 +255,8 @@ export default function FormularioProductos() {
       </select>
       <p style={{ color: "red" }}>{errores.proveedor}</p>
 
-      <button type="submit">Guardar</button>
+      <button type="submit" onClick={()=> handleSubmit}>Guardar</button>
     </form>
+    </>
   );
 }
