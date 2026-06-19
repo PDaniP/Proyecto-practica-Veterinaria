@@ -1,11 +1,37 @@
 import { useState, useEffect } from "react";
 import FormularioProductos from "../../components/FormularioProductos";
+import FormularioEdicionProductos from "../../components/FormularioEdicionProducto";
 import Modal from "../../components/Modal";
 
 export default function Productos() {
   const [mostrarFormulario, setMostrarFormulario] = useState(false);
+  const [modoEdicion, setModoEdicion] = useState(false);
+  const [productoSeleccionado, setProductoSeleccionado] = useState(null);
 
-  const abrirModal = () => setMostrarFormulario(true);
+  //const abrirModal = () => setMostrarFormulario(true);
+ const abrirModalCrear = () => {
+    setModoEdicion(false);
+    setProductoSeleccionado(null);
+    setMostrarFormulario(true);
+  };
+
+  const abrirModalEditar = () => {
+    // 🔥 Simulación de producto seleccionado
+    const productoDemo = {
+      precio_compra: 100,
+      precio_venta: 150,
+      stock_actual: 20,
+      stock_minimo: 5,
+      fecha_vencimiento: "2026-12-31",
+      proveedor: 2,
+    };
+
+    setProductoSeleccionado(productoDemo);
+    setModoEdicion(true);
+    setMostrarFormulario(true);
+  };
+
+
   const cerrarModal = () => setMostrarFormulario(false);
 
   useEffect(() => {
@@ -18,10 +44,7 @@ export default function Productos() {
       document.head.appendChild(style);
     }
 
-    return () => {
-      const style = document.getElementById(styleId);
-      if (style) style.remove();
-    };
+    
   }, []);
 
 
@@ -31,22 +54,40 @@ export default function Productos() {
       <h1>Productos</h1>
       <p>Administra el catálogo de productos para tu clínica veterinaria.</p>
 
-      <button 
-      type="button" 
-      className="btn-agregar"
-      onClick={abrirModal}
-      >
-        Agregar Producto
-      </button>
+
+      <div style={{ display: "flex", gap: "10px" }}>
+        <button
+          type="button"
+          className="btn-agregar"
+          onClick={abrirModalCrear}
+        >
+          Agregar Producto
+        </button>
+
+        <button
+          type="button"
+          className="btn-agregar"
+          onClick={abrirModalEditar}
+        >
+          Editar Producto
+        </button>
+      </div>
 
       {/* MODAL */}
       <Modal
         isOpen={mostrarFormulario}
         onClose={cerrarModal}
       >
-        <FormularioProductos 
-          onClose={cerrarModal} 
-        />
+        {modoEdicion ? (
+          <FormularioEdicionProductos 
+            producto={productoSeleccionado}
+            onClose={cerrarModal}
+          />
+        ) : (
+          <FormularioProductos 
+            onClose={cerrarModal} 
+          />
+        )}
       </Modal>
     </section>
   );
@@ -62,7 +103,6 @@ const estilosBoton = `
   font-size: 14px;
   font-weight: 500;
   cursor: pointer;
-
   transition: all 0.2s ease;
 }
 
