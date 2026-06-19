@@ -43,7 +43,7 @@ const añadirProductoADB = async (categoria,nombre,marca,descripcion,codigo_barr
 
 }
 
-const añadirLote = async (producto, codigo, stock_inicial, stock_actual, fecha_ingreso, fecha_vencimiento,activo) => {
+const añadirLote = async (producto, codigo, stock_inicial, stock_actual,fecha_vencimiento,activo) => {
     const query = `
     INSERT INTO lotes (
     id_producto,
