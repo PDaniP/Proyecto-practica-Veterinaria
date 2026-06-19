@@ -15,6 +15,20 @@ const añadirProducto = async (req,res) => {
 
 }
 
+const añadirCategoria = async (req,res) => {
+    const {nombre,descripcion} = req.body
+
+    if(!nombre || !descripcion){
+        return res.status(401).json({message:"Error al añadir, existen campos vacios"})
+    }
+    const datos = await productModel.añadirCategoriaADB(nombre,descripcion)
+    console.log(datos)
+    if(!datos){
+        res.status(401).json({message: "Error al añadir categoria"})
+    }
+    res.status(200).json({message: "Categoria añadida con exito"})
+}
+
 const añadirLote = async (req,res) => {
     const {id_producto, codigo_lote, stock_inicial,stock_actual, fecha_vencimiento, activo} = req.body
 
@@ -72,5 +86,6 @@ export default {listaProducto,
                 eliminarProducto,
                 editarProducto,
                 añadirProducto,
-                añadirLote
+                añadirLote,
+                añadirCategoria
 }
