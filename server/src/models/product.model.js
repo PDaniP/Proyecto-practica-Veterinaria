@@ -95,9 +95,23 @@ const eliminarProductoEnDB = async (id) => {
 
 }
 
-const editarProductoEnDB = async (precio_costo,precio_venta,stock_actual,fecha_de_vencimiento) =>{
+const editarProductoEnDB = async (precio_costo, precio_venta, id,) =>{
+    const query = `
+    UPDATE productos
+    SET
+    precio_costo = $1,
+    precio_venta = $2
+    WHERE id = $3
+    RETURNING *
+    `;
+    const result = await db.query(query,[
+        precio_costo,
+        precio_venta,
+        id
+    ])
 
+    return result
 }
 
-export default {obtenerProductoPorId, obtenerProductos, añadirProductoADB, eliminarProductoEnDB, añadirLoteADB, añadirCategoriaADB}
+export default {obtenerProductoPorId, obtenerProductos, añadirProductoADB, eliminarProductoEnDB, añadirLoteADB, añadirCategoriaADB, editarProductoEnDB}
 
