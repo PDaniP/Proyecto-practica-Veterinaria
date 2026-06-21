@@ -4,14 +4,14 @@ export default function FormularioEdicionProductos({ productoInicial, onClose })
   const [producto, setProducto] = useState({
     precio_compra: "",
     precio_venta: "",
-    stock_actual: "",
+    //stock_actual: "",
     stock_minimo: "",
-    fecha_vencimiento: "",
-    proveedor: "",
+    //fecha_vencimiento: "",
+    //proveedor: "",
   });
 
   const [errores, setErrores] = useState({});
-
+  /*
   // proveedores simulados
   const proveedores = [
     { id: 1, nombre: "Veterinaria Central" },
@@ -19,17 +19,18 @@ export default function FormularioEdicionProductos({ productoInicial, onClose })
     { id: 3, nombre: "Dropship Pet" },
     { id: 4, nombre: "Proveedor Salud Animal" },
   ];
-
+  
+  */
   // 🔥 Cargar datos del producto a editar
   useEffect(() => {
     if (productoInicial) {
       setProducto({
         precio_compra: productoInicial.precio_compra || "",
         precio_venta: productoInicial.precio_venta || "",
-        stock_actual: productoInicial.stock_actual || "",
+        //stock_actual: productoInicial.stock_actual || "",
         stock_minimo: productoInicial.stock_minimo || "",
-        fecha_vencimiento: productoInicial.fecha_vencimiento || "",
-        proveedor: productoInicial.proveedor || "",
+        //fecha_vencimiento: productoInicial.fecha_vencimiento || "",
+        //proveedor: productoInicial.proveedor || "",
       });
     }
   }, [productoInicial]);
@@ -97,7 +98,7 @@ export default function FormularioEdicionProductos({ productoInicial, onClose })
       ...producto,
       precio_compra: Number(producto.precio_compra),
       precio_venta: Number(producto.precio_venta),
-      stock_actual: Number(producto.stock_actual),
+      //stock_actual: Number(producto.stock_actual),
       stock_minimo: Number(producto.stock_minimo),
       proveedor: Number(producto.proveedor),
     };
@@ -152,7 +153,7 @@ export default function FormularioEdicionProductos({ productoInicial, onClose })
           />
           {errores.precio_venta && <p className="error">{errores.precio_venta}</p>}
         </div>
-
+        {/*
         <div className="field">
           <label>Stock actual</label>
           <input
@@ -163,7 +164,7 @@ export default function FormularioEdicionProductos({ productoInicial, onClose })
           />
           {errores.stock_actual && <p className="error">{errores.stock_actual}</p>}
         </div>
-
+        */}
         <div className="field">
           <label>Stock mínimo</label>
           <input
@@ -174,7 +175,7 @@ export default function FormularioEdicionProductos({ productoInicial, onClose })
           />
           {errores.stock_minimo && <p className="error">{errores.stock_minimo}</p>}
         </div>
-
+        {/**
         <div className="field">
           <label>Fecha de vencimiento</label>
           <input
@@ -204,7 +205,7 @@ export default function FormularioEdicionProductos({ productoInicial, onClose })
           </select>
           {errores.proveedor && <p className="error">{errores.proveedor}</p>}
         </div>
-
+        */}
         <button className="btn" type="submit">
           Guardar cambios
         </button>

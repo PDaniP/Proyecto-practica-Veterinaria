@@ -2,14 +2,18 @@ import { useState, useEffect } from "react";
 import FormularioProductos from "../../components/FormularioProductos";
 import FormularioEdicionProductos from "../../components/FormularioEdicionProducto";
 import Modal from "../../components/Modal";
+import FormularioLote from "../../components/FormularioLote";
 
 export default function Productos() {
   const [mostrarFormulario, setMostrarFormulario] = useState(false);
   const [modoEdicion, setModoEdicion] = useState(false);
   const [productoSeleccionado, setProductoSeleccionado] = useState(null);
+  const [mostrarFormularioLote, setMostrarFormularioLote] = useState(false);
+  const [tipoFormulario, setTipoFormulario] = useState(null);
 
   //const abrirModal = () => setMostrarFormulario(true);
- const abrirModalCrear = () => {
+  const abrirModalCrear = () => {
+    setTipoFormulario("producto");
     setModoEdicion(false);
     setProductoSeleccionado(null);
     setMostrarFormulario(true);
@@ -28,9 +32,16 @@ export default function Productos() {
 
     setProductoSeleccionado(productoDemo);
     setModoEdicion(true);
+    setTipoFormulario("producto");
     setMostrarFormulario(true);
   };
 
+  const abrirModalLote = () => {
+    setTipoFormulario("lote");
+    setModoEdicion(false);
+    setProductoSeleccionado(null);
+    setMostrarFormulario(true);
+  };
 
   const cerrarModal = () => setMostrarFormulario(false);
 
@@ -43,24 +54,15 @@ export default function Productos() {
       style.textContent = estilosBoton;
       document.head.appendChild(style);
     }
-
-    
   }, []);
-
-
 
   return (
     <section className="page-shell">
       <h1>Productos</h1>
       <p>Administra el catálogo de productos para tu clínica veterinaria.</p>
 
-
       <div style={{ display: "flex", gap: "10px" }}>
-        <button
-          type="button"
-          className="btn-agregar"
-          onClick={abrirModalCrear}
-        >
+        <button type="button" className="btn-agregar" onClick={abrirModalCrear}>
           Agregar Producto
         </button>
 
@@ -71,22 +73,22 @@ export default function Productos() {
         >
           Editar Producto
         </button>
+        <button type="button" className="btn-agregar" onClick={abrirModalLote}>
+          Agregar Lote
+        </button>
       </div>
 
       {/* MODAL */}
-      <Modal
-        isOpen={mostrarFormulario}
-        onClose={cerrarModal}
-      >
-        {modoEdicion ? (
-          <FormularioEdicionProductos 
+      <Modal isOpen={mostrarFormulario} onClose={cerrarModal}>
+        {tipoFormulario === "lote" ? (
+          <FormularioLote onClose={cerrarModal} />
+        ) : modoEdicion ? (
+          <FormularioEdicionProductos
             producto={productoSeleccionado}
             onClose={cerrarModal}
           />
         ) : (
-          <FormularioProductos 
-            onClose={cerrarModal} 
-          />
+          <FormularioProductos onClose={cerrarModal} />
         )}
       </Modal>
     </section>

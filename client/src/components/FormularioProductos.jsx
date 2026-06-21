@@ -1,23 +1,27 @@
 import { useState, useEffect } from "react";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 export default function FormularioProductos({ onClose }) {
+  const navegar = useNavigate();
   const [producto, setProducto] = useState({
     id_categoria: "",
     nombre: "",
+    marca: "",
     descripcion: "",
     codigo_barras: "",
-    precio_compra: "",
+    precio_costo: "",
     precio_venta: "",
-    stock_actual: "",
     stock_minimo: "",
     es_publico: false,
-    fecha_vencimiento: "",
-    proveedor: "",
+    //fecha_vencimiento: "",
+    //proveedor: "",
   });
 
   const [errores, setErrores] = useState({});
 
   // simulación de categorías a traer después del backend
+
   const categorias = [
     { id: 1, nombre: "Alimentos" },
     { id: 2, nombre: "Accesorios y Juguetes" },
@@ -26,14 +30,22 @@ export default function FormularioProductos({ onClose }) {
     { id: 5, nombre: "Vacunas" },
     { id: 6, nombre: "Descartables e Insumos Médicos" },
   ];
+  /*
+  const [categorias, setCategorias] = useState([]);
 
-  const proveedores = [
-    { id: 1, nombre: "Veterinaria Central" },
-    { id: 2, nombre: "Distribuidora Animal" },
-    { id: 3, nombre: "Dropship Pet" },
-    { id: 4, nombre: "Proveedor Salud Animal" },
-  ];
+  useEffect(() => {
+  const obtenerCategorias = async () => {
+    try {
+      const response = await axios.get("/categorias");
+      setCategorias(response.data);
+    } catch (error) {
+      console.error("Error al cargar categorías:", error);
+    }
+  };
 
+  obtenerCategorias();
+  }, []);
+  */
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
 
@@ -54,27 +66,28 @@ export default function FormularioProductos({ onClose }) {
       nuevosErrores.nombre = "El nombre es obligatorio.";
     }
 
-    if (!producto.precio_compra || producto.precio_compra <= 0) {
-      nuevosErrores.precio_compra = "Ingrese el precio de compra válido.";
+    if (!producto.marca.trim()) {
+      nuevosErrores.marca = "La marca es obligatoria.";
+    }
+
+    if (!producto.precio_costo || producto.precio_costo <= 0) {
+      nuevosErrores.precio_costo = "Ingrese el precio de compra válido.";
     }
 
     if (!producto.precio_venta || producto.precio_venta <= 0) {
       nuevosErrores.precio_venta = "Ingrese el precio de venta válido.";
     }
 
-    if (producto.precio_venta < producto.precio_compra) {
+    if (Number(producto.precio_venta) < Number(producto.precio_costo)) {
       nuevosErrores.precio_venta =
         "El precio de venta no puede ser menor al precio de compra.";
-    }
-
-    if (producto.stock_actual < 0) {
-      nuevosErrores.stock_actual = "El stock no puede ser negativo.";
     }
 
     if (producto.stock_minimo < 0) {
       nuevosErrores.stock_minimo = "El stock mínimo no puede ser negativo.";
     }
 
+    /*
     const hoy = new Date();
     hoy.setHours(0, 0, 0, 0);
 
@@ -86,15 +99,15 @@ export default function FormularioProductos({ onClose }) {
           "La fecha de vencimiento no puede ser anterior a la fecha actual.";
       }
     }
-
-    if (!producto.proveedor) {
-      nuevosErrores.proveedor = "Seleccione un proveedor.";
-    }
+    */
+    // if (!producto.proveedor) {
+    //   nuevosErrores.proveedor = "Seleccione un proveedor.";
+    // }
 
     return nuevosErrores;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     const erroresValidacion = validar();
@@ -105,34 +118,47 @@ export default function FormularioProductos({ onClose }) {
     const productoFormateado = {
       ...producto,
       id_categoria: Number(producto.id_categoria),
-      proveedor: Number(producto.proveedor),
-      precio_compra: Number(producto.precio_compra),
+      //proveedor: Number(producto.proveedor),
+      precio_costo: Number(producto.precio_costo),
       precio_venta: Number(producto.precio_venta),
-      stock_actual: Number(producto.stock_actual),
+      //stock_actual: Number(producto.stock_actual),
       stock_minimo: Number(producto.stock_minimo),
     };
 
     console.log("Producto listo para enviar:", productoFormateado);
 
-    alert("Producto registrado correctamente.");
-    onClose(); // Cierra el modal después de guardar
+    try {
+      await axios.post(
+        "http://localhost:3000/products/product/add",
+        productoFormateado,
+        { withCredentials: true },
+      );
 
-    // Reset del formulario
-    setProducto({
-      id_categoria: "",
-      nombre: "",
-      descripcion: "",
-      codigo_barras: "",
-      precio_compra: "",
-      precio_venta: "",
-      stock_actual: "",
-      stock_minimo: "",
-      es_publico: false,
-      fecha_vencimiento: "",
-      proveedor: "",
-    });
+      alert("Producto registrado correctamente.");
+      onClose(); // Cierra el modal después de guardar
+      navegar("/productos");
 
-    setErrores({});
+      // Reset del formulario
+      setProducto({
+        id_categoria: "",
+        nombre: "",
+        marca: "",
+        descripcion: "",
+        codigo_barras: "",
+        precio_costo: "",
+        precio_venta: "",
+        stock_minimo: "",
+        es_publico: false,
+        //fecha_vencimiento: "",
+        //proveedor: "",
+      });
+      setErrores({});
+    } catch (error) {
+      console.error("Error al registrar producto:", error);
+      alert(
+        "Hubo un error al registrar el producto. Por favor, inténtelo de nuevo.",
+      );
+    }
   };
 
   useEffect(() => {
@@ -192,6 +218,19 @@ export default function FormularioProductos({ onClose }) {
           </div>
 
           <div className="field">
+            <label htmlFor="marca">Marca</label>
+            <input
+              id="marca"
+              type="text"
+              name="marca"
+              placeholder="Marca"
+              value={producto.marca}
+              onChange={handleChange}
+            />
+            {errores.marca && <p className="error">{errores.marca}</p>}
+          </div>
+
+          <div className="field">
             <label htmlFor="descripcion">Descripción</label>
             <textarea
               id="descripcion"
@@ -215,17 +254,17 @@ export default function FormularioProductos({ onClose }) {
           </div>
 
           <div className="field">
-            <label htmlFor="precio_compra">Precio compra</label>
+            <label htmlFor="precio_costo">Precio compra</label>
             <input
-              id="precio_compra"
+              id="precio_costo"
               type="number"
-              name="precio_compra"
+              name="precio_costo"
               placeholder="Precio compra"
-              value={producto.precio_compra}
+              value={producto.precio_costo}
               onChange={handleChange}
             />
-            {errores.precio_compra && (
-              <p className="error">{errores.precio_compra}</p>
+            {errores.precio_costo && (
+              <p className="error">{errores.precio_costo}</p>
             )}
           </div>
 
@@ -241,21 +280,6 @@ export default function FormularioProductos({ onClose }) {
             />
             {errores.precio_venta && (
               <p className="error">{errores.precio_venta}</p>
-            )}
-          </div>
-
-          <div className="field">
-            <label htmlFor="stock_actual">Stock actual</label>
-            <input
-              id="stock_actual"
-              type="number"
-              name="stock_actual"
-              placeholder="Stock actual"
-              value={producto.stock_actual}
-              onChange={handleChange}
-            />
-            {errores.stock_actual && (
-              <p className="error">{errores.stock_actual}</p>
             )}
           </div>
 
@@ -283,40 +307,6 @@ export default function FormularioProductos({ onClose }) {
               checked={producto.es_publico}
               onChange={handleChange}
             />
-          </div>
-
-          <div className="field">
-            <label htmlFor="fecha_vencimiento">Fecha de vencimiento</label>
-            <input
-              id="fecha_vencimiento"
-              type="date"
-              name="fecha_vencimiento"
-              value={producto.fecha_vencimiento}
-              onChange={handleChange}
-              min="2000-01-01"
-              max="2100-12-31"
-            />
-            {errores.fecha_vencimiento && (
-              <p className="error">{errores.fecha_vencimiento}</p>
-            )}
-          </div>
-
-          <div className="field">
-            <label htmlFor="proveedor">Proveedor</label>
-            <select
-              id="proveedor"
-              name="proveedor"
-              value={producto.proveedor}
-              onChange={handleChange}
-            >
-              <option value="">Seleccione proveedor</option>
-              {proveedores.map((prov) => (
-                <option key={prov.id} value={prov.id}>
-                  {prov.nombre}
-                </option>
-              ))}
-            </select>
-            {errores.proveedor && <p className="error">{errores.proveedor}</p>}
           </div>
 
           <button className="btn" type="submit">
