@@ -17,6 +17,9 @@ export default function FormularioProductos({ onClose }) {
     es_publico: false,
     //fecha_vencimiento: "",
     //proveedor: "",
+    venta_al_publico: false,
+    fecha_vencimiento: "",
+    proveedor: "",
   });
 
   const [errores, setErrores] = useState({});

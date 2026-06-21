@@ -2,6 +2,7 @@ import express from 'express';
 // import routes from './routes/user.routes.js'; // Tu compañero deberá usar el .js al final
 import db from './config/db.js'; // <-- ¡Acá el .js al final es obligatorio!
 import userRoutes from './routes/user.routes.js';
+import productRoutes from './routes/product.routes.js'
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 
@@ -23,6 +24,7 @@ app.get('/', (req, res) => {
 });
 
 app.use('/users', userRoutes);
+app.use('/products', productRoutes)
 
 
 
