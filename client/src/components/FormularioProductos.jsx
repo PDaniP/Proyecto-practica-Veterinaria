@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import NuevaCategoria from "./NuevaCategoria";
 
 export default function FormularioProductos({ onClose }) {
   const navegar = useNavigate();
@@ -186,19 +187,35 @@ export default function FormularioProductos({ onClose }) {
         <form onSubmit={handleSubmit}>
           <div className="field">
             <label htmlFor="id_categoria">Categoría</label>
-            <select
-              id="id_categoria"
-              name="id_categoria"
-              value={producto.id_categoria}
-              onChange={handleChange}
-            >
-              <option value="">Seleccione categoría</option>
-              {categorias.map((cat) => (
-                <option key={cat.id} value={cat.id}>
-                  {cat.nombre}
-                </option>
-              ))}
-            </select>
+
+            <div className="categoria-row">
+              <select
+                id="id_categoria"
+                name="id_categoria"
+                value={producto.id_categoria}
+                onChange={handleChange}
+              >
+                <option value="">Seleccione categoría</option>
+
+                {categorias.map((cat) => (
+                  <option key={cat.id} value={cat.id}>
+                    {cat.nombre}
+                  </option>
+                ))}
+              </select>
+
+              <NuevaCategoria
+                onCategoriaCreada={(categoria) => {
+                  setCategorias((prev) => [...prev, categoria]);
+                  setProducto((prev) => ({
+                    ...prev,
+                    id_categoria: categoria.id,
+                  }));
+                }}
+              />
+            </div>
+
+            
             {errores.id_categoria && (
               <p className="error">{errores.id_categoria}</p>
             )}
@@ -349,6 +366,41 @@ const formStyles = `
   text-align: center;
   margin: 0 0 4px;
 }
+
+.categoria-row {
+  display: flex;
+  gap: 10px;
+  align-items: stretch;
+  position: relative;
+}
+
+.categoria-row select {
+  flex: 1;
+  height: 38px;
+  box-sizing: border-box;
+}
+
+.categoria-row > div {
+  display: flex;
+  flex-direction: column; 
+}
+
+.categoria-row .btn-add {
+  height: 38px !important; 
+  box-sizing: border-box;
+  margin: 0 !important;
+}
+
+.categoria-row > div > div:nth-child(2) {
+  position: absolute;
+  top: 44px;
+  left: 0;
+  right: 0;
+  z-index: 10;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+
 
 .field {
   display: flex;

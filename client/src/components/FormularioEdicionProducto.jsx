@@ -59,15 +59,15 @@ export default function FormularioEdicionProductos({ productoInicial, onClose })
       nuevosErrores.precio_venta =
         "El precio de venta no puede ser menor al de compra.";
     }
-
+    /*
     if (producto.stock_actual < 0) {
       nuevosErrores.stock_actual = "El stock no puede ser negativo.";
     }
-
+    */
     if (producto.stock_minimo < 0) {
       nuevosErrores.stock_minimo = "El stock mínimo no puede ser negativo.";
     }
-
+    /*
     const hoy = new Date();
     hoy.setHours(0, 0, 0, 0);
 
@@ -82,7 +82,7 @@ export default function FormularioEdicionProductos({ productoInicial, onClose })
     if (!producto.proveedor) {
       nuevosErrores.proveedor = "Seleccione un proveedor.";
     }
-
+    */
     return nuevosErrores;
   };
 
