@@ -4,6 +4,7 @@ import productController from '../controllers/product.controller.js'
 const router = express.Router()
 
 router.get('/', productController.listaProducto )
+router.get('/product/categorias', productController.listaCategorias)
 router.get('/product/:id', productController.productoPorId)
 
 

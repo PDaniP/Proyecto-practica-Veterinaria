@@ -27,15 +27,16 @@ const NuevaCategoria = ({ onCategoriaCreada }) => {
   };
 
   const handleSubmit = async () => {
+    let categoriaCreada = false
     if (!validar()) return;
 
     try {
       setLoading(true);
       setError("");
+      await axios.post("http://localhost:3000/products/product/addcategoria", categoria,{withCredentials:true})
+            .then(()=> categoriaCreada = categoria)
 
-      const response = await axios.post("/categorias", categoria);
-
-      const categoriaCreada = response.data;
+      console.log(categoriaCreada)
 
       // 👉 avisar al componente padre
       if (onCategoriaCreada) {

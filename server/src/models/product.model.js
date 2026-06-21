@@ -5,6 +5,15 @@ const obtenerProductos = async () => {
     return rows
 }
 
+const obtenerCategorias = async () => {
+    const {rows} = await db.query(
+        `
+        SELECT * FROM categorias ORDER BY id ASC
+        `
+    )
+    return rows
+}
+
 const obtenerProductoPorId = async (id) => {
     const {rows} = await db.query(`SELECT * FROM productos WHERE id = ${id}`)
     return rows
@@ -113,5 +122,5 @@ const editarProductoEnDB = async (precio_costo, precio_venta, id,) =>{
     return result
 }
 
-export default {obtenerProductoPorId, obtenerProductos, añadirProductoADB, eliminarProductoEnDB, añadirLoteADB, añadirCategoriaADB, editarProductoEnDB}
+export default {obtenerProductoPorId,obtenerCategorias,obtenerProductos, añadirProductoADB, eliminarProductoEnDB, añadirLoteADB, añadirCategoriaADB, editarProductoEnDB}
 

@@ -26,30 +26,31 @@ export default function FormularioProductos({ onClose }) {
 
   // simulación de categorías a traer después del backend
 
-  const categorias = [
+  /*const categorias = [
     { id: 1, nombre: "Alimentos" },
     { id: 2, nombre: "Accesorios y Juguetes" },
     { id: 3, nombre: "Higiene y Cuidado" },
     { id: 4, nombre: "Medicamentos y Fármacos" },
     { id: 5, nombre: "Vacunas" },
     { id: 6, nombre: "Descartables e Insumos Médicos" },
-  ];
-  /*
+  ];*/
+  
   const [categorias, setCategorias] = useState([]);
-
+  
   useEffect(() => {
   const obtenerCategorias = async () => {
     try {
-      const response = await axios.get("/categorias");
-      setCategorias(response.data);
+      const response = await axios.get("http://localhost:3000/products/product/categorias",{withCredentials:true})
+      setCategorias(response.data)
+      
     } catch (error) {
       console.error("Error al cargar categorías:", error);
     }
   };
-
+  
   obtenerCategorias();
   }, []);
-  */
+
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
 
