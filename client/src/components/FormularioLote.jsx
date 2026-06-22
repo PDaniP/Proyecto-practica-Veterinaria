@@ -6,10 +6,10 @@ export default function FormularioLote({ onClose }) {
   const navegar = useNavigate();
 
   const [lote, setLote] = useState({
+    idProducto: 1,
     codigo_lote: "",
     stock_inicial: "",
     stock_actual: "",
-    fecha_ingreso: "",
     fecha_vencimiento: "",
     activo: true,
   });
@@ -45,10 +45,6 @@ export default function FormularioLote({ onClose }) {
         "El stock actual no puede ser mayor al stock inicial.";
     }
 
-    if (!lote.fecha_ingreso) {
-      nuevosErrores.fecha_ingreso = "La fecha de ingreso es obligatoria.";
-    }
-
     if (lote.fecha_vencimiento) {
       const ingreso = new Date(lote.fecha_ingreso);
       const vencimiento = new Date(lote.fecha_vencimiento);
@@ -80,7 +76,7 @@ export default function FormularioLote({ onClose }) {
 
     try {
       await axios.post(
-        "http://localhost:3000/lotes/add",
+        "http://localhost:3000/products/product/addlote",
         loteFormateado,
         { withCredentials: true }
       );
@@ -93,7 +89,7 @@ export default function FormularioLote({ onClose }) {
         codigo_lote: "",
         stock_inicial: "",
         stock_actual: "",
-        fecha_ingreso: "",
+
         fecha_vencimiento: "",
         activo: true,
       });
@@ -165,20 +161,6 @@ export default function FormularioLote({ onClose }) {
             />
             {errores.stock_actual && (
               <p className="error">{errores.stock_actual}</p>
-            )}
-          </div>
-
-          <div className="field">
-            <label htmlFor="fecha_ingreso">Fecha de ingreso</label>
-            <input
-              id="fecha_ingreso"
-              type="date"
-              name="fecha_ingreso"
-              value={lote.fecha_ingreso}
-              onChange={handleChange}
-            />
-            {errores.fecha_ingreso && (
-              <p className="error">{errores.fecha_ingreso}</p>
             )}
           </div>
 

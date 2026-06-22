@@ -35,7 +35,7 @@ const añadirLote = async (req,res) => {
     if (!id_producto || !codigo_lote || !stock_actual || !stock_inicial || !fecha_vencimiento || !activo){
         return res.status(401).json({message:"Error al añadir, existen campos vacios"})
     }
-    const datos = await productModel.añadirLote(Number(id_producto),codigo_lote,Number(stock_inicial),Number(stock_actual),fecha_vencimiento,activo)
+    const datos = await productModel.añadirLoteADB(Number(id_producto),codigo_lote,Number(stock_inicial),Number(stock_actual),fecha_vencimiento,activo)
     console.log(datos)
     if(!datos) {
         res.status(401).json({message: 'Error al añadir producto'})
