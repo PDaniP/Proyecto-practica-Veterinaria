@@ -19,12 +19,12 @@
   --shadow-md:         0 4px 16px rgba(125, 31, 153, 0.13);
 }
 
-/* ─── Shell ────────────────────────────────────────────────────── */
+
 .page-shell {
   padding: 24px;
 }
 
-/* ─── Toolbar ──────────────────────────────────────────────────── */
+
 .productos-toolbar {
   display: flex;
   align-items: center;
@@ -60,7 +60,6 @@
   box-shadow: 0 0 0 3px rgba(125, 31, 153, 0.12);
 }
 
-/* ─── Botones toolbar ──────────────────────────────────────────── */
 .btn-toggle {
   height: 38px;
   padding: 0 18px;
@@ -110,7 +109,7 @@
   transform: scale(0.97);
 }
 
-/* ─── Tabla ────────────────────────────────────────────────────── */
+
 .tabla-wrapper {
   overflow-x: auto;
   border-radius: var(--radius);
@@ -159,7 +158,6 @@
   vertical-align: middle;
 }
 
-/* ─── Botón editar en tabla ────────────────────────────────────── */
 .btn-editar {
   font-size: 0.83rem;
   font-weight: 600;
@@ -177,7 +175,7 @@
   color: #fff;
 }
 
-/* ─── Botón eliminar en modal ──────────────────────────────────── */
+
 .btn-danger {
   width: 100%;
   height: 40px;
@@ -197,7 +195,7 @@
   color: #fff;
 }
 
-/* ─── Badges de stock ──────────────────────────────────────────── */
+
 .badge {
   font-size: 0.82rem;
   padding: 3px 10px;
@@ -220,7 +218,7 @@
   color: #991b1b;
 }
 
-/* ─── Estados vacíos ───────────────────────────────────────────── */
+
 .productos-empty,
 .productos-loading {
   text-align: center;
@@ -236,12 +234,12 @@
   margin-bottom: 0.75rem;
 }
 
-/* ─── Eliminar padding modal ───────────────────────────────────── */
+
 .modal-eliminar {
   padding: 0 32px 24px;
 }
 
-/* ─── Responsive ───────────────────────────────────────────────── */
+
 @media (max-width: 640px) {
   .productos-toolbar {
     flex-direction: column;
