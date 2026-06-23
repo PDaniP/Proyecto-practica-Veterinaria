@@ -14,27 +14,11 @@ export default function FormularioProductos({ onClose }) {
     precio_costo: "",
     precio_venta: "",
     stock_minimo: "",
-    es_publico: false,
-    //fecha_vencimiento: "",
-    //proveedor: "",
     venta_al_publico: false,
-    fecha_vencimiento: "",
-    proveedor: "",
   });
 
   const [errores, setErrores] = useState({});
 
-  // simulación de categorías a traer después del backend
-
-  /*const categorias = [
-    { id: 1, nombre: "Alimentos" },
-    { id: 2, nombre: "Accesorios y Juguetes" },
-    { id: 3, nombre: "Higiene y Cuidado" },
-    { id: 4, nombre: "Medicamentos y Fármacos" },
-    { id: 5, nombre: "Vacunas" },
-    { id: 6, nombre: "Descartables e Insumos Médicos" },
-  ];*/
-  
   const [categorias, setCategorias] = useState([]);
   
   useEffect(() => {
@@ -92,22 +76,6 @@ export default function FormularioProductos({ onClose }) {
       nuevosErrores.stock_minimo = "El stock mínimo no puede ser negativo.";
     }
 
-    /*
-    const hoy = new Date();
-    hoy.setHours(0, 0, 0, 0);
-
-    if (producto.fecha_vencimiento) {
-      const fecha = new Date(producto.fecha_vencimiento);
-
-      if (fecha < hoy) {
-        nuevosErrores.fecha_vencimiento =
-          "La fecha de vencimiento no puede ser anterior a la fecha actual.";
-      }
-    }
-    */
-    // if (!producto.proveedor) {
-    //   nuevosErrores.proveedor = "Seleccione un proveedor.";
-    // }
 
     return nuevosErrores;
   };
@@ -123,15 +91,12 @@ export default function FormularioProductos({ onClose }) {
     const productoFormateado = {
       ...producto,
       id_categoria: Number(producto.id_categoria),
-      //proveedor: Number(producto.proveedor),
       precio_costo: Number(producto.precio_costo),
       precio_venta: Number(producto.precio_venta),
-      //stock_actual: Number(producto.stock_actual),
       stock_minimo: Number(producto.stock_minimo),
     };
 
     console.log("Producto listo para enviar:", productoFormateado);
-
     try {
       await axios.post(
         "http://localhost:3000/products/product/add",
@@ -154,8 +119,6 @@ export default function FormularioProductos({ onClose }) {
         precio_venta: "",
         stock_minimo: "",
         es_publico: false,
-        //fecha_vencimiento: "",
-        //proveedor: "",
       });
       setErrores({});
     } catch (error) {
@@ -320,12 +283,12 @@ export default function FormularioProductos({ onClose }) {
           </div>
 
           <div className="field checkbox-field">
-            <label htmlFor="es_publico">Venta al público</label>
+            <label htmlFor="venta_al_publico">Venta al público</label>
             <input
-              id="es_publico"
+              id="venta_al_publico"
               type="checkbox"
-              name="es_publico"
-              checked={producto.es_publico}
+              name="venta_al_publico"
+              checked={producto.venta_al_publico}
               onChange={handleChange}
             />
           </div>
