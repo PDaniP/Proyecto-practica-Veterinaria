@@ -14,6 +14,13 @@ const obtenerCategorias = async () => {
     return rows
 }
 
+const obtenerLotes = async () => {
+    const {rows} = await db.query(
+        `SELECT * FROM lotes ORDER BY id ASC`
+    )
+    return rows
+}
+
 const obtenerProductoPorId = async (id) => {
     const {rows} = await db.query(`SELECT * FROM productos WHERE id = ${id}`)
     return rows
@@ -121,8 +128,8 @@ const editarProductoEnDB = async (precio_costo, precio_venta,stock_minimo, id,) 
         id
     ])
 
-    return result
+    return result.rows[0]
 }
 
-export default {obtenerProductoPorId,obtenerCategorias,obtenerProductos, añadirProductoADB, eliminarProductoEnDB, añadirLoteADB, añadirCategoriaADB, editarProductoEnDB}
+export default {obtenerProductoPorId,obtenerCategorias,obtenerProductos, obtenerLotes, añadirProductoADB, eliminarProductoEnDB, añadirLoteADB, añadirCategoriaADB, editarProductoEnDB}
 

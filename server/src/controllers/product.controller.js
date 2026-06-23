@@ -90,6 +90,13 @@ const listaCategorias = async (req,res) => {
     res.status(200).json(datos,{message:"Datos obtenidos con exito"})
 }
 
+const listaLotes = async (req,res) => {
+    const datos = await productModel.obtenerLotes()
+    if(!datos){
+        res.status(401).json({message:"No existen datos"})
+    }
+    res.status(200).json(datos,{message:"Datos obtenidos con exito"})
+}
 const productoPorId = async (req, res) => {
     const {id} = req.params
     const datos = await productModel.obtenerProductoPorId(id)
@@ -107,5 +114,6 @@ export default {listaProducto,
                 añadirProducto,
                 añadirLote,
                 añadirCategoria,
-                listaCategorias
+                listaCategorias,
+                listaLotes
 }

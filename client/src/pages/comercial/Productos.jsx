@@ -39,12 +39,12 @@ export default function Productos() {
     try {
       const response = await axios.get(`${API_URL}/product/lotes`, { withCredentials: true })
       setLotes(response.data)
+    
     } catch (err) {
       console.error('Error al cargar lotes:', err)
     }
   }
 
- 
   const handleEliminar = async (id) => {
     const confirmar = window.confirm('¿Seguro que querés eliminar este producto? Esta acción no se puede deshacer.')
     if (!confirmar) return
@@ -86,10 +86,12 @@ export default function Productos() {
     p.nombre.toLowerCase().includes(busqueda.toLowerCase())
   )
 
-  const lotesFiltrados = lotes.filter((l) =>
-    l.producto?.toLowerCase().includes(busqueda.toLowerCase())
-  )
+ const lotesFiltrados = lotes.filter((l) =>
+  (l.producto || "").toLowerCase().includes(busqueda.toLowerCase())
+)
 
+  console.log('productosFiltrados:', productosFiltrados)
+  console.log('lotesFiltrados:', lotesFiltrados)
 
   const badgeStock = (actual, minimo) => {
     if (actual === 0) return <span className="badge badge-danger">{actual}</span>
