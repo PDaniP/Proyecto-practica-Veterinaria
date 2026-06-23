@@ -44,12 +44,12 @@ const añadirLote = async (req,res) => {
     }
 
 const editarProducto = async (req,res) => {
-    const{precio_costo,precio_venta} = req.body
+    const{precio_costo,precio_venta, stock_minimo} = req.body
     const {id} = req.params
-    if(!precio_costo || !precio_venta || !id){
+    if(!precio_costo || !precio_venta || !id || !stock_minimo){
         return res.status(401).json({message:"Error al añadir, existen campos vacios"})
     }
-    const datos = await productModel.editarProductoEnDB(precio_costo,precio_venta,id)
+    const datos = await productModel.editarProductoEnDB(precio_costo,precio_venta,stock_minimo,id)
     console.log(datos)
     if(!datos){
         return res.status(401).json({message: "Error al editar productos"})

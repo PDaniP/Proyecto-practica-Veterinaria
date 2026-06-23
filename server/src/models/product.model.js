@@ -104,13 +104,14 @@ const eliminarProductoEnDB = async (id) => {
 
 }
 
-const editarProductoEnDB = async (precio_costo, precio_venta, id,) =>{
+const editarProductoEnDB = async (precio_costo, precio_venta,stock_minimo, id,) =>{
     const query = `
     UPDATE productos
     SET
     precio_costo = $1,
-    precio_venta = $2
-    WHERE id = $3
+    precio_venta = $2,
+    stock_minimo = $3
+    WHERE id = $4
     RETURNING *
     `;
     const result = await db.query(query,[
