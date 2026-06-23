@@ -1,36 +1,25 @@
 import { useState, useEffect } from "react";
+import axios from "axios";
+
+const API_URL = "http://localhost:3000/products";
 
 export default function FormularioEdicionProductos({ productoInicial, onClose }) {
   const [producto, setProducto] = useState({
-    precio_compra: "",
+    precio_costo: "",
     precio_venta: "",
-    //stock_actual: "",
     stock_minimo: "",
-    //fecha_vencimiento: "",
-    //proveedor: "",
   });
 
+  const [idProducto, setIdProducto] = useState(productoInicial ? productoInicial.id : null);
   const [errores, setErrores] = useState({});
-  /*
-  // proveedores simulados
-  const proveedores = [
-    { id: 1, nombre: "Veterinaria Central" },
-    { id: 2, nombre: "Distribuidora Animal" },
-    { id: 3, nombre: "Dropship Pet" },
-    { id: 4, nombre: "Proveedor Salud Animal" },
-  ];
-  
-  */
+
   // 🔥 Cargar datos del producto a editar
   useEffect(() => {
     if (productoInicial) {
       setProducto({
-        precio_compra: productoInicial.precio_compra || "",
+        precio_costo: productoInicial.precio_costo || "",
         precio_venta: productoInicial.precio_venta || "",
-        //stock_actual: productoInicial.stock_actual || "",
         stock_minimo: productoInicial.stock_minimo || "",
-        //fecha_vencimiento: productoInicial.fecha_vencimiento || "",
-        //proveedor: productoInicial.proveedor || "",
       });
     }
   }, [productoInicial]);
@@ -47,44 +36,26 @@ export default function FormularioEdicionProductos({ productoInicial, onClose })
   const validar = () => {
     const nuevosErrores = {};
 
-    if (!producto.precio_compra || producto.precio_compra <= 0) {
-      nuevosErrores.precio_compra = "Ingrese un precio de compra válido.";
+    if (!producto.precio_costo || producto.precio_costo <= 0) {
+      nuevosErrores.precio_costo = "Ingrese un precio de costo válido.";
     }
 
     if (!producto.precio_venta || producto.precio_venta <= 0) {
       nuevosErrores.precio_venta = "Ingrese un precio de venta válido.";
     }
 
-    if (producto.precio_venta < producto.precio_compra) {
+    if (producto.precio_venta < producto.precio_costo) {
       nuevosErrores.precio_venta =
-        "El precio de venta no puede ser menor al de compra.";
+        "El precio de venta no puede ser menor al de costo.";
     }
-    /*
-    if (producto.stock_actual < 0) {
-      nuevosErrores.stock_actual = "El stock no puede ser negativo.";
-    }
-    */
+
     if (producto.stock_minimo < 0) {
       nuevosErrores.stock_minimo = "El stock mínimo no puede ser negativo.";
     }
-    /*
-    const hoy = new Date();
-    hoy.setHours(0, 0, 0, 0);
-
-    if (producto.fecha_vencimiento) {
-      const fecha = new Date(producto.fecha_vencimiento);
-      if (fecha < hoy) {
-        nuevosErrores.fecha_vencimiento =
-          "La fecha no puede ser anterior a hoy.";
-      }
-    }
-
-    if (!producto.proveedor) {
-      nuevosErrores.proveedor = "Seleccione un proveedor.";
-    }
-    */
+    
     return nuevosErrores;
-  };
+  };  
+  
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -96,17 +67,23 @@ export default function FormularioEdicionProductos({ productoInicial, onClose })
 
     const productoFormateado = {
       ...producto,
-      precio_compra: Number(producto.precio_compra),
+      precio_costo: Number(producto.precio_costo),
       precio_venta: Number(producto.precio_venta),
-      //stock_actual: Number(producto.stock_actual),
       stock_minimo: Number(producto.stock_minimo),
-      proveedor: Number(producto.proveedor),
     };
 
-    console.log("Producto editado:", productoFormateado);
-
-    alert("Producto actualizado correctamente.");
-    onClose();
+    console.log("Datos a enviar:", productoFormateado);
+    axios
+      .patch(`${API_URL}/product/update/${idProducto}`, productoFormateado)
+      .then((response) => {
+        console.log("Producto editado:", response.data);
+        alert("Producto actualizado correctamente.");
+        onClose();
+      })
+      .catch((error) => {
+        console.error("Error al actualizar el producto:", error);
+        alert("Error al actualizar el producto.");
+      });
   };
 
   useEffect(() => {
@@ -136,11 +113,11 @@ export default function FormularioEdicionProductos({ productoInicial, onClose })
           <label>Precio compra</label>
           <input
             type="number"
-            name="precio_compra"
-            value={producto.precio_compra}
+            name="precio_costo"
+            value={producto.precio_costo}
             onChange={handleChange}
           />
-          {errores.precio_compra && <p className="error">{errores.precio_compra}</p>}
+          {errores.precio_costo && <p className="error">{errores.precio_costo}</p>}
         </div>
 
         <div className="field">
@@ -153,18 +130,7 @@ export default function FormularioEdicionProductos({ productoInicial, onClose })
           />
           {errores.precio_venta && <p className="error">{errores.precio_venta}</p>}
         </div>
-        {/*
-        <div className="field">
-          <label>Stock actual</label>
-          <input
-            type="number"
-            name="stock_actual"
-            value={producto.stock_actual}
-            onChange={handleChange}
-          />
-          {errores.stock_actual && <p className="error">{errores.stock_actual}</p>}
-        </div>
-        */}
+
         <div className="field">
           <label>Stock mínimo</label>
           <input
@@ -175,37 +141,7 @@ export default function FormularioEdicionProductos({ productoInicial, onClose })
           />
           {errores.stock_minimo && <p className="error">{errores.stock_minimo}</p>}
         </div>
-        {/**
-        <div className="field">
-          <label>Fecha de vencimiento</label>
-          <input
-            type="date"
-            name="fecha_vencimiento"
-            value={producto.fecha_vencimiento}
-            onChange={handleChange}
-          />
-          {errores.fecha_vencimiento && (
-            <p className="error">{errores.fecha_vencimiento}</p>
-          )}
-        </div>
 
-        <div className="field">
-          <label>Proveedor</label>
-          <select
-            name="proveedor"
-            value={producto.proveedor}
-            onChange={handleChange}
-          >
-            <option value="">Seleccione proveedor</option>
-            {proveedores.map((p) => (
-              <option key={p.id} value={p.id}>
-                {p.nombre}
-              </option>
-            ))}
-          </select>
-          {errores.proveedor && <p className="error">{errores.proveedor}</p>}
-        </div>
-        */}
         <button className="btn" type="submit">
           Guardar cambios
         </button>

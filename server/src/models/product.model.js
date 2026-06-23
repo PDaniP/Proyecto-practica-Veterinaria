@@ -117,6 +117,7 @@ const editarProductoEnDB = async (precio_costo, precio_venta,stock_minimo, id,) 
     const result = await db.query(query,[
         precio_costo,
         precio_venta,
+        stock_minimo,
         id
     ])
 
