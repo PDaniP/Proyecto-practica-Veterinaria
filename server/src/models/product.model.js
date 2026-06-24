@@ -111,6 +111,16 @@ const eliminarProductoEnDB = async (id) => {
 
 }
 
+const obtenerLoteConProducto = async () => {
+    const query = `
+    SELECT * FROM lotes
+    JOIN productos ON lotes.id_producto = productos.id
+    ORDER BY lotes.id ASC
+    `;
+    const {rows} = await db.query(query);
+    return rows;
+}
+
 const editarProductoEnDB = async (precio_costo, precio_venta,stock_minimo, id,) =>{
     const query = `
     UPDATE productos
@@ -130,6 +140,29 @@ const editarProductoEnDB = async (precio_costo, precio_venta,stock_minimo, id,) 
 
     return result.rows[0]
 }
+const productosConStockSumado = async () => {
+    const query = `
+    Select * from productos
+    LEFT JOIN (
+        SELECT id_producto, SUM(stock_actual) as stock_actual
+        FROM lotes
+        GROUP BY id_producto
+    ) as lotes_sumados ON productos.id = lotes_sumados.id_producto`
 
-export default {obtenerProductoPorId,obtenerCategorias,obtenerProductos, obtenerLotes, añadirProductoADB, eliminarProductoEnDB, añadirLoteADB, añadirCategoriaADB, editarProductoEnDB}
+    const {rows} = await db.query(query)
+    return rows
+}
+
+
+export default {obtenerProductoPorId,
+    obtenerCategorias,
+    obtenerProductos, 
+    obtenerLotes, 
+    añadirProductoADB, 
+    eliminarProductoEnDB, 
+    añadirLoteADB, 
+    añadirCategoriaADB, 
+    editarProductoEnDB, 
+    obtenerLoteConProducto,
+    productosConStockSumado}
 

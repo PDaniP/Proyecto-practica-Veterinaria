@@ -2,11 +2,13 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
-export default function FormularioLote({ onClose }) {
+export default function FormularioLote({productoId, onClose }) {
   const navegar = useNavigate();
+  const [idProducto, setIdProducto] = useState(productoId);
+  const [productos, setProductos] = useState([]);
 
   const [lote, setLote] = useState({
-    idProducto: 1,
+    id_producto: idProducto,
     codigo_lote: "",
     stock_inicial: "",
     stock_actual: "",
@@ -68,12 +70,23 @@ export default function FormularioLote({ onClose }) {
 
     const loteFormateado = {
       ...lote,
+      idProducto: idProducto,
       stock_inicial: Number(lote.stock_inicial),
       stock_actual: Number(lote.stock_actual),
     };
 
     console.log("Lote listo para enviar:", loteFormateado);
 
+    try {
+      await axios.get("http://localhost:3000/products", { withCredentials: true })
+      .then((response) => {setProductos(response.data)})
+    } catch (error) {
+      console.error("Error al obtener productos:", error);
+      alert("Error al obtener productos. Asegúrate de que el servidor esté en funcionamiento.");
+      return;
+    }
+
+    console.log("loteFormateado antes de enviar:", loteFormateado);
     try {
       await axios.post(
         "http://localhost:3000/products/product/addlote",
@@ -83,13 +96,13 @@ export default function FormularioLote({ onClose }) {
 
       alert("Lote registrado correctamente.");
       onClose();
-      navegar("/lotes");
+      
 
       setLote({
         codigo_lote: "",
+        idProducto: productoId,
         stock_inicial: "",
         stock_actual: "",
-
         fecha_vencimiento: "",
         activo: true,
       });

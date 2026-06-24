@@ -34,16 +34,18 @@ export default function Productos() {
       setLoading(false)
     }
   }
+  console.log(productos)
 
   const fetchLotes = async () => {
     try {
       const response = await axios.get(`${API_URL}/product/lotes`, { withCredentials: true })
-      setLotes(response.data)
+      setLotes(response.data.datos)
     
     } catch (err) {
       console.error('Error al cargar lotes:', err)
     }
   }
+
 
   const handleEliminar = async (id) => {
     const confirmar = window.confirm('¿Seguro que querés eliminar este producto? Esta acción no se puede deshacer.')
@@ -70,9 +72,9 @@ export default function Productos() {
     setModalAbierto(true)
   }
 
-  const abrirModalLote = () => {
+  const abrirModalLote = (idproducto) => {
     setTipoModal('lote')
-    setProductoSeleccionado(null)
+    setProductoSeleccionado(idproducto)
     setModalAbierto(true)
   }
 
@@ -86,20 +88,19 @@ export default function Productos() {
     p.nombre.toLowerCase().includes(busqueda.toLowerCase())
   )
 
- const lotesFiltrados = lotes.filter((l) =>
-  (l.producto || "").toLowerCase().includes(busqueda.toLowerCase())
+const lotesFiltrados = lotes.filter((l) =>
+  l.nombre_producto?.toLowerCase().includes(busqueda.toLowerCase())
 )
 
-  console.log('productosFiltrados:', productosFiltrados)
-  console.log('lotesFiltrados:', lotesFiltrados)
 
+  
   const badgeStock = (actual, minimo) => {
     if (actual === 0) return <span className="badge badge-danger">{actual}</span>
     if (actual <= minimo) return <span className="badge badge-warning">{actual}</span>
     return <span className="badge badge-ok">{actual}</span>
   }
 
-
+  
   return (
     <section className="page-shell">
 
@@ -128,9 +129,9 @@ export default function Productos() {
 
         <button
           className="btn-primary"
-          onClick={vistaLotes ? abrirModalLote : abrirModalCrear}
+          onClick={abrirModalCrear}
         >
-          + {vistaLotes ? 'Nuevo lote' : 'Nuevo producto'}
+          + Nuevo producto
         </button>
       </div>
 
@@ -151,6 +152,7 @@ export default function Productos() {
                   <th>Stock</th>
                   <th>Público</th>
                   <th></th>
+                  <th></th>
                 </tr>
               </thead>
               <tbody>
@@ -165,6 +167,11 @@ export default function Productos() {
                     <td>
                       <button className="btn-editar" onClick={() => abrirModalEditar(p)}>
                         Editar
+                      </button>
+                    </td>
+                    <td>
+                      <button className="btn-editar" onClick={() => abrirModalLote(p.id)}>
+                        Añadir lote
                       </button>
                     </td>
                   </tr>
@@ -185,6 +192,7 @@ export default function Productos() {
                 <tr>
                   <th>Código lote</th>
                   <th>Producto</th>
+                  <th>Marca</th>
                   <th>Stock inicial</th>
                   <th>Stock actual</th>
                   <th>Vencimiento</th>
@@ -195,7 +203,8 @@ export default function Productos() {
                 {lotesFiltrados.map((l) => (
                   <tr key={l.id}>
                     <td>{l.codigo_lote}</td>
-                    <td>{l.producto}</td>
+                    <td>{l.nombre_producto}</td>
+                    <td>{l.marca_producto}</td>
                     <td>{l.stock_inicial}</td>
                     <td>{badgeStock(l.stock_actual, 0)}</td>
                     <td>{l.fecha_vencimiento}</td>
@@ -214,7 +223,7 @@ export default function Productos() {
 
       <Modal isOpen={modalAbierto} onClose={cerrarModal}>
         {tipoModal === 'lote' && (
-          <FormularioLote onClose={cerrarModal} />
+          <FormularioLote onClose={cerrarModal} productoId={productoSeleccionado} />
         )}
         {tipoModal === 'editar' && (
           <>

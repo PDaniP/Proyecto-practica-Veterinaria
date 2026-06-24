@@ -37,6 +37,9 @@ const añadirLote = async (req,res) => {
     }
     const datos = await productModel.añadirLoteADB(Number(id_producto),codigo_lote,Number(stock_inicial),Number(stock_actual),fecha_vencimiento,activo)
     console.log(datos)
+    if(datos.fecha_vencimiento < new Date().toISOString().split('T')[0]) {
+        datos.activo = false;
+    }
     if(!datos) {
         res.status(401).json({message: 'Error al añadir producto'})
     }
@@ -75,10 +78,11 @@ const eliminarProducto = async (req,res) => {
 }
 
 const listaProducto = async (req,res) => {
-    const datos = await productModel.obtenerProductos()
+    const datos = await productModel.productosConStockSumado()
     if(datos.length < 1){
         res.status(401).json({message:"no existen datos"})
     }
+    console.log(datos)
     res.status(200).json(datos,{message:'datos obtenidos con exito'})
 }
 
@@ -91,18 +95,29 @@ const listaCategorias = async (req,res) => {
 }
 
 const listaLotes = async (req,res) => {
-    const datos = await productModel.obtenerLotes()
-    if(!datos){
-        res.status(401).json({message:"No existen datos"})
+        const datosLoteYProductos = await productModel.obtenerLoteConProducto()
+        console.log(datosLoteYProductos)
+        if(!datosLoteYProductos || datosLoteYProductos.length < 1){
+            return res.status(401).json({message:"No existen datos"})
     }
-    res.status(200).json(datos,{message:"Datos obtenidos con exito"})
+        const datosFormateados = datosLoteYProductos.map((lote) => ({
+            codigo_lote: lote.codigo_lote,
+            nombre_producto: lote.nombre,
+            marca_producto: lote.marca,
+            stock_inicial: lote.stock_inicial,
+            stock_actual: lote.stock_actual,
+            fecha_vencimiento: lote.fecha_vencimiento,
+            activo: lote.activo,
+        }));
+        console.log(datosFormateados)
+    res.status(200).json({datos: datosFormateados, message:"Datos obtenidos con exito"})
 }
 const productoPorId = async (req, res) => {
     const {id} = req.params
     const datos = await productModel.obtenerProductoPorId(id)
     console.log(datos)
     if(datos.length < 1){
-        res.status(401).json({message: "no existen datos con esa id"})
+        return res.status(401).json({message: "no existen datos con esa id"})
     }
     res.status(200).json(datos,{message: 'Producto obtenido exitosamente'})
 } 

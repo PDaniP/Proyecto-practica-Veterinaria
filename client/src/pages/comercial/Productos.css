@@ -111,6 +111,7 @@
 
 
 .tabla-wrapper {
+  width: 105%;
   overflow-x: auto;
   border-radius: var(--radius);
   box-shadow: var(--shadow-md);
