@@ -124,7 +124,7 @@ const lotesFiltrados = lotes.filter((l) =>
             if (!vistaLotes) fetchLotes()
           }}
         >
-          {vistaLotes ? '← Ver productos' : 'Ver lotes'}
+          {vistaLotes ? ' Ver productos' : 'Ver lotes'}
         </button>
 
         <button
