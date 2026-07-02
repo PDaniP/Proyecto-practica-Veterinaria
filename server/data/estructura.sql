@@ -39,7 +39,8 @@ INSERT INTO roles (nombre, descripcion) VALUES
 INSERT INTO usuarios (nombre, usuario, email, password_hash, id_rol) VALUES 
 ('Carlos Gómez', 'CarlitosVet', 'admin@veterinaria.com', 'admin123', (SELECT id FROM roles WHERE nombre = 'Administrador')),
 ('Dra. Laura Martínez', 'LauritaVet', 'laura.vet@veterinaria.com', '$2y$10$S9bB7X4mF8gH2jK1l3m4n5o6p7q8r9s...', (SELECT id FROM roles WHERE nombre = 'Veterinario')),
-('Matias Silva', 'MatiVet', 'ventas@veterinaria.com', '$2y$10$U7vW8x9y0z1a2b3c4d5e6f7g8h9i0j...', (SELECT id FROM roles WHERE nombre = 'Administrativo/Vendedor'));
+('Matias Silva', 'MatiVet', 'ventas@veterinaria.com', '$2y$10$U7vW8x9y0z1a2b3c4d5e6f7g8h9i0j...', (SELECT id FROM roles WHERE nombre = 'Administrativo/Vendedor')),
+('Matias Picasso','Matias', 'matias.picasso@veterinaria.com','pikachu17', (SELECT id FROM roles WHERE nombre = 'Administrador'));
 
 -- 5. Tabla de clientes
 CREATE TABLE clientes (
@@ -85,7 +86,7 @@ CREATE TABLE lotes (
     id_producto INT NOT NULL,
     codigo_lote VARCHAR(50) NOT NULL, 
     stock_inicial INT NOT NULL,       
-    stock_actual INT NOT NULL,        
+    stock_actual INT NOT NULL Check (stock_actual >= 0),        
     fecha_ingreso TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     fecha_vencimiento DATE NOT NULL,  
     activo BOOLEAN DEFAULT TRUE,
