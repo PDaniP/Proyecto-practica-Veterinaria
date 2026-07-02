@@ -10,6 +10,7 @@ import Mascotas from './pages/clinica/Mascotas.jsx'
 import HistoriasClinicas from './pages/clinica/historiasClinicas.jsx'
 import Login from './pages/auth/Login.jsx'
 import { VerificacionToken } from './pages/auth/Login.jsx'
+import FormularioProductos from './components/FormularioProductos.jsx'
 
 
 function App() {
@@ -26,6 +27,7 @@ function App() {
 
               <Route path="/" element={<Home />} />
               <Route path="/productos" element={<Productos />} />
+              <Route path='/productos/añadir' element={<FormularioProductos />}></Route>
               <Route path="/ventas" element={<Ventas />} />
               <Route path="/clientes" element={<Clientes />} />
               <Route path="/mascotas" element={<Mascotas />} />
