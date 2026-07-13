@@ -1,4 +1,4 @@
-import {obtenerLotesVentas, actualizarStockLote, añadirVenta, filtrarProductoPorID, detallesVenta} from '../models/ventas.model.js'
+import {obtenerLotesVentas, actualizarStockLote, añadirVenta, filtrarProductoPorID, detallesVenta, obtenerListaVentas, obtenerDetallesVenta} from '../models/ventas.model.js'
 
 const descontarStock = async (req, res) => {
     const { id_lote, cantidad } = req.body;
@@ -79,4 +79,24 @@ const registrarDetallesVenta = async (req, res) => {
     }
 };
 
-export { descontarStock, eliminarLoteVacio, registrarVenta, registrarDetallesVenta };
+const listaVentas = async (req, res) => {
+    try {
+        const ventas = await obtenerListaVentas();
+        res.status(200).json({ message: 'Lista de ventas obtenida correctamente', ventas: ventas.rows });
+    } catch (error) {
+        res.status(500).json({ message: 'Error al obtener la lista de ventas', error });
+    }
+};
+
+const obtenerDetallesVentaController = async (req, res) => {
+    const { id_venta } = req.params;
+    try {
+        const detalles = await obtenerDetallesVenta(id_venta);
+        res.status(200).json({ message: 'Detalles de la venta obtenidos correctamente', detalles });
+    } catch (error) {
+        res.status(500).json({ message: 'Error al obtener los detalles de la venta', error });
+        console.error('Error al obtener los detalles de la venta:', error);
+    }
+};
+
+export { descontarStock, eliminarLoteVacio, registrarVenta, registrarDetallesVenta, listaVentas, obtenerDetallesVentaController };
