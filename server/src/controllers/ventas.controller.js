@@ -1,4 +1,4 @@
-import {obtenerLotesVentas, actualizarStockLote, añadirVenta, filtrarProductoPorID, detallesVenta, obtenerListaVentas, obtenerDetallesVenta} from '../models/ventas.model.js'
+import {obtenerLotesVentas, actualizarStockLote, añadirVenta, filtrarProductoPorID, detallesVenta, obtenerListaVentas, obtenerDetallesVenta,filtrarServiciosPorId} from '../models/ventas.model.js'
 
 const descontarStock = async (req, res) => {
     const { id_lote, cantidad } = req.body;
@@ -50,12 +50,13 @@ const registrarDetallesVenta = async (req, res) => {
     }
 
     const producto = id_producto ? await filtrarProductoPorID(id_producto) : null;
+    const servicio = id_servicio ? await filtrarServiciosPorId(id_servicio) : null;
     
-    const subtotal = producto ? producto.precio_venta * cantidad : null;
+    const subtotal = producto ? producto.precio_venta * cantidad : servicio ? servicio.precio_venta * cantidad : 0;
    
     if(!id_producto) {
         try {
-            const detalle = await detallesVenta(id_venta, null, id_servicio, cantidad, producto.precio_venta, subtotal);
+            const detalle = await detallesVenta(id_venta, null, id_servicio, cantidad, servicio.precio_venta, subtotal);
             console.log('Detalle de venta registrado:', detalle);
             if (!detalle) {
                 return res.status(500).json({ message: 'Error al registrar los detalles de la venta' });
@@ -63,6 +64,7 @@ const registrarDetallesVenta = async (req, res) => {
             res.status(201).json({ message: 'Detalles de la venta registrados correctamente', detalle });
         } catch (error) {
             res.status(500).json({ message: 'Error al registrar los detalles de la venta', error });
+            console.error('Error al registrar los detalles de la venta:', error);
         }
     } else if(!id_servicio) {
         try {
@@ -74,7 +76,7 @@ const registrarDetallesVenta = async (req, res) => {
             res.status(201).json({ message: 'Detalles de la venta registrados correctamente', detalle });
         } catch (error) {
             res.status(500).json({ message: 'Error al registrar los detalles de la venta', error });
-            
+            console.error('Error al registrar los detalles de la venta:', error);
         }
     }
 };

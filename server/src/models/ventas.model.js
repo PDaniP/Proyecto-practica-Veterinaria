@@ -59,6 +59,13 @@ const obtenerListaVentas = () => {
     )
 }
 
+const filtrarServiciosPorId = async (id_servicio) => {
+    const {rows} = await db.query(
+        `SELECT * FROM servicios WHERE id = $1`, [id_servicio]
+    )
+    return rows[0]
+}
+
 const obtenerDetallesVenta = async (id_venta) => {
     const {rows} = await db.query(
         `SELECT dv.id, dv.cantidad, dv.precio_unitario, dv.subtotal, p.nombre AS producto_nombre, s.nombre AS servicio_nombre
@@ -71,4 +78,4 @@ const obtenerDetallesVenta = async (id_venta) => {
     return rows
 }
 
-export { obtenerLotesVentas, actualizarStockLote, eliminarLoteVacio, añadirVenta, detallesVenta, filtrarProductoPorID, obtenerListaVentas, obtenerDetallesVenta }
+export { obtenerLotesVentas, actualizarStockLote, eliminarLoteVacio, añadirVenta, detallesVenta, filtrarProductoPorID, obtenerListaVentas, obtenerDetallesVenta, filtrarServiciosPorId }
