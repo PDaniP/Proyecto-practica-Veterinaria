@@ -122,6 +122,8 @@ const productoPorId = async (req, res) => {
     res.status(200).json(datos,{message: 'Producto obtenido exitosamente'})
 } 
 
+
+
 export default {listaProducto,
                 productoPorId,
                 eliminarProducto,
@@ -130,5 +132,5 @@ export default {listaProducto,
                 añadirLote,
                 añadirCategoria,
                 listaCategorias,
-                listaLotes
+                listaLotes,
 }

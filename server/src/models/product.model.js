@@ -153,6 +153,15 @@ const productosConStockSumado = async () => {
     return rows
 }
 
+const obtenerLotePorIdDeProducto = async (id_producto) => {
+    const query = `
+    SELECT * FROM lotes
+    WHERE id_producto = $1
+    ORDER BY fecha_vencimiento ASC
+    `;
+    const {rows} = await db.query(query, [id_producto]);
+    return rows;
+}
 
 export default {obtenerProductoPorId,
     obtenerCategorias,
@@ -164,5 +173,6 @@ export default {obtenerProductoPorId,
     añadirCategoriaADB, 
     editarProductoEnDB, 
     obtenerLoteConProducto,
-    productosConStockSumado}
+    productosConStockSumado,
+    obtenerLotePorIdDeProducto}
 
