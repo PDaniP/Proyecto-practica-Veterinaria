@@ -249,6 +249,11 @@ export default function Ventas() {
           <span className="resumen-label">Tarjeta</span>
           <span className="resumen-valor">${stats.tarjeta.toLocaleString()}</span>
         </div>
+
+        <div className="resumen-card">
+          <span className="resumen-label">Transferencia</span>
+          <span className="resumen-valor">${stats.transferencia.toLocaleString()}</span>
+        </div>
       </div>
 
       {loading ? (
