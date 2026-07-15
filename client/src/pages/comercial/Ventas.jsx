@@ -4,7 +4,7 @@ import Modal from '../../components/Modal'
 import './Ventas.css'
 import FormularioNuevaVenta from "../../components/FormularioNuevaVenta";
 
-const API_URL = 'http://localhost:3000/ventas'
+const API_URL = 'http://localhost:3000'
 
 export default function Ventas() {
   const [ventas, setVentas] = useState([])
@@ -46,10 +46,10 @@ export default function Ventas() {
   setLoading(true)
 
   try {
-    const response = await axios.get(`${API_URL}/lista-ventas`)
-
+    const response = await axios.get(`${API_URL}/ventas/lista-ventas`)
+    
     const listaVentas = response.data.ventas || []
-
+    
     setVentas(listaVentas)
 
     const resumen = {}
@@ -58,10 +58,12 @@ export default function Ventas() {
       listaVentas.map(async (venta) => {
         try {
           const res = await axios.get(
-            `${API_URL}/detalles-venta/${venta.id}`
+            `${API_URL}/ventas/detalles-venta/${venta.id}`
           )
+          
 
           resumen[venta.id] = res.data.detalles || []
+          
         } catch (error) {
           console.error(
             `Error al obtener el detalle de la venta ${venta.id}`,
@@ -74,6 +76,7 @@ export default function Ventas() {
     )
 
     setProductosPorVenta(resumen)
+    
   } catch (error) {
     console.error('Error al cargar las ventas:', error)
   } finally {
@@ -88,7 +91,7 @@ export default function Ventas() {
 
   try {
     const res = await axios.get(
-      `${API_URL}/detalles-venta/${venta.id}`
+      `${API_URL}/ventas/detalles-venta/${venta.id}`
     )
 
     setDetalleSeleccionado(res.data.detalles || [])

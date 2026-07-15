@@ -6,6 +6,7 @@ import productRoutes from './routes/product.routes.js'
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import ventasRoutes from './routes/ventas.routes.js'
+import clientesRoutes from './routes/clientes.routes.js'
 
 const app = express();
 
@@ -27,6 +28,7 @@ app.get('/', (req, res) => {
 app.use('/users', userRoutes);
 app.use('/products', productRoutes);
 app.use('/ventas', ventasRoutes);
+app.use('/clientes', clientesRoutes);
 
 const PORT = process.env.PORT || 3000;
 

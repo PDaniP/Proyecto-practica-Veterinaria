@@ -17,10 +17,11 @@ export default function FormularioNuevaVenta({ onClose }) {
   useEffect(() => {
     axios
       .get("http://localhost:3000/clientes")
-      .then((res) => setClientes(res.data))
+      .then((res) => setClientes(res.data.clientes))
       .catch((err) => console.error(err));
   }, []);
 
+  
   //para traer productos desde la base de datos
   useEffect(() => {
     axios
@@ -49,11 +50,10 @@ export default function FormularioNuevaVenta({ onClose }) {
   //fucnion para agregar productos
   const agregarProducto = (producto) => {
     const existe = productosVenta.find((p) => p.id === producto.id);
-
+    
     if (existe) return;
 
     setProductosVenta([...productosVenta, { ...producto, cantidad: 1 }]);
-
     setBusquedaProducto("");
   };
 
@@ -76,12 +76,22 @@ export default function FormularioNuevaVenta({ onClose }) {
   );
 
   //para la venta
-  const venta = {
-    cliente: clienteSeleccionado,
-    productos: productosVenta,
+  let venta = {}
+  const registrarVenta = async () => {
+
+  for(let i=0; i<productosVenta.length; i++) {
+        venta = {
+    cliente: clienteSeleccionado.id,
+    productos: productosVenta[i].id,
     total,
     metodo_pago: metodoPago,
-  };
+  }
+  console.log("Venta a registrar:", venta);
+  await axios.post("http://localhost:3000/ventas/registrar-venta",venta)
+  }
+}
+
+
 
   return (
     <div>
@@ -258,7 +268,7 @@ export default function FormularioNuevaVenta({ onClose }) {
           </div>
 
           <div className="actions">
-            <button className="btn" type="button">
+            <button className="btn" type="button" onClick={registrarVenta}>
               Guardar
             </button>
             <button
