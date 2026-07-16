@@ -1,74 +1,10 @@
-import { useState, useEffect } from "react";
-import FormularioNuevaVenta from "../../components/FormularioNuevaVenta";
-import Modal from "../../components/Modal";
-
-export default function Ventas() {
-  const [mostrarModal, setMostrarModal] = useState(false);
-
-  const abrirModal = () => setMostrarModal(true);
-  const cerrarModal = () => setMostrarModal(false);
-
-  useEffect(() => {
-    if (mostrarModal) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "auto";
-    }
-
-    return () => {
-      document.body.style.overflow = "auto";
-    };
-  }, [mostrarModal]);
-
-  return (
-    <section className="page-shell">
-      <h1>Ventas</h1>
-
-      <button onClick={abrirModal} className="btn-primary">
-        Nueva Venta
-      </button>
-
-      
-        <Modal isOpen={mostrarModal} onClose={cerrarModal}>
-          <FormularioNuevaVenta onClose={cerrarModal} />
-        </Modal>
-      
-    </section>
-  );
-}
-
-const formStyles =`
-  .btn-primary {
-  background: var(--vet-purple);
-  color: #fff;
-  border: none;
-  border-radius: 8px;
-  height: 38px;
-  padding: 0 22px;
-  font-size: 0.92rem;
-  font-weight: 600;
-  cursor: pointer;
-  white-space: nowrap;
-  transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
-  box-shadow: 0 2px 8px rgba(125, 31, 153, 0.25);
-}
-
-.btn-primary:hover {
-  background: var(--vet-purple-light);
-  transform: translateY(-1px);
-  box-shadow: 0 4px 14px rgba(125, 31, 153, 0.3);
-}
-
-.btn-primary:active {
-  transform: scale(0.97);
-}
-`
 import { useState, useEffect, useMemo } from 'react'
 import axios from 'axios'
 import Modal from '../../components/Modal'
 import './Ventas.css'
+import FormularioNuevaVenta from "../../components/FormularioNuevaVenta";
 
-const API_URL = 'http://localhost:3000/ventas'
+const API_URL = 'http://localhost:3000'
 
 export default function Ventas() {
   const [ventas, setVentas] = useState([])
@@ -84,6 +20,24 @@ export default function Ventas() {
   const [detalleSeleccionado, setDetalleSeleccionado] = useState([])
   const [loadingDetalle, setLoadingDetalle] = useState(false)
 
+   const [mostrarModal, setMostrarModal] = useState(false);
+
+  const abrirModal = () => setMostrarModal(true);
+  const cerrarModales = () => setMostrarModal(false);
+
+  useEffect(() => {
+    if (mostrarModal) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "auto";
+    }
+
+    return () => {
+      document.body.style.overflow = "auto";
+    };
+  }, [mostrarModal]);
+
+
   useEffect(() => {
     fetchVentas()
   }, [])
@@ -92,11 +46,12 @@ export default function Ventas() {
   setLoading(true)
 
   try {
-    const response = await axios.get(`${API_URL}/lista-ventas`)
-
+    const response = await axios.get(`${API_URL}/ventas/lista-ventas`)
+    
     const listaVentas = response.data.ventas || []
-
+    
     setVentas(listaVentas)
+    console.log('Ventas obtenidas:', listaVentas)
 
     const resumen = {}
 
@@ -104,10 +59,12 @@ export default function Ventas() {
       listaVentas.map(async (venta) => {
         try {
           const res = await axios.get(
-            `${API_URL}/detalles-venta/${venta.id}`
+            `${API_URL}/ventas/detalles-venta/${venta.id}`
           )
+          
 
           resumen[venta.id] = res.data.detalles || []
+          
         } catch (error) {
           console.error(
             `Error al obtener el detalle de la venta ${venta.id}`,
@@ -120,6 +77,7 @@ export default function Ventas() {
     )
 
     setProductosPorVenta(resumen)
+    
   } catch (error) {
     console.error('Error al cargar las ventas:', error)
   } finally {
@@ -134,9 +92,8 @@ export default function Ventas() {
 
   try {
     const res = await axios.get(
-      `${API_URL}/detalles-venta/${venta.id}`
+      `${API_URL}/ventas/detalles-venta/${venta.id}`
     )
-
     setDetalleSeleccionado(res.data.detalles || [])
   } catch (error) {
     console.error(error)
@@ -154,11 +111,13 @@ export default function Ventas() {
 
   const ventasFiltradas = useMemo(() => {
     return ventas.filter((v) => {
+      
       const fecha = v.fecha_venta.split('T')[0]
       return fecha >= fechaDesde && fecha <= fechaHasta
     })
   }, [ventas, fechaDesde, fechaHasta])
 
+ 
   const stats = useMemo(() => {
   return ventasFiltradas.reduce(
     (acc, v) => {
@@ -166,6 +125,8 @@ export default function Ventas() {
 
       acc.totalVentas++
       acc.ingresos += total
+
+      
 
       if (v.metodo_pago) {
         switch (v.metodo_pago.toLowerCase()) {
@@ -197,6 +158,8 @@ export default function Ventas() {
     }
   )
 }, [ventasFiltradas])
+
+
 
   const formatearFecha = (fechaISO) => {
     const fecha = new Date(fechaISO)
@@ -240,6 +203,21 @@ export default function Ventas() {
 
   return (
     <section className="page-shell">
+      <div>
+        <section className="page-shell">
+      <h1>Ventas</h1>
+
+      <button onClick={abrirModal} className="btn-primary">
+        Nueva Venta
+      </button>
+
+      
+        <Modal isOpen={mostrarModal} onClose={cerrarModales}>
+          <FormularioNuevaVenta onClose={cerrarModales} />
+        </Modal>
+      
+    </section>
+      </div>
       <div className="ventas-toolbar">
         <h1>Historial de ventas</h1>
 
@@ -279,6 +257,11 @@ export default function Ventas() {
         <div className="resumen-card">
           <span className="resumen-label">Tarjeta</span>
           <span className="resumen-valor">${stats.tarjeta.toLocaleString()}</span>
+        </div>
+
+        <div className="resumen-card">
+          <span className="resumen-label">Transferencia</span>
+          <span className="resumen-valor">${stats.transferencia.toLocaleString()}</span>
         </div>
       </div>
 
@@ -360,3 +343,29 @@ export default function Ventas() {
     </section>
   )
 }
+
+const formStyles =`
+  .btn-primary {
+  background: var(--vet-purple);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  height: 38px;
+  padding: 0 22px;
+  font-size: 0.92rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+  box-shadow: 0 2px 8px rgba(125, 31, 153, 0.25);
+}
+
+.btn-primary:hover {
+  background: var(--vet-purple-light);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(125, 31, 153, 0.3);
+}
+
+.btn-primary:active {
+  transform: scale(0.97);
+}`
