@@ -7,6 +7,7 @@ export default function FormularioNuevaVenta({ onClose }) {
   const [busqueda, setBusqueda] = useState("");
   const [clienteSeleccionado, setClienteSeleccionado] = useState(null);
   const [metodoPago, setMetodoPago] = useState("");
+  const [usuario, setUsuario] = useState(null); // Estado para almacenar el usuario logueado
 
   //estados para los productos
   const [productos, setProductos] = useState([]);
@@ -17,10 +18,27 @@ export default function FormularioNuevaVenta({ onClose }) {
   useEffect(() => {
     axios
       .get("http://localhost:3000/clientes")
-      .then((res) => setClientes(res.data))
+      .then((res) => setClientes(res.data.clientes))
       .catch((err) => console.error(err));
   }, []);
 
+  //traer id del usuario logeado
+  useEffect(() => {
+    axios.get('http://localhost:3000/users/comprobar',{withCredentials: true})
+      .then(response => {
+        if (response.data.valid) {
+          setUsuario(response.data.user);
+        } else {
+          setUsuario(null);
+        }
+      })
+      .catch(error => {
+        console.error("Error al comprobar el token:", error);
+        setUsuario(null);
+        
+      });
+  }, []);
+  
   //para traer productos desde la base de datos
   useEffect(() => {
     axios
@@ -49,11 +67,10 @@ export default function FormularioNuevaVenta({ onClose }) {
   //fucnion para agregar productos
   const agregarProducto = (producto) => {
     const existe = productosVenta.find((p) => p.id === producto.id);
-
+    
     if (existe) return;
 
     setProductosVenta([...productosVenta, { ...producto, cantidad: 1 }]);
-
     setBusquedaProducto("");
   };
 
@@ -76,12 +93,56 @@ export default function FormularioNuevaVenta({ onClose }) {
   );
 
   //para la venta
-  const venta = {
-    cliente: clienteSeleccionado,
-    productos: productosVenta,
+  let venta = {}
+  const registrarVenta = async () => {
+
+  
+    venta = {
+    id_usuario: usuario.id,
+    id_cliente: clienteSeleccionado.id,
+    metodoPago: metodoPago,
     total,
-    metodo_pago: metodoPago,
+    
+  }
+  const lotes = await axios.get("http://localhost:3000/products/product/lotes",{withCredentials: true});
+  console.log("Lotes obtenidos:", lotes.data.datos[0].stock_actual);
+  for (let i = 0; i < productosVenta.length; i++) {
+    const lote = lotes.data.datos.find((l) => l.id_producto === productosVenta[i].id);
+    console.log(`Producto: ${productosVenta[i].nombre}, Lote: ${lote ? lote.id : 'No encontrado'}, Stock actual: ${lote ? lote.stock_actual : 'N/A'}`);
+    if(!lote || lote.stock_actual < productosVenta[i].cantidad){
+      alert(`No hay suficiente stock para el producto ${productosVenta[i].nombre}. Stock disponible: ${lote ? lote.stock_actual : 0}`);
+      return;
+    }
+  }
+  const resVenta = await axios.post("http://localhost:3000/ventas/registrar-venta",venta,{withCredentials: true});
+  const idVenta = resVenta.data.id_venta;
+  const registrarDetallesVenta = async () => {
+    for(let i = 0; i < productosVenta.length; i++) {
+      const res = await axios.post("http://localhost:3000/ventas/registrar-detalles",{
+        id_venta: idVenta,
+        id_producto: productosVenta[i].id,
+        cantidad: productosVenta[i].cantidad,
+      },{withCredentials: true});
+      
+    }
+    
+  
   };
+  await registrarDetallesVenta();
+  const descontarStock = async () => {
+    for(let i = 0; i < productosVenta.length; i++) {
+      const res = await axios.post("http://localhost:3000/ventas/descontar-stock",{
+        id_producto: productosVenta[i].id,
+        cantidad: productosVenta[i].cantidad,
+      },{withCredentials: true});
+      
+    }
+  };
+  await descontarStock();
+  }
+
+
+
 
   return (
     <div>
@@ -258,7 +319,7 @@ export default function FormularioNuevaVenta({ onClose }) {
           </div>
 
           <div className="actions">
-            <button className="btn" type="button">
+            <button className="btn" type="button" onClick={registrarVenta}>
               Guardar
             </button>
             <button

@@ -51,12 +51,21 @@ const filtrarProductoPorID = async (id_producto) => {
 
 const obtenerListaVentas = () => {
     return db.query(
-        `SELECT v.id, v.fecha_venta, v.total, c.nombre AS cliente_nombre, u.nombre AS usuario_nombre
+        `SELECT v.id, v.fecha_venta, v.total, c.nombre AS cliente_nombre, u.nombre AS usuario_nombre, metodo_pago
         FROM ventas v
         JOIN clientes c ON v.id_cliente = c.id
         JOIN usuarios u ON v.id_usuario = u.id
         ORDER BY v.fecha_venta DESC`
     )
+}
+
+const obtenerVentaPorFechaActual = async () => {
+    const fechaActual = new Date();
+    const fechaFormateada = fechaActual.toISOString().split('T')[0]; // Formato YYYY-MM-DD
+    const {rows} = await db.query(
+        `SELECT * FROM ventas WHERE fecha_venta = $1`, [fechaFormateada]
+    )
+    return rows[0]
 }
 
 const filtrarServiciosPorId = async (id_servicio) => {
@@ -68,14 +77,15 @@ const filtrarServiciosPorId = async (id_servicio) => {
 
 const obtenerDetallesVenta = async (id_venta) => {
     const {rows} = await db.query(
-        `SELECT dv.id, dv.cantidad, dv.precio_unitario, dv.subtotal, p.nombre AS producto_nombre, s.nombre AS servicio_nombre
+        `SELECT dv.id, dv.cantidad, dv.precio_unitario, dv.subtotal, p.nombre AS producto_nombre, s.nombre AS servicio_nombre, metodo_pago
         FROM detalle_ventas dv
         LEFT JOIN productos p ON dv.id_producto = p.id
         LEFT JOIN servicios s ON dv.id_servicio = s.id
+        LEFT JOIN ventas v ON dv.id_venta = v.id
         WHERE dv.id_venta = $1`, [id_venta]
     )
     console.log(rows)
     return rows
 }
 
-export { obtenerLotesVentas, actualizarStockLote, eliminarLoteVacio, añadirVenta, detallesVenta, filtrarProductoPorID, obtenerListaVentas, obtenerDetallesVenta, filtrarServiciosPorId }
+export { obtenerLotesVentas, actualizarStockLote, eliminarLoteVacio, añadirVenta, detallesVenta, filtrarProductoPorID, obtenerListaVentas, obtenerDetallesVenta, filtrarServiciosPorId, obtenerVentaPorFechaActual }

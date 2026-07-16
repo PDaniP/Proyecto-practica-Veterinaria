@@ -6,7 +6,7 @@ const añadirProducto = async (req,res) => {
         return res.status(401).json({message: "Error al añadir, existen campos vacios"})
     }
     const datos = await productModel.añadirProductoADB(Number(id_categoria),nombre,marca,descripcion,Number(codigo_barras),Number(precio_costo),Number(precio_venta),Number(stock_minimo),venta_al_publico)
-    console.log(datos)
+    
     if (!datos){
         res.status(401).json({message: 'error al añadir producto'})
     }
@@ -22,7 +22,7 @@ const añadirCategoria = async (req,res) => {
         return res.status(401).json({message:"Error al añadir, existen campos vacios"})
     }
     const datos = await productModel.añadirCategoriaADB(nombre,descripcion)
-    console.log(datos)
+    
     if(!datos){
         res.status(401).json({message: "Error al añadir categoria"})
     }
@@ -36,7 +36,7 @@ const añadirLote = async (req,res) => {
         return res.status(401).json({message:"Error al añadir, existen campos vacios"})
     }
     const datos = await productModel.añadirLoteADB(Number(id_producto),codigo_lote,Number(stock_inicial),Number(stock_actual),fecha_vencimiento,activo)
-    console.log(datos)
+    
     if(datos.fecha_vencimiento < new Date().toISOString().split('T')[0]) {
         datos.activo = false;
     }
@@ -54,7 +54,7 @@ const editarProducto = async (req,res) => {
         return res.status(401).json({message:"Error al añadir, existen campos vacios"})
     }
     const datos = await productModel.editarProductoEnDB(precio_costo,precio_venta,stock_minimo,id)
-    console.log(datos)
+    
     if(!datos){
         return res.status(401).json({message: "Error al editar productos"})
     }
@@ -82,7 +82,7 @@ const listaProducto = async (req,res) => {
     if(datos.length < 1){
         res.status(401).json({message:"no existen datos"})
     }
-    console.log(datos)
+    
     res.status(200).json(datos,{message:'datos obtenidos con exito'})
 }
 
@@ -109,18 +109,20 @@ const listaLotes = async (req,res) => {
             fecha_vencimiento: lote.fecha_vencimiento,
             activo: lote.activo,
         }));
-        console.log(datosFormateados)
+        
     res.status(200).json({datos: datosFormateados, message:"Datos obtenidos con exito"})
 }
 const productoPorId = async (req, res) => {
     const {id} = req.params
     const datos = await productModel.obtenerProductoPorId(id)
-    console.log(datos)
+    
     if(datos.length < 1){
         return res.status(401).json({message: "no existen datos con esa id"})
     }
     res.status(200).json(datos,{message: 'Producto obtenido exitosamente'})
 } 
+
+
 
 export default {listaProducto,
                 productoPorId,
@@ -130,5 +132,5 @@ export default {listaProducto,
                 añadirLote,
                 añadirCategoria,
                 listaCategorias,
-                listaLotes
+                listaLotes,
 }
