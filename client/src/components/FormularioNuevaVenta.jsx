@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 
-export default function FormularioNuevaVenta({ onClose }) {
+export default function FormularioNuevaVenta({ onClose, onVentaRegistrada }) {
   const [tipoCliente, setTipoCliente] = useState("");
   const [clientes, setClientes] = useState([]);
   const [busqueda, setBusqueda] = useState("");
@@ -95,31 +95,47 @@ export default function FormularioNuevaVenta({ onClose }) {
   //para la venta
   let venta = {};
   const registrarVenta = async () => {
+    if (!usuario?.id) {
+      alert("Debe iniciar sesión para registrar una venta.");
+      return;
+    }
+
+    if (!clienteSeleccionado?.id) {
+      alert("Debe seleccionar un cliente para registrar la venta.");
+      return;
+    }
+
+    if (!metodoPago) {
+      alert("Debe seleccionar un método de pago.");
+      return;
+    }
+
+    if (productosVenta.length === 0) {
+      alert("Debe agregar al menos un producto para registrar la venta.");
+      return;
+    }
+
     venta = {
       id_usuario: usuario.id,
       id_cliente: clienteSeleccionado.id,
       metodoPago: metodoPago,
       total,
     };
-    const lotes = await axios.get(
-      "http://localhost:3000/products/product/lotes",
-      { withCredentials: true },
-    );
-    console.log("Lotes obtenidos:", lotes.data.datos[0].stock_actual);
+
     for (let i = 0; i < productosVenta.length; i++) {
-      const lote = lotes.data.datos.find(
-        (l) => l.id_producto === productosVenta[i].id,
+      const productoBase = productos.find((p) => p.id === productosVenta[i].id);
+      const stockDisponible = Number(
+        productoBase?.stock_actual ?? productosVenta[i].stock_actual ?? 0,
       );
-      console.log(
-        `Producto: ${productosVenta[i].nombre}, Lote: ${lote ? lote.id : "No encontrado"}, Stock actual: ${lote ? lote.stock_actual : "N/A"}`,
-      );
-      if (!lote || lote.stock_actual < productosVenta[i].cantidad) {
+
+      if (stockDisponible < productosVenta[i].cantidad) {
         alert(
-          `No hay suficiente stock para el producto ${productosVenta[i].nombre}. Stock disponible: ${lote ? lote.stock_actual : 0}`,
+          `No hay suficiente stock para el producto ${productosVenta[i].nombre}. Stock disponible: ${stockDisponible}`,
         );
         return;
       }
     }
+
     const resVenta = await axios.post(
       "http://localhost:3000/ventas/registrar-venta",
       venta,
@@ -153,6 +169,12 @@ export default function FormularioNuevaVenta({ onClose }) {
       }
     };
     await descontarStock();
+
+    window.alert("La venta se ha efectuado con éxito.");
+    if (onVentaRegistrada) {
+      await onVentaRegistrada();
+    }
+    onClose?.();
   };
 
   return (

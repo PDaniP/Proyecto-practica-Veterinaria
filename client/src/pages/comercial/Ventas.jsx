@@ -174,14 +174,24 @@ export default function Ventas() {
   }
 
   const resumenProductos = (idVenta) => {
-    const detalles = productosPorVenta[idVenta]
+  const detalles = productosPorVenta[idVenta];
 
-    if (!detalles || detalles.length === 0) return '—'
+  if (!detalles || detalles.length === 0) return '—';
 
-    return detalles
-      .map((d) => `${d.producto_nombre || d.servicio_nombre} x${d.cantidad}`)
-      .join(', ')
+  const max = 1; // cantidad de productos a mostrar
+
+  const visibles = detalles.slice(0, max);
+
+  let texto = visibles
+    .map((d) => `${d.producto_nombre || d.servicio_nombre} x${d.cantidad}`)
+    .join(', ');
+
+  if (detalles.length > max) {
+    texto += ` +${detalles.length - max} más`;
   }
+
+  return texto;
+};
 
   const badgePago = (metodo) => {
   if (!metodo)
@@ -213,7 +223,10 @@ export default function Ventas() {
 
       
         <Modal isOpen={mostrarModal} onClose={cerrarModales}>
-          <FormularioNuevaVenta onClose={cerrarModales} />
+          <FormularioNuevaVenta
+            onClose={cerrarModales}
+            onVentaRegistrada={fetchVentas}
+          />
         </Modal>
       
     </section>
