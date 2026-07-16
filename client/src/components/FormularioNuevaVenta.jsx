@@ -24,21 +24,21 @@ export default function FormularioNuevaVenta({ onClose }) {
 
   //traer id del usuario logeado
   useEffect(() => {
-    axios.get('http://localhost:3000/users/comprobar',{withCredentials: true})
-      .then(response => {
+    axios
+      .get("http://localhost:3000/users/comprobar", { withCredentials: true })
+      .then((response) => {
         if (response.data.valid) {
           setUsuario(response.data.user);
         } else {
           setUsuario(null);
         }
       })
-      .catch(error => {
+      .catch((error) => {
         console.error("Error al comprobar el token:", error);
         setUsuario(null);
-        
       });
   }, []);
-  
+
   //para traer productos desde la base de datos
   useEffect(() => {
     axios
@@ -67,7 +67,7 @@ export default function FormularioNuevaVenta({ onClose }) {
   //fucnion para agregar productos
   const agregarProducto = (producto) => {
     const existe = productosVenta.find((p) => p.id === producto.id);
-    
+
     if (existe) return;
 
     setProductosVenta([...productosVenta, { ...producto, cantidad: 1 }]);
@@ -93,56 +93,67 @@ export default function FormularioNuevaVenta({ onClose }) {
   );
 
   //para la venta
-  let venta = {}
+  let venta = {};
   const registrarVenta = async () => {
-
-  
     venta = {
-    id_usuario: usuario.id,
-    id_cliente: clienteSeleccionado.id,
-    metodoPago: metodoPago,
-    total,
-    
-  }
-  const lotes = await axios.get("http://localhost:3000/products/product/lotes",{withCredentials: true});
-  console.log("Lotes obtenidos:", lotes.data.datos[0].stock_actual);
-  for (let i = 0; i < productosVenta.length; i++) {
-    const lote = lotes.data.datos.find((l) => l.id_producto === productosVenta[i].id);
-    console.log(`Producto: ${productosVenta[i].nombre}, Lote: ${lote ? lote.id : 'No encontrado'}, Stock actual: ${lote ? lote.stock_actual : 'N/A'}`);
-    if(!lote || lote.stock_actual < productosVenta[i].cantidad){
-      alert(`No hay suficiente stock para el producto ${productosVenta[i].nombre}. Stock disponible: ${lote ? lote.stock_actual : 0}`);
-      return;
+      id_usuario: usuario.id,
+      id_cliente: clienteSeleccionado.id,
+      metodoPago: metodoPago,
+      total,
+    };
+    const lotes = await axios.get(
+      "http://localhost:3000/products/product/lotes",
+      { withCredentials: true },
+    );
+    console.log("Lotes obtenidos:", lotes.data.datos[0].stock_actual);
+    for (let i = 0; i < productosVenta.length; i++) {
+      const lote = lotes.data.datos.find(
+        (l) => l.id_producto === productosVenta[i].id,
+      );
+      console.log(
+        `Producto: ${productosVenta[i].nombre}, Lote: ${lote ? lote.id : "No encontrado"}, Stock actual: ${lote ? lote.stock_actual : "N/A"}`,
+      );
+      if (!lote || lote.stock_actual < productosVenta[i].cantidad) {
+        alert(
+          `No hay suficiente stock para el producto ${productosVenta[i].nombre}. Stock disponible: ${lote ? lote.stock_actual : 0}`,
+        );
+        return;
+      }
     }
-  }
-  const resVenta = await axios.post("http://localhost:3000/ventas/registrar-venta",venta,{withCredentials: true});
-  const idVenta = resVenta.data.id_venta;
-  const registrarDetallesVenta = async () => {
-    for(let i = 0; i < productosVenta.length; i++) {
-      const res = await axios.post("http://localhost:3000/ventas/registrar-detalles",{
-        id_venta: idVenta,
-        id_producto: productosVenta[i].id,
-        cantidad: productosVenta[i].cantidad,
-      },{withCredentials: true});
-      
-    }
-    
-  
+    const resVenta = await axios.post(
+      "http://localhost:3000/ventas/registrar-venta",
+      venta,
+      { withCredentials: true },
+    );
+    const idVenta = resVenta.data.id_venta;
+    const registrarDetallesVenta = async () => {
+      for (let i = 0; i < productosVenta.length; i++) {
+        const res = await axios.post(
+          "http://localhost:3000/ventas/registrar-detalles",
+          {
+            id_venta: idVenta,
+            id_producto: productosVenta[i].id,
+            cantidad: productosVenta[i].cantidad,
+          },
+          { withCredentials: true },
+        );
+      }
+    };
+    await registrarDetallesVenta();
+    const descontarStock = async () => {
+      for (let i = 0; i < productosVenta.length; i++) {
+        const res = await axios.post(
+          "http://localhost:3000/ventas/descontar-stock",
+          {
+            id_producto: productosVenta[i].id,
+            cantidad: productosVenta[i].cantidad,
+          },
+          { withCredentials: true },
+        );
+      }
+    };
+    await descontarStock();
   };
-  await registrarDetallesVenta();
-  const descontarStock = async () => {
-    for(let i = 0; i < productosVenta.length; i++) {
-      const res = await axios.post("http://localhost:3000/ventas/descontar-stock",{
-        id_producto: productosVenta[i].id,
-        cantidad: productosVenta[i].cantidad,
-      },{withCredentials: true});
-      
-    }
-  };
-  await descontarStock();
-  }
-
-
-
 
   return (
     <div>
@@ -168,7 +179,7 @@ export default function FormularioNuevaVenta({ onClose }) {
             </select>
           </div>
 
-          {tipoCliente === "registrado" && (
+          {tipoCliente === "registrado" && !clienteSeleccionado && (
             <div className="field">
               <label>Buscar cliente</label>
               <div className="field-content">
@@ -202,7 +213,7 @@ export default function FormularioNuevaVenta({ onClose }) {
                               setBusqueda(c.nombre);
                             }}
                           >
-                            {c.nombre}
+                            {c.nombre} {c.apellido}
                           </li>
                         ))
                     )}
@@ -213,9 +224,21 @@ export default function FormularioNuevaVenta({ onClose }) {
           )}
 
           {clienteSeleccionado && (
-            <p className="selected-info">
-              Cliente seleccionado: {clienteSeleccionado.nombre}
-            </p>
+            <div className="cliente-seleccionado">
+              <p className="selected-info">
+                Cliente seleccionado: {clienteSeleccionado.nombre}{" "}
+                {clienteSeleccionado.apellido}
+              </p>
+              <button
+                className="icon-btn"
+                onClick={() => {
+                  setClienteSeleccionado(null);
+                  setBusqueda("");
+                }}
+              >
+                ✕
+              </button>
+            </div>
           )}
 
           <div className="field">
@@ -235,7 +258,9 @@ export default function FormularioNuevaVenta({ onClose }) {
                       .toLowerCase()
                       .includes(busquedaProducto.toLowerCase()),
                   ).length === 0 ? (
-                    <li className="suggestion-item">No se encontro el producto</li>
+                    <li className="suggestion-item">
+                      No se encontro el producto
+                    </li>
                   ) : (
                     productos
                       .filter((p) =>
@@ -421,9 +446,17 @@ const formStyles = `
   padding: 10px 12px;
   border-radius: 8px;
   background: #f5f3ff;
-  color: #5b21b6;
+  color: #000000;
   font-size: 13px;
 }
+
+.cliente-seleccionado {
+  display: flex;
+  align-items: center;
+  gap: 10px; 
+  margin-top: 10px;
+}
+
 
 .suggestions {
   position: absolute;
