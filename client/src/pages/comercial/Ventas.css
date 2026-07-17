@@ -1,3 +1,20 @@
+.ventas-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 1.75rem;
+  flex-wrap: wrap;
+}
+
+.ventas-header h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--vet-purple);
+  margin: 0;
+  white-space: nowrap;
+}
+
 .ventas-toolbar {
   display: flex;
   align-items: center;
@@ -6,7 +23,7 @@
   flex-wrap: wrap;
 }
 
-.ventas-toolbar h1 {
+.ventas-toolbar h2 {
   font-size: 2rem;
   font-weight: 700;
   color: var(--vet-purple);
@@ -16,14 +33,54 @@
 
 .fecha-filtro {
   display: flex;
+  align-items: center;
   gap: 10px;
   flex: 1;
   min-width: 240px;
 }
 
+.fecha-label {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--vet-purple);
+  white-space: nowrap;
+}
+
+.fecha-hasta-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.fecha-hasta-group .search-input {
+  min-width: 180px;
+}
+
+.btn-reset {
+  background: transparent;
+  border: 1px solid var(--vet-purple-border);
+  color: var(--vet-purple);
+  border-radius: 8px;
+  padding: 0 14px;
+  height: 38px;
+  font-size: 0.92rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s, transform 0.15s;
+}
+
+.btn-reset:hover {
+  background: var(--vet-purple-bg);
+  border-color: var(--vet-purple);
+}
+
+.btn-reset:active {
+  transform: scale(0.97);
+}
+
 .fecha-filtro .search-input {
   flex: 1;
-  border-radius: 8px;
+  border-radius: 100px;
 }
 
 .ventas-resumen {

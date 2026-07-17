@@ -1,26 +1,25 @@
-import { useState, useEffect, useMemo } from 'react'
-import axios from 'axios'
-import Modal from '../../components/Modal'
-import './Ventas.css'
+import { useState, useEffect, useMemo } from "react";
+import axios from "axios";
+import Modal from "../../components/Modal";
+import "./Ventas.css";
 import FormularioNuevaVenta from "../../components/FormularioNuevaVenta";
 
-const API_URL = 'http://localhost:3000'
+const API_URL = "http://localhost:3000";
 
 export default function Ventas() {
-  const [ventas, setVentas] = useState([])
-  const [productosPorVenta, setProductosPorVenta] = useState({})
-  const [loading, setLoading] = useState(true)
+  const [ventas, setVentas] = useState([]);
+  const [productosPorVenta, setProductosPorVenta] = useState({});
+  const [loading, setLoading] = useState(true);
 
-  const hoy = new Date().toISOString().split('T')[0]
-  const [fechaDesde, setFechaDesde] = useState(hoy)
-  const [fechaHasta, setFechaHasta] = useState(hoy)
+  const [fechaDesde, setFechaDesde] = useState("");
+  const [fechaHasta, setFechaHasta] = useState("");
 
-  const [modalAbierto, setModalAbierto] = useState(false)
-  const [ventaSeleccionada, setVentaSeleccionada] = useState(null)
-  const [detalleSeleccionado, setDetalleSeleccionado] = useState([])
-  const [loadingDetalle, setLoadingDetalle] = useState(false)
+  const [modalAbierto, setModalAbierto] = useState(false);
+  const [ventaSeleccionada, setVentaSeleccionada] = useState(null);
+  const [detalleSeleccionado, setDetalleSeleccionado] = useState([]);
+  const [loadingDetalle, setLoadingDetalle] = useState(false);
 
-   const [mostrarModal, setMostrarModal] = useState(false);
+  const [mostrarModal, setMostrarModal] = useState(false);
 
   const abrirModal = () => setMostrarModal(true);
   const cerrarModales = () => setMostrarModal(false);
@@ -37,217 +36,223 @@ export default function Ventas() {
     };
   }, [mostrarModal]);
 
-
   useEffect(() => {
-    fetchVentas()
-  }, [])
+    fetchVentas();
+  }, []);
 
   const fetchVentas = async () => {
-  setLoading(true)
+    setLoading(true);
 
-  try {
-    const response = await axios.get(`${API_URL}/ventas/lista-ventas`)
-    
-    const listaVentas = response.data.ventas || []
-    
-    setVentas(listaVentas)
-    console.log('Ventas obtenidas:', listaVentas)
+    try {
+      const response = await axios.get(`${API_URL}/ventas/lista-ventas`);
 
-    const resumen = {}
+      const listaVentas = response.data.ventas || [];
 
-    await Promise.all(
-      listaVentas.map(async (venta) => {
-        try {
-          const res = await axios.get(
-            `${API_URL}/ventas/detalles-venta/${venta.id}`
-          )
-          
+      setVentas(listaVentas);
+      console.log("Ventas obtenidas:", listaVentas);
 
-          resumen[venta.id] = res.data.detalles || []
-          
-        } catch (error) {
-          console.error(
-            `Error al obtener el detalle de la venta ${venta.id}`,
-            error
-          )
+      const resumen = {};
 
-          resumen[venta.id] = []
-        }
-      })
-    )
+      await Promise.all(
+        listaVentas.map(async (venta) => {
+          try {
+            const res = await axios.get(
+              `${API_URL}/ventas/detalles-venta/${venta.id}`,
+            );
 
-    setProductosPorVenta(resumen)
-    
-  } catch (error) {
-    console.error('Error al cargar las ventas:', error)
-  } finally {
-    setLoading(false)
-  }
-}
+            resumen[venta.id] = res.data.detalles || [];
+          } catch (error) {
+            console.error(
+              `Error al obtener el detalle de la venta ${venta.id}`,
+              error,
+            );
+
+            resumen[venta.id] = [];
+          }
+        }),
+      );
+
+      setProductosPorVenta(resumen);
+    } catch (error) {
+      console.error("Error al cargar las ventas:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const abrirDetalle = async (venta) => {
-  setVentaSeleccionada(venta)
-  setModalAbierto(true)
-  setLoadingDetalle(true)
+    setVentaSeleccionada(venta);
+    setModalAbierto(true);
+    setLoadingDetalle(true);
 
-  try {
-    const res = await axios.get(
-      `${API_URL}/ventas/detalles-venta/${venta.id}`
-    )
-    setDetalleSeleccionado(res.data.detalles || [])
-  } catch (error) {
-    console.error(error)
-    setDetalleSeleccionado([])
-  } finally {
-    setLoadingDetalle(false)
-  }
-}
+    try {
+      const res = await axios.get(
+        `${API_URL}/ventas/detalles-venta/${venta.id}`,
+      );
+      setDetalleSeleccionado(res.data.detalles || []);
+    } catch (error) {
+      console.error(error);
+      setDetalleSeleccionado([]);
+    } finally {
+      setLoadingDetalle(false);
+    }
+  };
 
   const cerrarModal = () => {
-    setModalAbierto(false)
-    setVentaSeleccionada(null)
-    setDetalleSeleccionado([])
-  }
+    setModalAbierto(false);
+    setVentaSeleccionada(null);
+    setDetalleSeleccionado([]);
+  };
+
+  const resetFechas = () => {
+    setFechaDesde("");
+    setFechaHasta("");
+  };
 
   const ventasFiltradas = useMemo(() => {
     return ventas.filter((v) => {
-      
-      const fecha = v.fecha_venta.split('T')[0]
-      return fecha >= fechaDesde && fecha <= fechaHasta
-    })
-  }, [ventas, fechaDesde, fechaHasta])
+      const fecha = v.fecha_venta.split("T")[0];
 
- 
-  const stats = useMemo(() => {
-  return ventasFiltradas.reduce(
-    (acc, v) => {
-      const total = Number(v.total)
-
-      acc.totalVentas++
-      acc.ingresos += total
-
-      
-
-      if (v.metodo_pago) {
-        switch (v.metodo_pago.toLowerCase()) {
-          case 'efectivo':
-            acc.efectivo += total
-            break
-
-          case 'tarjeta':
-            acc.tarjeta += total
-            break
-
-          case 'transferencia':
-            acc.transferencia += total
-            break
-
-          default:
-            break
-        }
+      if (!fechaDesde && !fechaHasta) {
+        return true;
       }
 
-      return acc
-    },
-    {
-      totalVentas: 0,
-      ingresos: 0,
-      efectivo: 0,
-      tarjeta: 0,
-      transferencia: 0,
-    }
-  )
-}, [ventasFiltradas])
+      if (fechaDesde && !fechaHasta) {
+        return fecha >= fechaDesde;
+      }
 
+      if (!fechaDesde && fechaHasta) {
+        return fecha <= fechaHasta;
+      }
 
+      return fecha >= fechaDesde && fecha <= fechaHasta;
+    });
+  }, [ventas, fechaDesde, fechaHasta]);
+
+  const stats = useMemo(() => {
+    return ventasFiltradas.reduce(
+      (acc, v) => {
+        const total = Number(v.total);
+
+        acc.totalVentas++;
+        acc.ingresos += total;
+
+        if (v.metodo_pago) {
+          switch (v.metodo_pago.toLowerCase()) {
+            case "efectivo":
+              acc.efectivo += total;
+              break;
+
+            case "tarjeta":
+              acc.tarjeta += total;
+              break;
+
+            case "transferencia":
+              acc.transferencia += total;
+              break;
+
+            default:
+              break;
+          }
+        }
+
+        return acc;
+      },
+      {
+        totalVentas: 0,
+        ingresos: 0,
+        efectivo: 0,
+        tarjeta: 0,
+        transferencia: 0,
+      },
+    );
+  }, [ventasFiltradas]);
 
   const formatearFecha = (fechaISO) => {
-    const fecha = new Date(fechaISO)
+    const fecha = new Date(fechaISO);
 
-    return fecha.toLocaleString('es-AR', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    })
-  }
+    return fecha.toLocaleString("es-AR", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  };
 
   const resumenProductos = (idVenta) => {
-  const detalles = productosPorVenta[idVenta];
+    const detalles = productosPorVenta[idVenta];
 
-  if (!detalles || detalles.length === 0) return '—';
+    if (!detalles || detalles.length === 0) return "—";
 
-  const max = 1; // cantidad de productos a mostrar
+    const max = 1; // cantidad de productos a mostrar
 
-  const visibles = detalles.slice(0, max);
+    const visibles = detalles.slice(0, max);
 
-  let texto = visibles
-    .map((d) => `${d.producto_nombre || d.servicio_nombre} x${d.cantidad}`)
-    .join(', ');
+    let texto = visibles
+      .map((d) => `${d.producto_nombre || d.servicio_nombre} x${d.cantidad}`)
+      .join(", ");
 
-  if (detalles.length > max) {
-    texto += ` +${detalles.length - max} más`;
-  }
+    if (detalles.length > max) {
+      texto += ` +${detalles.length - max} más`;
+    }
 
-  return texto;
-};
+    return texto;
+  };
 
   const badgePago = (metodo) => {
-  if (!metodo)
-    return (
-      <span className="badge badge-pago-desconocido">
-        Sin datos
-      </span>
-    )
+    if (!metodo)
+      return <span className="badge badge-pago-desconocido">Sin datos</span>;
 
-  const clase =
-    metodo.toLowerCase() === 'efectivo'
-      ? 'badge-pago-efectivo'
-      : metodo.toLowerCase() === 'tarjeta'
-      ? 'badge-pago-tarjeta'
-      : 'badge-pago-transferencia'
+    const clase =
+      metodo.toLowerCase() === "efectivo"
+        ? "badge-pago-efectivo"
+        : metodo.toLowerCase() === "tarjeta"
+          ? "badge-pago-tarjeta"
+          : "badge-pago-transferencia";
 
-  return <span className={`badge ${clase}`}>{metodo}</span>
-}
+    return <span className={`badge ${clase}`}>{metodo}</span>;
+  };
 
   return (
     <section className="page-shell">
-      <div>
-        <section className="page-shell">
-      <h1>Ventas</h1>
+      <div className="ventas-header">
+        <h1>Ventas</h1>
 
-      <button onClick={abrirModal} className="btn-primary">
-        Nueva Venta
-      </button>
+        <button onClick={abrirModal} className="btn-primary">
+          Nueva Venta
+        </button>
 
-      
         <Modal isOpen={mostrarModal} onClose={cerrarModales}>
           <FormularioNuevaVenta
             onClose={cerrarModales}
             onVentaRegistrada={fetchVentas}
           />
         </Modal>
-      
-    </section>
       </div>
       <div className="ventas-toolbar">
-        <h1>Historial de ventas</h1>
+        <h2>Historial de ventas:</h2>
 
         <div className="fecha-filtro">
+          <label className="fecha-label">Desde</label>
           <input
             type="date"
             className="search-input"
             value={fechaDesde}
             onChange={(e) => setFechaDesde(e.target.value)}
           />
-
-          <input
-            type="date"
-            className="search-input"
-            value={fechaHasta}
-            onChange={(e) => setFechaHasta(e.target.value)}
-          />
+          <label className="fecha-label">Hasta</label>
+          <div className="fecha-hasta-group">
+            <input
+              type="date"
+              className="search-input"
+              value={fechaHasta}
+              onChange={(e) => setFechaHasta(e.target.value)}
+            />
+            <button type="button" className="btn-reset" onClick={resetFechas}>
+              Limpiar
+            </button>
+          </div>
         </div>
       </div>
 
@@ -259,29 +264,39 @@ export default function Ventas() {
 
         <div className="resumen-card">
           <span className="resumen-label">Ingresos del día</span>
-          <span className="resumen-valor">${stats.ingresos.toLocaleString()}</span>
+          <span className="resumen-valor">
+            ${stats.ingresos.toLocaleString()}
+          </span>
         </div>
 
         <div className="resumen-card">
           <span className="resumen-label">Efectivo</span>
-          <span className="resumen-valor">${stats.efectivo.toLocaleString()}</span>
+          <span className="resumen-valor">
+            ${stats.efectivo.toLocaleString()}
+          </span>
         </div>
 
         <div className="resumen-card">
           <span className="resumen-label">Tarjeta</span>
-          <span className="resumen-valor">${stats.tarjeta.toLocaleString()}</span>
+          <span className="resumen-valor">
+            ${stats.tarjeta.toLocaleString()}
+          </span>
         </div>
 
         <div className="resumen-card">
           <span className="resumen-label">Transferencia</span>
-          <span className="resumen-valor">${stats.transferencia.toLocaleString()}</span>
+          <span className="resumen-valor">
+            ${stats.transferencia.toLocaleString()}
+          </span>
         </div>
       </div>
 
       {loading ? (
         <p className="productos-loading">Cargando ventas...</p>
       ) : ventasFiltradas.length === 0 ? (
-        <p className="productos-empty">No se encontraron ventas en ese rango de fechas.</p>
+        <p className="productos-empty">
+          No se encontraron ventas en ese rango de fechas.
+        </p>
       ) : (
         <div className="tabla-wrapper">
           <table className="productos-tabla">
@@ -299,7 +314,7 @@ export default function Ventas() {
             <tbody>
               {ventasFiltradas.map((v) => (
                 <tr key={v.id}>
-                  <td>#{String(v.id).padStart(3, '0')}</td>
+                  <td>#{String(v.id).padStart(3, "0")}</td>
                   <td>{formatearFecha(v.fecha_venta)}</td>
                   <td>{resumenProductos(v.id)}</td>
                   <td>{badgePago(v.metodo_pago)}</td>
@@ -323,8 +338,7 @@ export default function Ventas() {
       <Modal isOpen={modalAbierto} onClose={cerrarModal}>
         <h2 className="detalle-titulo">
           Venta #
-          {ventaSeleccionada &&
-            String(ventaSeleccionada.id).padStart(3, '0')}
+          {ventaSeleccionada && String(ventaSeleccionada.id).padStart(3, "0")}
         </h2>
 
         {loadingDetalle ? (
@@ -354,10 +368,10 @@ export default function Ventas() {
         )}
       </Modal>
     </section>
-  )
+  );
 }
 
-const formStyles =`
+const formStyles = `
   .btn-primary {
   background: var(--vet-purple);
   color: #fff;
@@ -381,4 +395,6 @@ const formStyles =`
 
 .btn-primary:active {
   transform: scale(0.97);
-}`
+}
+
+`;
