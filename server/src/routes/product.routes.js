@@ -10,6 +10,7 @@ router.get('/product/:id', productController.productoPorId)
 
 
 
+
 router.post('/product/add',productController.añadirProducto)
 router.post('/product/addlote', productController.añadirLote)
 router.post('/product/addcategoria', productController.añadirCategoria)

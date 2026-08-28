@@ -7,6 +7,7 @@ export default function FormularioNuevaVenta({ onClose }) {
   const [busqueda, setBusqueda] = useState("");
   const [clienteSeleccionado, setClienteSeleccionado] = useState(null);
   const [metodoPago, setMetodoPago] = useState("");
+  const [usuario, setUsuario] = useState(null); // Estado para almacenar el usuario logueado
 
   //estados para los productos
   const [productos, setProductos] = useState([]);
@@ -21,6 +22,22 @@ export default function FormularioNuevaVenta({ onClose }) {
       .catch((err) => console.error(err));
   }, []);
 
+  //traer id del usuario logeado
+  useEffect(() => {
+    axios.get('http://localhost:3000/users/comprobar',{withCredentials: true})
+      .then(response => {
+        if (response.data.valid) {
+          setUsuario(response.data.user);
+        } else {
+          setUsuario(null);
+        }
+      })
+      .catch(error => {
+        console.error("Error al comprobar el token:", error);
+        setUsuario(null);
+        
+      });
+  }, []);
   
   //para traer productos desde la base de datos
   useEffect(() => {
@@ -79,17 +96,51 @@ export default function FormularioNuevaVenta({ onClose }) {
   let venta = {}
   const registrarVenta = async () => {
 
-  for(let i=0; i<productosVenta.length; i++) {
-        venta = {
-    cliente: clienteSeleccionado.id,
-    productos: productosVenta[i].id,
+  
+    venta = {
+    id_usuario: usuario.id,
+    id_cliente: clienteSeleccionado.id,
+    metodoPago: metodoPago,
     total,
-    metodo_pago: metodoPago,
+    
   }
-  console.log("Venta a registrar:", venta);
-  await axios.post("http://localhost:3000/ventas/registrar-venta",venta)
+  const lotes = await axios.get("http://localhost:3000/products/product/lotes",{withCredentials: true});
+  console.log("Lotes obtenidos:", lotes.data.datos[0].stock_actual);
+  for (let i = 0; i < productosVenta.length; i++) {
+    const lote = lotes.data.datos.find((l) => l.id_producto === productosVenta[i].id);
+    console.log(`Producto: ${productosVenta[i].nombre}, Lote: ${lote ? lote.id : 'No encontrado'}, Stock actual: ${lote ? lote.stock_actual : 'N/A'}`);
+    if(!lote || lote.stock_actual < productosVenta[i].cantidad){
+      alert(`No hay suficiente stock para el producto ${productosVenta[i].nombre}. Stock disponible: ${lote ? lote.stock_actual : 0}`);
+      return;
+    }
   }
-}
+  const resVenta = await axios.post("http://localhost:3000/ventas/registrar-venta",venta,{withCredentials: true});
+  const idVenta = resVenta.data.id_venta;
+  const registrarDetallesVenta = async () => {
+    for(let i = 0; i < productosVenta.length; i++) {
+      const res = await axios.post("http://localhost:3000/ventas/registrar-detalles",{
+        id_venta: idVenta,
+        id_producto: productosVenta[i].id,
+        cantidad: productosVenta[i].cantidad,
+      },{withCredentials: true});
+      
+    }
+    
+  
+  };
+  await registrarDetallesVenta();
+  const descontarStock = async () => {
+    for(let i = 0; i < productosVenta.length; i++) {
+      const res = await axios.post("http://localhost:3000/ventas/descontar-stock",{
+        id_producto: productosVenta[i].id,
+        cantidad: productosVenta[i].cantidad,
+      },{withCredentials: true});
+      
+    }
+  };
+  await descontarStock();
+  }
+
 
 
 
