@@ -10,5 +10,10 @@ router.post('/logout', userController.cerrarSesion)
 
 router.get('/comprobar', userController.comprobarUsuario)
 
+router.post('/add', userController.crearUsuario)
+
+router.put('/editar/:id', userController.editarUsuario)
+
+router.delete('/eliminar/:id', userController.eliminarUsuario)
 
 export default router

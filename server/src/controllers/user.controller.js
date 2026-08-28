@@ -1,5 +1,6 @@
 import userModel from '../models/user.models.js'
 import jwt from 'jsonwebtoken';
+import bcrypt from 'bcrypt';
 
 
 const JWT_SECRET = process.env.JWT_SECRET;
@@ -15,8 +16,8 @@ const userLogin = async (req, res) => {
 
         const users = await userModel();
 
-        const user = users.find(u => u.usuario === usuario && u.password_hash === password);
-        if (user) {
+        const user = users.find(u => u.usuario === usuario);
+        if (user && await bcrypt.compare(password, user.password_hash)) {
             const token = jwt.sign({ id: user.id, usuario: user.usuario, rol: user.rol }, JWT_SECRET, { expiresIn: '1d' });
             res.cookie("token", token, {
                 httpOnly: true,
@@ -61,8 +62,56 @@ const cerrarSesion = (req, res) => {
     return res.status(200).json({ message: 'Sesión cerrada correctamente' });
 };
 
+const crearUsuario = async (req, res) => {
+    try {
+        const { nombre,usuario,email, password, rol,activo } = req.body;
+        if (!nombre || !usuario || !email || !password || !rol || !activo) {
+            return res.status(400).json({ message: 'Faltan datos obligatorios' });
+        }
+        const password_hash = await bcrypt.hash(password, 10);
+        const nuevoUsuario = await userModel.añadirUsuarioADB({ nombre, usuario, email, password_hash, id_rol: rol, activo });
+        res.status(201).json({ message: 'Usuario creado correctamente', user: nuevoUsuario });
+    } catch (error) {
+        res.status(500).json({ message: 'Error al crear el usuario', error });
+    }
+}
+
+const editarUsuario = async (req, res) => {
+    try {
+        const { id } = req.params;
+        if (!id) {
+            return res.status(400).json({ message: 'Falta el ID del usuario' });
+        }
+        const { nombre,usuario,email, password, rol,activo } = req.body;
+        if (!nombre || !usuario || !email || !password || !rol || !activo) {
+            return res.status(400).json({ message: 'Faltan datos obligatorios' });
+        }
+        const password_hash = await bcrypt.hash(password, 10);
+        const usuarioEditado = await userModel.editarUsuarioADB(id, { nombre, usuario, email, password_hash, id_rol: rol, activo });
+        res.status(200).json({ message: 'Usuario editado correctamente', user: usuarioEditado });
+    } catch (error) {
+        res.status(500).json({ message: 'Error al editar el usuario', error });
+    }
+};
+
+const eliminarUsuario = async (req, res) => {
+    try {
+        const { id } = req.params;
+        if (!id) {
+            return res.status(400).json({ message: 'Falta el ID del usuario' });
+        }
+        const usuarioEliminado = await userModel.eliminarUsuarioADB(id);
+        res.status(200).json({ message: 'Usuario eliminado correctamente', user: usuarioEliminado });
+    } catch (error) {
+        res.status(500).json({ message: 'Error al eliminar el usuario', error });
+    }
+}; 
+
 export default {
     userLogin,
     comprobarUsuario,
-    cerrarSesion
+    cerrarSesion,
+    crearUsuario,
+    editarUsuario,
+    eliminarUsuario
 }
