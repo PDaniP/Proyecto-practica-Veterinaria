@@ -7,6 +7,7 @@ DROP TABLE IF EXISTS productos;
 DROP TABLE IF EXISTS categorias;
 DROP TABLE IF EXISTS usuarios;
 DROP TABLE IF EXISTS roles;
+DROP TABLE IF EXISTS mascotas;
 DROP TABLE IF EXISTS clientes;
 
 -- 1. Creación de tabla de roles
@@ -39,8 +40,7 @@ INSERT INTO roles (nombre, descripcion) VALUES
 INSERT INTO usuarios (nombre, usuario, email, password_hash, id_rol) VALUES 
 ('Carlos Gómez', 'CarlitosVet', 'admin@veterinaria.com', 'admin123', (SELECT id FROM roles WHERE nombre = 'Administrador')),
 ('Dra. Laura Martínez', 'LauritaVet', 'laura.vet@veterinaria.com', '$2y$10$S9bB7X4mF8gH2jK1l3m4n5o6p7q8r9s...', (SELECT id FROM roles WHERE nombre = 'Veterinario')),
-('Matias Silva', 'MatiVet', 'ventas@veterinaria.com', '$2y$10$U7vW8x9y0z1a2b3c4d5e6f7g8h9i0j...', (SELECT id FROM roles WHERE nombre = 'Administrativo/Vendedor')),
-('Matias Picasso','Matias', 'matias.picasso@veterinaria.com','pikachu17', (SELECT id FROM roles WHERE nombre = 'Administrador'));
+('Matias Silva', 'MatiVet', 'ventas@veterinaria.com', '$2y$10$U7vW8x9y0z1a2b3c4d5e6f7g8h9i0j...', (SELECT id FROM roles WHERE nombre = 'Administrativo/Vendedor'));
 
 -- 5. Tabla de clientes
 CREATE TABLE clientes (
@@ -55,6 +55,7 @@ CREATE TABLE clientes (
 
 -- 6. Insertamos clientes ficticios
 INSERT INTO clientes (nombre, apellido, dni, telefono, direccion) VALUES 
+('Consumidor', 'Final', '99999999', '0000000', 'Mostrador'),
 ('Juan', 'Pérez', '38444555', '3329-154422', 'Mitre 1230, San Pedro'),
 ('María', 'Rodríguez', '40111222', '3329-155566', 'Pellegrini 450, San Pedro');
 
@@ -86,7 +87,7 @@ CREATE TABLE lotes (
     id_producto INT NOT NULL,
     codigo_lote VARCHAR(50) NOT NULL, 
     stock_inicial INT NOT NULL,       
-    stock_actual INT NOT NULL Check (stock_actual >= 0),        
+    stock_actual INT NOT NULL CHECK (stock_actual >= 0),        
     fecha_ingreso TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     fecha_vencimiento DATE NOT NULL,  
     activo BOOLEAN DEFAULT TRUE,
@@ -164,4 +165,24 @@ CREATE TABLE detalle_ventas (
         (id_producto IS NULL AND id_servicio IS NOT NULL)
     )
 );
--- 2/7/2026
+-- 16. Tabla de Mascotas
+CREATE TABLE mascotas (
+    id SERIAL PRIMARY KEY,
+    id_cliente INT NOT NULL,
+    nombre VARCHAR(100) NOT NULL,
+    especie VARCHAR(50) NOT NULL,
+    raza VARCHAR(100),
+    fecha_nacimiento DATE,             -- Sosa wachin como vas a poner edad        
+    peso DECIMAL(5,2),                 -- Peso de registro (máximo 999.99 kg) (Permitir actualizar en cualquier momento por la ficha clínica)
+    genero VARCHAR(20),
+    alergias TEXT,
+    observaciones TEXT,
+    numero_chip VARCHAR(30) UNIQUE,     -- Número de chip de identificación (opcional)
+    activo BOOLEAN DEFAULT TRUE,
+    fecha_registro TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_cliente_mascota FOREIGN KEY (id_cliente) REFERENCES clientes(id) ON DELETE RESTRICT ON UPDATE CASCADE
+);
+-- 17. Inserción de Mascotas de Prueba
+INSERT INTO mascotas (id_cliente, nombre, especie, raza, fecha_nacimiento, peso, genero, alergias, observaciones, numero_chip) VALUES 
+((SELECT id FROM clientes WHERE dni = '38444555' LIMIT 1), 'Roko', 'Perro', 'Perro', '2020-05-15', 20.50, 'Macho', 'Ninguna, es una bestia', 'Le falta un ojo', '012345678912345'),
+((SELECT id FROM clientes WHERE dni = '40111222' LIMIT 1), 'Michi', 'Gato', 'Gato', '2022-11-10', 3.80, 'Hembra', 'Alergia a la penicilina', 'Le falta un pie', '123456789012345');
