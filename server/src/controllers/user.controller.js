@@ -14,7 +14,7 @@ const userLogin = async (req, res) => {
             });
         }
 
-        const users = await userModel();
+        const users = await userModel.userModel();
 
         const user = users.find(u => u.usuario === usuario);
         if (user && await bcrypt.compare(password, user.password_hash)) {

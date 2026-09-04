@@ -215,7 +215,7 @@ export default function Ventas() {
   };
 
   return (
-    <section className="page-shell">
+    <section className="page-shell ventas-page">
       <div className="ventas-header">
         <h1>Ventas</h1>
 

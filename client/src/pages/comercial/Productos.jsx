@@ -102,7 +102,7 @@ const lotesFiltrados = lotes.filter((l) =>
 
   
   return (
-    <section className="page-shell">
+    <section className="page-shell productos-page">
 
       {/* Toolbar */}
       <div className="productos-toolbar">
