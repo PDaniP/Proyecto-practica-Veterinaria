@@ -263,7 +263,7 @@ export default function Ventas() {
         </div>
 
         <div className="resumen-card">
-          <span className="resumen-label">Ingresos del día</span>
+          <span className="resumen-label">Ingresos</span>
           <span className="resumen-valor">
             ${stats.ingresos.toLocaleString()}
           </span>
