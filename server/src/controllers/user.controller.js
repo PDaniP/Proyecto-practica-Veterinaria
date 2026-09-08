@@ -21,9 +21,9 @@ const userLogin = async (req, res) => {
             const token = jwt.sign({ id: user.id, usuario: user.usuario, rol: user.rol }, JWT_SECRET, { expiresIn: '1d' });
             res.cookie("token", token, {
                 httpOnly: true,
-                secure: false, // Cambia a true en producción
+                secure: false, 
                 sameSite: "lax",
-                maxAge: 24 * 60 * 60 * 1000 // 1 día
+                maxAge: 24 * 60 * 60 * 1000 
             });
             res.status(200).json({ message: 'Logueado Correctamente', user: { id: user.id, usuario: user.usuario, rol: user.rol } });
         } else {
@@ -56,7 +56,7 @@ const comprobarUsuario = (req, res) => {
 const cerrarSesion = (req, res) => {
     res.clearCookie("token", {
         httpOnly: true,
-        secure: false, // Cambia a true en producción
+        secure: false, 
         sameSite: "lax"
     });
     return res.status(200).json({ message: 'Sesión cerrada correctamente' });
