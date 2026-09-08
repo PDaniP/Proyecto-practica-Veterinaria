@@ -48,16 +48,20 @@ CREATE TABLE clientes (
     nombre VARCHAR(100) NOT NULL,
     apellido VARCHAR(100) NOT NULL,
     dni VARCHAR(20) UNIQUE NOT NULL,
-    telefono VARCHAR(20),
+    email VARCHAR(255) UNIQUE,
+    telefono VARCHAR(20) NOT NULL,
+    telefono_alternativo VARCHAR(20),
     direccion VARCHAR(255),
+    localidad VARCHAR(100) NOT NULL,
+    ciudad VARCHAR(100) NOT NULL,
     fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 -- 6. Insertamos clientes ficticios
-INSERT INTO clientes (nombre, apellido, dni, telefono, direccion) VALUES 
-('Consumidor', 'Final', '99999999', '0000000', 'Mostrador'),
-('Juan', 'Pérez', '38444555', '3329-154422', 'Mitre 1230, San Pedro'),
-('María', 'Rodríguez', '40111222', '3329-155566', 'Pellegrini 450, San Pedro');
+INSERT INTO clientes (nombre, apellido, dni, email, telefono, telefono_alternativo, direccion, localidad, ciudad) VALUES 
+('Consumidor', 'Final', '99999999', 'consumidor@veterinaria.com', '0000000', '0000001', 'Mostrador', 'San Pedro', 'San Pedro'),
+('Juan', 'Pérez', '38444555', 'juan.perez@gmail.com', '3329-154422', '3329-154423', 'Mitre 1230, San Pedro', 'San Pedro', 'San Pedro'),
+('María', 'Rodríguez', '40111222', 'maria.rodriguez@gmail.com', '3329-155566', '3329-155567', 'Pellegrini 450, San Pedro', 'San Pedro', 'San Pedro');
 
 -- 7. Tabla de Categorías
 CREATE TABLE categorias (
@@ -172,7 +176,7 @@ CREATE TABLE mascotas (
     nombre VARCHAR(100) NOT NULL,
     especie VARCHAR(50) NOT NULL,
     raza VARCHAR(100),
-    fecha_nacimiento DATE,             -- Sosa wachin como vas a poner edad        
+    fecha_nacimiento DATE,
     peso DECIMAL(5,2),                 -- Peso de registro (máximo 999.99 kg) (Permitir actualizar en cualquier momento por la ficha clínica)
     genero VARCHAR(20),
     alergias TEXT,
