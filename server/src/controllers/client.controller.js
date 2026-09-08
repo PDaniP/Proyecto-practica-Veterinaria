@@ -16,7 +16,8 @@ const listaClientes = async (req, res) => {
 const añadirCliente = async (req, res) => {
     try {
         const cliente = req.body;
-        if(!cliente.nombre || !cliente.apellido || !cliente.dni || !cliente.telefono || !cliente.direccion) {
+        // AGREGADO: ahora se validan localidad y ciudad como obligatorios en vez de direccion (direccion pasó a ser opcional)
+        if(!cliente.nombre || !cliente.apellido || !cliente.dni || !cliente.telefono || !cliente.localidad || !cliente.ciudad) {
             return res.status(400).json({ message: 'Faltan datos obligatorios del cliente' });
         }
         const nuevoCliente = await añadirClienteADB(cliente);
@@ -34,7 +35,8 @@ const editarCliente = async (req, res) => {
             return res.status(400).json({ message: 'Falta el ID del cliente' });
         }
         const cliente = req.body;
-        if(!cliente.nombre || !cliente.apellido || !cliente.dni || !cliente.telefono || !cliente.direccion) {
+        // AGREGADO: ahora se validan localidad y ciudad como obligatorios en vez de direccion (direccion pasó a ser opcional)
+        if(!cliente.nombre || !cliente.apellido || !cliente.dni || !cliente.telefono || !cliente.localidad || !cliente.ciudad) {
             return res.status(400).json({ message: 'Faltan datos obligatorios del cliente' });
         }
         const clienteEditado = await editarClienteADB(id, cliente);
