@@ -60,6 +60,7 @@ CREATE TABLE clientes (
 -- 6. Insertamos clientes ficticios
 INSERT INTO clientes (nombre, apellido, dni, email, telefono, telefono_alternativo, direccion, localidad, ciudad) VALUES 
 ('Consumidor', 'Final', '99999999', 'consumidor@veterinaria.com', '0000000', '0000001', 'Mostrador', 'San Pedro', 'San Pedro'),
+('sin dueño', '', '', '', '', '', '', '', ''),
 ('Juan', 'Pérez', '38444555', 'juan.perez@gmail.com', '3329-154422', '3329-154423', 'Mitre 1230, San Pedro', 'San Pedro', 'San Pedro'),
 ('María', 'Rodríguez', '40111222', 'maria.rodriguez@gmail.com', '3329-155566', '3329-155567', 'Pellegrini 450, San Pedro', 'San Pedro', 'San Pedro');
 

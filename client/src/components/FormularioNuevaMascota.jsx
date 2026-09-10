@@ -36,7 +36,7 @@ export default function FormularioNuevaMascota({ onClose }) {
 
   useEffect(() => {
     axios
-      .get("http://localhost:3000/clientes")
+      .get("http://localhost:3000/clientes", { withCredentials: true })
       .then((response) => setDueños(response.data.clientes ?? []))
       .catch(() => setErrorDueños("No se pudieron cargar los dueños."));
   }, []);

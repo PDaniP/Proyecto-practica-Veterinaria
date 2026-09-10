@@ -22,9 +22,7 @@ const editarClienteADB = async (id, cliente) => {
     // AGREGADO: se suman email, telefono_alternativo, localidad y ciudad (antes solo estaba direccion)
     const {nombre, apellido, dni, email, telefono, telefono_alternativo, direccion, localidad, ciudad} = cliente;
     const {rows} = await db.query(
-        // AGREGADO: columnas email, telefono_alternativo, localidad, ciudad en el UPDATE (se corrió el $10 del id)
-        'UPDATE clientes SET nombre = $1, apellido = $2, dni = $3, email = $4, telefono = $5, telefono_alternativo = $6, direccion = $7, localidad = $8, ciudad = $9 WHERE id = $10 RETURNING *',
-        // AGREGADO: email y telefono_alternativo van con "|| null" porque son opcionales
+        'UPDATE clientes SET (nombre,apellido,dni,email,telefono,telefono_alternativo,direccion,localidad,ciudad) = ($1,$2,$3,$4,$5,$6,$7,$8,$9) WHERE id = $10 RETURNING *',
         [nombre, apellido, dni, email || null, telefono, telefono_alternativo || null, direccion || null, localidad, ciudad, id]
     );
     return rows[0];

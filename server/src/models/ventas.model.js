@@ -88,5 +88,16 @@ const obtenerDetallesVenta = async (id_venta) => {
     console.log(rows)
     return rows
 }
+const obtenerRegistroVentaPorCliente = async (id_cliente) => {
+    const {rows} = await db.query(
+        `SELECT v.id, v.id_cliente, v.fecha_venta, v.total, c.nombre AS cliente_nombre, u.nombre AS usuario_nombre, metodo_pago
+        FROM ventas v
+        JOIN clientes c ON v.id_cliente = c.id
+        JOIN usuarios u ON v.id_usuario = u.id
+        WHERE v.id_cliente = $1
+        ORDER BY v.fecha_venta DESC`, [id_cliente]
+    )
+    return rows
+}
 
-export { obtenerLotesVentas, actualizarStockLote, eliminarLoteVacio, añadirVenta, detallesVenta, filtrarProductoPorID, obtenerListaVentas, obtenerDetallesVenta, filtrarServiciosPorId, obtenerVentaPorFechaActual }
+export { obtenerLotesVentas, actualizarStockLote, eliminarLoteVacio, añadirVenta, detallesVenta, filtrarProductoPorID, obtenerListaVentas, obtenerDetallesVenta, filtrarServiciosPorId, obtenerVentaPorFechaActual, obtenerRegistroVentaPorCliente }

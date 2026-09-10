@@ -36,9 +36,10 @@ export default function Mascotas() {
       setClientes(clientesResponse.data.clientes ?? []);
     } catch (error) {
       if (error.response?.status === 404) {
-        setMascotas([]);
+        setMascotas([])
+        setClientes([]);
       } else {
-        console.error("Error al cargar mascotas:", error);
+        console.error("Error al cargar mascotas o clientes:", error);
       }
     } finally {
       setCargando(false);

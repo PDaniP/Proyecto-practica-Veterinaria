@@ -5,7 +5,7 @@ const router = express.Router();
 
 
 //metodos GET
-router.get('/', validarUsuario, clientController.listaClientes);
+router.get('/',validarUsuario, clientController.listaClientes);
 
 //metodos POST
 router.post('/add', validarUsuario, clientController.añadirCliente);

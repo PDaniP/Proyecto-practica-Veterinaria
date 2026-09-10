@@ -25,7 +25,7 @@ const userLogin = async (req, res) => {
                 sameSite: "lax",
                 maxAge: 24 * 60 * 60 * 1000 
             });
-            res.status(200).json({ message: 'Logueado Correctamente', user: { id: user.id, usuario: user.usuario, rol: user.rol } });
+            res.status(200).json({ message: 'Logueado Correctamente', user: { id: user.id, usuario: user.usuario, rol: user.rol }, token });
         } else {
             res.status(401).json({ message: 'Invalid username or password' });
         }
