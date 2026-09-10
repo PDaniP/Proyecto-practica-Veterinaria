@@ -340,6 +340,9 @@ export default function Ventas() {
           Venta #
           {ventaSeleccionada && String(ventaSeleccionada.id).padStart(3, "0")}
         </h2>
+        <h2 className="detalle-titulo">
+          Cliente: {`${ventaSeleccionada?.cliente_nombre || "Cliente"} ${ventaSeleccionada?.cliente_apellido || "general"}`.trim()}
+        </h2>
 
         {loadingDetalle ? (
           <p>Cargando...</p>

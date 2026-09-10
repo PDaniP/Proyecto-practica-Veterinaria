@@ -14,7 +14,6 @@ export default function FormularioNuevaMascota({ onClose }) {
     especie: "",
     raza: "",
     fecha_nacimiento: "",
-    peso: "",
     genero: "",
     numero_chip: "",
     observaciones: "",
@@ -53,8 +52,10 @@ export default function FormularioNuevaMascota({ onClose }) {
     setBusquedaDueño("");
     setIdCliente("");
 
+    // cambiar el uso de la id cuando arregle la tabla, por el id 0
     if (tipo === "sin-dueño") {
       setDueño("sin dueño");
+      setIdCliente(6);
     } else {
       setDueño("");
     }
@@ -63,6 +64,14 @@ export default function FormularioNuevaMascota({ onClose }) {
   const handleChange = (event) => {
     const { name, value } = event.target;
     setMascota((actual) => ({ ...actual, [name]: value }));
+  };
+
+  const handleGeneroChange = (generoSeleccionado) => {
+    setMascota((actual) => ({
+      ...actual,
+      genero:
+        actual.genero === generoSeleccionado ? "" : generoSeleccionado,
+    }));
   };
 
   const handleSubmit = async (event) => {
@@ -78,7 +87,6 @@ export default function FormularioNuevaMascota({ onClose }) {
       !mascota.especie.trim() ||
       !mascota.raza.trim() ||
       !mascota.fecha_nacimiento ||
-      !mascota.peso ||
       !mascota.genero
     ) {
       alert("Complete todos los campos obligatorios de la mascota.");
@@ -88,7 +96,7 @@ export default function FormularioNuevaMascota({ onClose }) {
     const mascotaFormateada = {
       id_cliente: Number(idCliente),
       ...mascota,
-      peso: Number(mascota.peso),
+      peso: null,
       numero_chip: tieneChip ? mascota.numero_chip || null : null,
     };
 
@@ -152,17 +160,31 @@ export default function FormularioNuevaMascota({ onClose }) {
             />
           </div>
 
-          <div className="field">
-            <label htmlFor="sexo">Sexo</label>
-            <input
-              type="text"
-              className="form-control"
-              id="sexo"
-              name="genero"
-              value={mascota.genero}
-              onChange={handleChange}
-              required
-            />
+          <div className="field sexo-field">
+            <label className="sexo-label">Sexo</label>
+            <div className="sexo-options">
+              <label htmlFor="generoMacho" className="sexo-option">
+                <span>M</span>
+                <input
+                  type="checkbox"
+                  className="form-check-input"
+                  id="generoMacho"
+                  checked={mascota.genero === "Macho"}
+                  onChange={() => handleGeneroChange("Macho")}
+                />
+              </label>
+
+              <label htmlFor="generoHembra" className="sexo-option">
+                <span>F</span>
+                <input
+                  type="checkbox"
+                  className="form-check-input"
+                  id="generoHembra"
+                  checked={mascota.genero === "Hembra"}
+                  onChange={() => handleGeneroChange("Hembra")}
+                />
+              </label>
+            </div>
           </div>
 
           <div className="field">
@@ -173,21 +195,6 @@ export default function FormularioNuevaMascota({ onClose }) {
               id="fechaNacimiento"
               name="fecha_nacimiento"
               value={mascota.fecha_nacimiento}
-              onChange={handleChange}
-              required
-            />
-          </div>
-
-          <div className="field">
-            <label htmlFor="peso">Peso (kg)</label>
-            <input
-              type="number"
-              className="form-control"
-              id="peso"
-              name="peso"
-              min="0"
-              step="0.01"
-              value={mascota.peso}
               onChange={handleChange}
               required
             />
@@ -374,10 +381,39 @@ const formStyles = `
   gap: 8px;
 }
 
-.pet-form-container .checkbox-field input[type="checkbox"] {
+.pet-form-container .checkbox-field input[type="checkbox"],
+.pet-form-container .sexo-option input[type="checkbox"] {
   width: 16px;
   height: 16px;
   accent-color: #534ab7;
+}
+
+.pet-form-container .sexo-field {
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
+}
+
+.pet-form-container .sexo-label {
+  min-width: 42px;
+  margin: 0;
+}
+
+.pet-form-container .sexo-options {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  flex-wrap: wrap;
+}
+
+.pet-form-container .sexo-option {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #374151;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
 }
 
 .pet-form-container .owner-search-field {

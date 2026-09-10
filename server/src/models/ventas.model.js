@@ -51,7 +51,7 @@ const filtrarProductoPorID = async (id_producto) => {
 
 const obtenerListaVentas = () => {
     return db.query(
-        `SELECT v.id, v.fecha_venta, v.total, c.nombre AS cliente_nombre, u.nombre AS usuario_nombre, metodo_pago
+        `SELECT v.id, v.fecha_venta, v.total, c.nombre AS cliente_nombre, c.apellido AS cliente_apellido, u.nombre AS usuario_nombre, metodo_pago
         FROM ventas v
         JOIN clientes c ON v.id_cliente = c.id
         JOIN usuarios u ON v.id_usuario = u.id

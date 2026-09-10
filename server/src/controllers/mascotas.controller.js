@@ -17,7 +17,7 @@ const listaMascotas = async (req, res) => {
 const añadirMascota = async (req, res) => {
     try {
         const mascota = req.body;
-        if(!mascota.id_cliente || !mascota.nombre || !mascota.especie || !mascota.raza || !mascota.fecha_nacimiento || !mascota.peso || !mascota.genero) {
+        if(!mascota.id_cliente || !mascota.nombre || !mascota.especie || !mascota.raza || !mascota.fecha_nacimiento || !mascota.genero) {
             return res.status(400).json({ message: 'Faltan datos obligatorios de la mascota' });
         }
         const nuevaMascota = await añadirMascotaADB(mascota);
@@ -34,7 +34,7 @@ const editarMascota = async (req, res) => {
             return res.status(400).json({ message: 'Falta el ID de la mascota' });
         }
         const mascota = req.body;
-        if(!mascota.id_cliente || !mascota.nombre || !mascota.especie || !mascota.raza || !mascota.fecha_nacimiento || !mascota.peso || !mascota.genero) {
+        if(!mascota.id_cliente || !mascota.nombre || !mascota.especie || !mascota.raza || !mascota.fecha_nacimiento || !mascota.genero) {
             return res.status(400).json({ message: 'Faltan datos obligatorios de la mascota' });
         }
         const mascotaEditada = await editarMascotaADB(id, mascota);

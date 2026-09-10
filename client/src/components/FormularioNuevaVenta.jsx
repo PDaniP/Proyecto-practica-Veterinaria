@@ -190,9 +190,23 @@ export default function FormularioNuevaVenta({ onClose, onVentaRegistrada }) {
               id="cliente"
               value={tipoCliente}
               onChange={(e) => {
-                setTipoCliente(e.target.value);
-                setClienteSeleccionado(null);
+                const tipo = e.target.value;
+                setTipoCliente(tipo);
                 setBusqueda("");
+
+                // cambiar el uso de la id cuando arregle la tabla, por el id 1
+                if (tipo === "generico") {
+                  const clienteGeneral = clientes.find(
+                    (cliente) => Number(cliente.id) === 7,
+                  );
+
+                  setClienteSeleccionado(
+                    clienteGeneral ?? { id: 7, nombre: "Cliente", apellido: "General" },
+                  );
+                  return;
+                }
+
+                setClienteSeleccionado(null);
               }}
             >
               <option value="">Seleccione tipo</option>
