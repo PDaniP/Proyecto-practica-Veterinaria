@@ -7,15 +7,32 @@ const obtenerListaClientes = async () => {
 }
 
 const añadirClienteADB = async (cliente) => {
-    const {nombre,apellido, dni, telefono, direccion} = cliente;
-    const {rows} = await db.query('INSERT INTO clientes (nombre,apellido, dni, telefono, direccion, fecha_creacion) VALUES ($1, $2, $3, $4, $5, NOW()) RETURNING *', [nombre, apellido, dni, telefono, direccion]);
+    // AGREGADO: se suman email, telefono_alternativo, localidad y ciudad (antes solo estaba direccion)
+    const {nombre, apellido, dni, email, telefono, telefono_alternativo, direccion, localidad, ciudad} = cliente;
+    const {rows} = await db.query(
+        // AGREGADO: columnas email, telefono_alternativo, localidad, ciudad en el INSERT (y sus $4, $6, $8, $9)
+        'INSERT INTO clientes (nombre, apellido, dni, email, telefono, telefono_alternativo, direccion, localidad, ciudad, fecha_creacion) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, NOW()) RETURNING *',
+        // AGREGADO: email y telefono_alternativo van con "|| null" porque son opcionales (pueden no venir del form)
+        [nombre, apellido, dni, email || null, telefono, telefono_alternativo || null, direccion || null, localidad, ciudad]
+    );
     return rows[0];
 }
 
 const editarClienteADB = async (id, cliente) => {
-    const {nombre,apellido, dni, telefono, direccion} = cliente;
-    const {rows} = await db.query('UPDATE clientes SET nombre = $1, apellido = $2, dni = $3, telefono = $4, direccion = $5 WHERE id = $6 RETURNING *', [nombre, apellido, dni, telefono, direccion, id]);
+    // AGREGADO: se suman email, telefono_alternativo, localidad y ciudad (antes solo estaba direccion)
+    const {nombre, apellido, dni, email, telefono, telefono_alternativo, direccion, localidad, ciudad} = cliente;
+    const {rows} = await db.query(
+        // AGREGADO: columnas email, telefono_alternativo, localidad, ciudad en el UPDATE (se corrió el $10 del id)
+        'UPDATE clientes SET nombre = $1, apellido = $2, dni = $3, email = $4, telefono = $5, telefono_alternativo = $6, direccion = $7, localidad = $8, ciudad = $9 WHERE id = $10 RETURNING *',
+        // AGREGADO: email y telefono_alternativo van con "|| null" porque son opcionales
+        [nombre, apellido, dni, email || null, telefono, telefono_alternativo || null, direccion || null, localidad, ciudad, id]
+    );
     return rows[0];
+}
+
+const objeterRegistroVentaPorCliente = async (id_cliente) => {
+    const {rows} = await db.query('SELECT * FROM ventas WHERE id_cliente = $1', [id_cliente]);
+    return rows;
 }
 
 const eliminarClienteADB = async (id) => {
@@ -27,5 +44,6 @@ export default {
     obtenerListaClientes,
     añadirClienteADB,
     editarClienteADB,
-    eliminarClienteADB
+    eliminarClienteADB,
+    objeterRegistroVentaPorCliente
 };
