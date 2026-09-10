@@ -180,6 +180,24 @@
   margin: 0 auto;
 }
 
+html:has(.productos-page),
+html:has(.ventas-page),
+html:has(.mascotas-page),
+body:has(.productos-page),
+body:has(.ventas-page),
+body:has(.mascotas-page) {
+  scrollbar-width: none;
+}
+
+html:has(.productos-page)::-webkit-scrollbar,
+html:has(.ventas-page)::-webkit-scrollbar,
+html:has(.mascotas-page)::-webkit-scrollbar,
+body:has(.productos-page)::-webkit-scrollbar,
+body:has(.ventas-page)::-webkit-scrollbar,
+body:has(.mascotas-page)::-webkit-scrollbar {
+  display: none;
+}
+
 .page-shell h1 {
   margin-bottom: 16px;
 }

@@ -1,0 +1,32 @@
+const formatearFecha = (fecha) => {
+  if (!fecha) return "-";
+
+  const [fechaParte] = String(fecha).split("T");
+  const [anio, mes, dia] = fechaParte.split("-");
+
+  if (!anio || !mes || !dia) return "-";
+
+  return `${dia}/${mes}/${anio}`;
+};
+
+export default function DetalleMascota({ mascota, dueño }) {
+  if (!mascota) return null;
+
+  return (
+    <div className="mascota-detalle">
+      <h2>Detalle de {mascota.nombre}</h2>
+      <dl>
+        <div><dt>Especie</dt><dd>{mascota.especie}</dd></div>
+        <div><dt>Raza</dt><dd>{mascota.raza || "-"}</dd></div>
+        <div><dt>Fecha de nacimiento</dt><dd>{formatearFecha(mascota.fecha_nacimiento)}</dd></div>
+        <div><dt>Edad</dt><dd>{mascota.fecha_nacimiento ? Math.floor((new Date() - new Date(mascota.fecha_nacimiento)) / (1000 * 60 * 60 * 24 * 365)) + " años" : "-"}</dd></div>
+        <div><dt>Sexo</dt><dd>{mascota.genero || "-"}</dd></div>
+        <div><dt>Dueño</dt><dd>{dueño}</dd></div>
+        <div><dt>Número de chip</dt><dd>{mascota.numero_chip || "-"}</dd></div>
+        <div><dt>Observaciones</dt><dd>{mascota.observaciones || "-"}</dd></div>
+        <div><dt>Estado</dt><dd>{mascota.activo ? "Activo" : "Inactivo"}</dd></div>
+        <div><dt>Fecha de registro</dt><dd>{formatearFecha(mascota.fecha_registro)}</dd></div>
+      </dl>
+    </div>
+  );
+}
