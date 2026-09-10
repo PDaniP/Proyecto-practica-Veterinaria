@@ -19,6 +19,7 @@ export default function DetalleMascota({ mascota, dueño }) {
         <div><dt>Especie</dt><dd>{mascota.especie}</dd></div>
         <div><dt>Raza</dt><dd>{mascota.raza || "-"}</dd></div>
         <div><dt>Fecha de nacimiento</dt><dd>{formatearFecha(mascota.fecha_nacimiento)}</dd></div>
+        <div><dt>Edad</dt><dd>{mascota.fecha_nacimiento ? Math.floor((new Date() - new Date(mascota.fecha_nacimiento)) / (1000 * 60 * 60 * 24 * 365)) + " años" : "-"}</dd></div>
         <div><dt>Sexo</dt><dd>{mascota.genero || "-"}</dd></div>
         <div><dt>Dueño</dt><dd>{dueño}</dd></div>
         <div><dt>Número de chip</dt><dd>{mascota.numero_chip || "-"}</dd></div>

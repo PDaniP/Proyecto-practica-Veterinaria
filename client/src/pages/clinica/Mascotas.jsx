@@ -101,6 +101,7 @@ export default function Mascotas() {
                 <th>Dueño</th>
                 <th>Detalle</th>
                 <th>Historia clínica</th>
+                <th>Estado</th>
               </tr>
             </thead>
             <tbody>
