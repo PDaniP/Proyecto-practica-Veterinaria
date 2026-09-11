@@ -14,18 +14,18 @@ const userLogin = async (req, res) => {
             });
         }
 
-        const users = await userModel();
+        const users = await userModel.userModel();
 
         const user = users.find(u => u.usuario === usuario);
         if (user && await bcrypt.compare(password, user.password_hash)) {
             const token = jwt.sign({ id: user.id, usuario: user.usuario, rol: user.rol }, JWT_SECRET, { expiresIn: '1d' });
             res.cookie("token", token, {
                 httpOnly: true,
-                secure: false, // Cambia a true en producción
+                secure: false, 
                 sameSite: "lax",
-                maxAge: 24 * 60 * 60 * 1000 // 1 día
+                maxAge: 24 * 60 * 60 * 1000 
             });
-            res.status(200).json({ message: 'Logueado Correctamente', user: { id: user.id, usuario: user.usuario, rol: user.rol } });
+            res.status(200).json({ message: 'Logueado Correctamente', user: { id: user.id, usuario: user.usuario, rol: user.rol }, token });
         } else {
             res.status(401).json({ message: 'Invalid username or password' });
         }
@@ -56,7 +56,7 @@ const comprobarUsuario = (req, res) => {
 const cerrarSesion = (req, res) => {
     res.clearCookie("token", {
         httpOnly: true,
-        secure: false, // Cambia a true en producción
+        secure: false, 
         sameSite: "lax"
     });
     return res.status(200).json({ message: 'Sesión cerrada correctamente' });

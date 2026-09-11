@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 
-export default function FormularioNuevaVenta({ onClose }) {
+export default function FormularioNuevaVenta({ onClose, onVentaRegistrada }) {
   const [tipoCliente, setTipoCliente] = useState("");
   const [clientes, setClientes] = useState([]);
   const [busqueda, setBusqueda] = useState("");
@@ -24,21 +24,21 @@ export default function FormularioNuevaVenta({ onClose }) {
 
   //traer id del usuario logeado
   useEffect(() => {
-    axios.get('http://localhost:3000/users/comprobar',{withCredentials: true})
-      .then(response => {
+    axios
+      .get("http://localhost:3000/users/comprobar", { withCredentials: true })
+      .then((response) => {
         if (response.data.valid) {
           setUsuario(response.data.user);
         } else {
           setUsuario(null);
         }
       })
-      .catch(error => {
+      .catch((error) => {
         console.error("Error al comprobar el token:", error);
         setUsuario(null);
-        
       });
   }, []);
-  
+
   //para traer productos desde la base de datos
   useEffect(() => {
     axios
@@ -67,7 +67,7 @@ export default function FormularioNuevaVenta({ onClose }) {
   //fucnion para agregar productos
   const agregarProducto = (producto) => {
     const existe = productosVenta.find((p) => p.id === producto.id);
-    
+
     if (existe) return;
 
     setProductosVenta([...productosVenta, { ...producto, cantidad: 1 }]);
@@ -93,56 +93,89 @@ export default function FormularioNuevaVenta({ onClose }) {
   );
 
   //para la venta
-  let venta = {}
+  let venta = {};
   const registrarVenta = async () => {
-
-  
-    venta = {
-    id_usuario: usuario.id,
-    id_cliente: clienteSeleccionado.id,
-    metodoPago: metodoPago,
-    total,
-    
-  }
-  const lotes = await axios.get("http://localhost:3000/products/product/lotes",{withCredentials: true});
-  console.log("Lotes obtenidos:", lotes.data.datos[0].stock_actual);
-  for (let i = 0; i < productosVenta.length; i++) {
-    const lote = lotes.data.datos.find((l) => l.id_producto === productosVenta[i].id);
-    console.log(`Producto: ${productosVenta[i].nombre}, Lote: ${lote ? lote.id : 'No encontrado'}, Stock actual: ${lote ? lote.stock_actual : 'N/A'}`);
-    if(!lote || lote.stock_actual < productosVenta[i].cantidad){
-      alert(`No hay suficiente stock para el producto ${productosVenta[i].nombre}. Stock disponible: ${lote ? lote.stock_actual : 0}`);
+    if (!usuario?.id) {
+      alert("Debe iniciar sesión para registrar una venta.");
       return;
     }
-  }
-  const resVenta = await axios.post("http://localhost:3000/ventas/registrar-venta",venta,{withCredentials: true});
-  const idVenta = resVenta.data.id_venta;
-  const registrarDetallesVenta = async () => {
-    for(let i = 0; i < productosVenta.length; i++) {
-      const res = await axios.post("http://localhost:3000/ventas/registrar-detalles",{
-        id_venta: idVenta,
-        id_producto: productosVenta[i].id,
-        cantidad: productosVenta[i].cantidad,
-      },{withCredentials: true});
-      
+
+    if (!clienteSeleccionado?.id) {
+      alert("Debe seleccionar un cliente para registrar la venta.");
+      return;
     }
-    
-  
-  };
-  await registrarDetallesVenta();
-  const descontarStock = async () => {
-    for(let i = 0; i < productosVenta.length; i++) {
-      const res = await axios.post("http://localhost:3000/ventas/descontar-stock",{
-        id_producto: productosVenta[i].id,
-        cantidad: productosVenta[i].cantidad,
-      },{withCredentials: true});
-      
+
+    if (!metodoPago) {
+      alert("Debe seleccionar un método de pago.");
+      return;
     }
+
+    if (productosVenta.length === 0) {
+      alert("Debe agregar al menos un producto para registrar la venta.");
+      return;
+    }
+
+    venta = {
+      id_usuario: usuario.id,
+      id_cliente: clienteSeleccionado.id,
+      metodoPago: metodoPago,
+      total,
+    };
+
+    for (let i = 0; i < productosVenta.length; i++) {
+      const productoBase = productos.find((p) => p.id === productosVenta[i].id);
+      const stockDisponible = Number(
+        productoBase?.stock_actual ?? productosVenta[i].stock_actual ?? 0,
+      );
+
+      if (stockDisponible < productosVenta[i].cantidad) {
+        alert(
+          `No hay suficiente stock para el producto ${productosVenta[i].nombre}. Stock disponible: ${stockDisponible}`,
+        );
+        return;
+      }
+    }
+
+    const resVenta = await axios.post(
+      "http://localhost:3000/ventas/registrar-venta",
+      venta,
+      { withCredentials: true },
+    );
+    const idVenta = resVenta.data.id_venta;
+    const registrarDetallesVenta = async () => {
+      for (let i = 0; i < productosVenta.length; i++) {
+        const res = await axios.post(
+          "http://localhost:3000/ventas/registrar-detalles",
+          {
+            id_venta: idVenta,
+            id_producto: productosVenta[i].id,
+            cantidad: productosVenta[i].cantidad,
+          },
+          { withCredentials: true },
+        );
+      }
+    };
+    await registrarDetallesVenta();
+    const descontarStock = async () => {
+      for (let i = 0; i < productosVenta.length; i++) {
+        const res = await axios.post(
+          "http://localhost:3000/ventas/descontar-stock",
+          {
+            id_producto: productosVenta[i].id,
+            cantidad: productosVenta[i].cantidad,
+          },
+          { withCredentials: true },
+        );
+      }
+    };
+    await descontarStock();
+
+    window.alert("La venta se ha efectuado con éxito.");
+    if (onVentaRegistrada) {
+      await onVentaRegistrada();
+    }
+    onClose?.();
   };
-  await descontarStock();
-  }
-
-
-
 
   return (
     <div>
@@ -157,9 +190,23 @@ export default function FormularioNuevaVenta({ onClose }) {
               id="cliente"
               value={tipoCliente}
               onChange={(e) => {
-                setTipoCliente(e.target.value);
-                setClienteSeleccionado(null);
+                const tipo = e.target.value;
+                setTipoCliente(tipo);
                 setBusqueda("");
+
+                // cambiar el uso de la id cuando arregle la tabla, por el id 1
+                if (tipo === "generico") {
+                  const clienteGeneral = clientes.find(
+                    (cliente) => Number(cliente.id) === 7,
+                  );
+
+                  setClienteSeleccionado(
+                    clienteGeneral ?? { id: 7, nombre: "Cliente", apellido: "General" },
+                  );
+                  return;
+                }
+
+                setClienteSeleccionado(null);
               }}
             >
               <option value="">Seleccione tipo</option>
@@ -168,7 +215,7 @@ export default function FormularioNuevaVenta({ onClose }) {
             </select>
           </div>
 
-          {tipoCliente === "registrado" && (
+          {tipoCliente === "registrado" && !clienteSeleccionado && (
             <div className="field">
               <label>Buscar cliente</label>
               <div className="field-content">
@@ -202,7 +249,7 @@ export default function FormularioNuevaVenta({ onClose }) {
                               setBusqueda(c.nombre);
                             }}
                           >
-                            {c.nombre}
+                            {c.nombre} {c.apellido}
                           </li>
                         ))
                     )}
@@ -213,9 +260,21 @@ export default function FormularioNuevaVenta({ onClose }) {
           )}
 
           {clienteSeleccionado && (
-            <p className="selected-info">
-              Cliente seleccionado: {clienteSeleccionado.nombre}
-            </p>
+            <div className="cliente-seleccionado">
+              <p className="selected-info">
+                Cliente seleccionado: {clienteSeleccionado.nombre}{" "}
+                {clienteSeleccionado.apellido}
+              </p>
+              <button
+                className="icon-btn"
+                onClick={() => {
+                  setClienteSeleccionado(null);
+                  setBusqueda("");
+                }}
+              >
+                ✕
+              </button>
+            </div>
           )}
 
           <div className="field">
@@ -235,7 +294,9 @@ export default function FormularioNuevaVenta({ onClose }) {
                       .toLowerCase()
                       .includes(busquedaProducto.toLowerCase()),
                   ).length === 0 ? (
-                    <li className="suggestion-item">No se encontro el producto</li>
+                    <li className="suggestion-item">
+                      No se encontro el producto
+                    </li>
                   ) : (
                     productos
                       .filter((p) =>
@@ -421,9 +482,17 @@ const formStyles = `
   padding: 10px 12px;
   border-radius: 8px;
   background: #f5f3ff;
-  color: #5b21b6;
+  color: #000000;
   font-size: 13px;
 }
+
+.cliente-seleccionado {
+  display: flex;
+  align-items: center;
+  gap: 10px; 
+  margin-top: 10px;
+}
+
 
 .suggestions {
   position: absolute;

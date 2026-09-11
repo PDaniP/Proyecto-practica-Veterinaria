@@ -45,6 +45,7 @@ const modalStyles = `
 }
 
 .modal {
+  box-sizing: border-box;
   background: white;
   padding: 20px;
   border-radius: 12px;

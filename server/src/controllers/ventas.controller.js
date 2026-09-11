@@ -1,4 +1,12 @@
-import {obtenerLotesVentas, actualizarStockLote, añadirVenta, obtenerVentaPorFechaActual, filtrarProductoPorID, detallesVenta, obtenerListaVentas, obtenerDetallesVenta, filtrarServiciosPorId} from '../models/ventas.model.js'
+import {obtenerLotesVentas, 
+    actualizarStockLote,
+     añadirVenta, 
+     obtenerVentaPorFechaActual, 
+     filtrarProductoPorID, 
+     detallesVenta, 
+     obtenerListaVentas,
+      obtenerDetallesVenta, 
+      filtrarServiciosPorId} from '../models/ventas.model.js'
 import productModel from '../models/product.model.js'
 
 const descontarStock = async (req, res) => {
@@ -121,4 +129,15 @@ const obtenerDetallesVentaController = async (req, res) => {
     }
 };
 
-export { descontarStock, eliminarLoteVacio, registrarVenta, registrarDetallesVenta, listaVentas, obtenerDetallesVentaController, obtenerVentaPorFecha };
+const obtenerRegistroVentaPorCliente = async (req, res) => {
+    const { id_cliente } = req.params;
+    try {
+        const registro = await obtenerRegistroVentaPorCliente(id_cliente);
+        res.status(200).json({ message: 'Registro de ventas por cliente obtenido correctamente', registro });
+    } catch (error) {
+        res.status(500).json({ message: 'Error al obtener el registro de ventas por cliente', error });
+        console.error('Error al obtener el registro de ventas por cliente:', error);
+    }
+};
+
+export { descontarStock, eliminarLoteVacio, registrarVenta, registrarDetallesVenta, listaVentas, obtenerDetallesVentaController, obtenerVentaPorFecha, obtenerRegistroVentaPorCliente };

@@ -1,0 +1,41 @@
+.mascota-detalle {
+  color: var(--text);
+  min-width: min(100%, 560px);
+}
+
+.mascota-detalle h2 {
+  color: var(--vet-purple);
+  margin: 0 0 20px;
+}
+
+.mascota-detalle dl {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px 20px;
+  margin: 0;
+}
+
+.mascota-detalle dl div {
+  padding: 10px 12px;
+  border: 1px solid var(--vet-purple-border);
+  border-radius: var(--radius-sm);
+  background: var(--vet-purple-bg);
+}
+
+.mascota-detalle dt {
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.mascota-detalle dd {
+  margin: 4px 0 0;
+  color: var(--text);
+}
+
+@media (max-width: 640px) {
+  .mascota-detalle dl {
+    grid-template-columns: 1fr;
+  }
+}

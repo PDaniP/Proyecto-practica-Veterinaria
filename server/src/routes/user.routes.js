@@ -1,19 +1,23 @@
 //importaciones necesarias
 import userController from '../controllers/user.controller.js'
+import { obtenerRegistroVentaPorCliente } from '../controllers/ventas.controller.js'
 import express from 'express'
+import { validarUsuario } from '../middlewares/validator.middlewares.js'
 const router = express.Router()
 
 
 router.post('/login', userController.userLogin)
 
-router.post('/logout', userController.cerrarSesion)
+router.post('/logout', validarUsuario, userController.cerrarSesion)
 
 router.get('/comprobar', userController.comprobarUsuario)
 
-router.post('/add', userController.crearUsuario)
+router.get('/ventas/:id_cliente', validarUsuario, obtenerRegistroVentaPorCliente)
 
-router.put('/editar/:id', userController.editarUsuario)
+router.post('/add',  userController.crearUsuario)
 
-router.delete('/eliminar/:id', userController.eliminarUsuario)
+router.put('/editar/:id', validarUsuario, userController.editarUsuario)
+
+router.put('/eliminar/:id', validarUsuario, userController.eliminarUsuario)
 
 export default router
