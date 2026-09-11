@@ -18,6 +18,6 @@ router.post('/add',  userController.crearUsuario)
 
 router.put('/editar/:id', validarUsuario, userController.editarUsuario)
 
-router.delete('/eliminar/:id', validarUsuario, userController.eliminarUsuario)
+router.put('/eliminar/:id', validarUsuario, userController.eliminarUsuario)
 
 export default router

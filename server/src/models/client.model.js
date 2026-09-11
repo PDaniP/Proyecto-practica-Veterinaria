@@ -2,7 +2,7 @@ import db from '../config/db.js';
 
 
 const obtenerListaClientes = async () => {
-    const {rows} = await db.query('SELECT * FROM clientes');
+    const {rows} = await db.query('SELECT * FROM clientes WHERE activo = TRUE');
     return rows;
 }
 
@@ -34,7 +34,7 @@ const objeterRegistroVentaPorCliente = async (id_cliente) => {
 }
 
 const eliminarClienteADB = async (id) => {
-    const {rows} = await db.query('DELETE FROM clientes WHERE id = $1 RETURNING *', [id]);
+    const {rows} = await db.query('UPDATE clientes SET activo = FALSE WHERE id = $1 RETURNING *', [id]);
     return rows[0];
 }
 

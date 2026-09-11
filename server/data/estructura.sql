@@ -38,6 +38,7 @@ INSERT INTO roles (nombre, descripcion) VALUES
 
 -- 4. Carga de Usuarios de Prueba
 INSERT INTO usuarios (nombre, usuario, email, password_hash, id_rol) VALUES 
+('Matias Picasso', 'Matias', 'rhagis@gmail.com', '$2b$10$sGBJ.aHYMLNw8OLnSjYLlO5Gmd36SfObDw0LipcPiVfjnR4qFXGTa', (SELECT id FROM roles WHERE nombre = 'Administrativo/Vendedor'));
 ('Carlos Gómez', 'CarlitosVet', 'admin@veterinaria.com', 'admin123', (SELECT id FROM roles WHERE nombre = 'Administrador')),
 ('Dra. Laura Martínez', 'LauritaVet', 'laura.vet@veterinaria.com', '$2y$10$S9bB7X4mF8gH2jK1l3m4n5o6p7q8r9s...', (SELECT id FROM roles WHERE nombre = 'Veterinario')),
 ('Matias Silva', 'MatiVet', 'ventas@veterinaria.com', '$2y$10$U7vW8x9y0z1a2b3c4d5e6f7g8h9i0j...', (SELECT id FROM roles WHERE nombre = 'Administrativo/Vendedor'));
@@ -54,7 +55,8 @@ CREATE TABLE clientes (
     direccion VARCHAR(255),
     localidad VARCHAR(100) NOT NULL,
     ciudad VARCHAR(100) NOT NULL,
-    fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    activo BOOLEAN DEFAULT TRUE
 );
 
 -- 6. Insertamos clientes ficticios
