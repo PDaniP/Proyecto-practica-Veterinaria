@@ -1,6 +1,6 @@
 import mascotasModel from '../models/mascotas.model.js';
 
-const { añadirMascotaADB, obtenerListaMascotas, editarMascotaADB, eliminarMascotaADB } = mascotasModel;
+const { añadirMascotaADB, obtenerListaMascotas, editarMascotaADB, eliminarMascotaADB, obtenerVacunas, obtenerConsultas, obtenerAntecedentes, datosMascota, añadirVacuna, añadirConsulta, añadirAntecedente } = mascotasModel;
 
 const listaMascotas = async (req, res) => {
     try {
@@ -63,9 +63,56 @@ const eliminarMascota = async (req, res) => {
     }
 }
 
+const historiaClinica = async (req, res) => {
+    try {
+        const { id } = req.params;
+        if(!id) {
+            return res.status(400).json({ message: 'Falta el ID de la mascota' });
+        }
+        const datos = await datosMascota(id);
+        const vacunas = await obtenerVacunas(id);
+        const consultas = await obtenerConsultas(id);
+        const antecedentes = await obtenerAntecedentes(id);
+        res.status(200).json({ message: 'Historia clínica obtenida correctamente', historiaClinica: { nombre: datos.nombre, especie: datos.especie, raza: datos.raza, vacunas, consultas, antecedentes } });
+    } catch (error) {
+        res.status(500).json({ message: 'Error al obtener la historia clínica', error });
+    }
+}
+
+/*const actualizarHistoriaClinica = async (req, res) => {
+    try {
+        const { id } = req.params;
+        if(!id) {
+            return res.status(400).json({ message: 'Falta el ID de la mascota' });
+        }
+        const { vacunas, consultas, antecedentes } = req.body;
+        if(vacunas) {
+            for(const vacuna of vacunas) {
+                await añadirVacuna({ id_mascota: id, ...vacuna });
+            }
+        }
+        if(consultas) {
+            for(const consulta of consultas) {
+                await añadirConsulta({ id_mascota: id, ...consulta });
+            }
+        }
+        if(antecedentes) {
+            for(const antecedente of antecedentes) {
+                await añadirAntecedente({ id_mascota: id, ...antecedente });
+            }
+        }
+        res.status(200).json({ message: 'Historia clínica actualizada correctamente' });
+    } catch (error) {
+        res.status(500).json({ message: 'Error al actualizar la historia clínica', error });
+    }
+}*/
+
+
 export default {
     listaMascotas,
     añadirMascota,
     editarMascota,
-    eliminarMascota
+    eliminarMascota,
+    historiaClinica,
+    //actualizarHistoriaClinica
 };
