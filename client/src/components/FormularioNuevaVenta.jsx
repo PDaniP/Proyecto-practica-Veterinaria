@@ -443,7 +443,7 @@ const formStyles = `
 }
 
 .field label {
-  width: 140px
+  width: 140px;
   text-align: right;
   font-size: 12px;
   font-weight: 500;
