@@ -52,10 +52,9 @@ export default function FormularioNuevaMascota({ onClose }) {
     setBusquedaDueño("");
     setIdCliente("");
 
-    // cambiar el uso de la id cuando arregle la tabla, por el id 0
     if (tipo === "sin-dueño") {
       setDueño("sin dueño");
-      setIdCliente(6);
+      setIdCliente(2);
     } else {
       setDueño("");
     }

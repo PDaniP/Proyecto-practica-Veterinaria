@@ -194,14 +194,14 @@ export default function FormularioNuevaVenta({ onClose, onVentaRegistrada }) {
                 setTipoCliente(tipo);
                 setBusqueda("");
 
-                // cambiar el uso de la id cuando arregle la tabla, por el id 1
+                
                 if (tipo === "generico") {
                   const clienteGeneral = clientes.find(
-                    (cliente) => Number(cliente.id) === 7,
+                    (cliente) => Number(cliente.id) === 1,
                   );
 
                   setClienteSeleccionado(
-                    clienteGeneral ?? { id: 7, nombre: "Cliente", apellido: "General" },
+                    clienteGeneral ?? { id: 1, nombre: "Cliente", apellido: "General" },
                   );
                   return;
                 }
