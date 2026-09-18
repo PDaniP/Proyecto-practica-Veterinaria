@@ -38,7 +38,7 @@ INSERT INTO roles (nombre, descripcion) VALUES
 
 -- 4. Carga de Usuarios de Prueba
 INSERT INTO usuarios (nombre, usuario, email, password_hash, id_rol) VALUES 
-('Matias Picasso', 'Matias', 'rhagis@gmail.com', '$2b$10$sGBJ.aHYMLNw8OLnSjYLlO5Gmd36SfObDw0LipcPiVfjnR4qFXGTa', (SELECT id FROM roles WHERE nombre = 'Administrativo/Vendedor'));
+('Matias Picasso', 'Matias', 'rhagis@gmail.com', '$2b$10$sGBJ.aHYMLNw8OLnSjYLlO5Gmd36SfObDw0LipcPiVfjnR4qFXGTa', (SELECT id FROM roles WHERE nombre = 'Administrativo/Vendedor')),
 ('Carlos Gómez', 'CarlitosVet', 'admin@veterinaria.com', 'admin123', (SELECT id FROM roles WHERE nombre = 'Administrador')),
 ('Dra. Laura Martínez', 'LauritaVet', 'laura.vet@veterinaria.com', '$2y$10$S9bB7X4mF8gH2jK1l3m4n5o6p7q8r9s...', (SELECT id FROM roles WHERE nombre = 'Veterinario')),
 ('Matias Silva', 'MatiVet', 'ventas@veterinaria.com', '$2y$10$U7vW8x9y0z1a2b3c4d5e6f7g8h9i0j...', (SELECT id FROM roles WHERE nombre = 'Administrativo/Vendedor'));
@@ -193,3 +193,109 @@ CREATE TABLE mascotas (
 INSERT INTO mascotas (id_cliente, nombre, especie, raza, fecha_nacimiento, peso, genero, alergias, observaciones, numero_chip) VALUES 
 ((SELECT id FROM clientes WHERE dni = '38444555' LIMIT 1), 'Roko', 'Perro', 'Perro', '2020-05-15', 20.50, 'Macho', 'Ninguna, es una bestia', 'Le falta un ojo', '012345678912345'),
 ((SELECT id FROM clientes WHERE dni = '40111222' LIMIT 1), 'Michi', 'Gato', 'Gato', '2022-11-10', 3.80, 'Hembra', 'Alergia a la penicilina', 'Le falta un pie', '123456789012345');
+-- 18. Tabla de Antecedentes Médicos (patologías previas, cirugías, condiciones crónicas)
+CREATE TABLE antecedentes (
+    id SERIAL PRIMARY KEY,
+    id_mascota INT NOT NULL,
+    tipo VARCHAR(50) NOT NULL, -- 'Quirúrgico', 'Enfermedad Crónica', 'Hereditario', 'Traumatismo'
+    descripcion TEXT NOT NULL,
+    fecha_diagnostico DATE,
+    fecha_registro TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_antecedente_mascota FOREIGN KEY (id_mascota) 
+        REFERENCES mascotas(id) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+-- 19. Tabla de Consultas Médicas
+CREATE TABLE consultas (
+    id SERIAL PRIMARY KEY,
+    id_mascota INT NOT NULL, -- Referencia a la mascota que se atiende
+    id_veterinario INT NOT NULL, -- Referencia a usuarios (con rol Veterinario)
+    fecha_consulta TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    motivo TEXT NOT NULL,
+    peso_actual DECIMAL(5,2), -- Peso tomado en la sesión (para la evolución del paciente) - Podría también enviarse a la tabla de mascotas para actualizar el peso registrado
+    temperatura DECIMAL(4,1), -- Ej: 38.5 °C
+    diagnostico TEXT NOT NULL,
+    tratamiento TEXT NOT NULL,
+    observaciones TEXT,
+    CONSTRAINT fk_consulta_mascota FOREIGN KEY (id_mascota) 
+        REFERENCES mascotas(id) ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT fk_consulta_veterinario FOREIGN KEY (id_veterinario) 
+        REFERENCES usuarios(id) ON DELETE RESTRICT ON UPDATE CASCADE
+);
+
+-- 20. Tabla de Vacunas y Desparasitaciones aplicadas
+CREATE TABLE vacunas (
+    id SERIAL PRIMARY KEY,
+    id_mascota INT NOT NULL, -- Referencia a la mascota a la que se le aplica la vacuna
+    id_veterinario INT NOT NULL, -- Referencia a usuarios (con rol Veterinario)
+    id_lote INT, -- Opcional: vincula directamente con el lote de stock que usaste / Llamar desde la tabla de lotes para control de vencimientos y trazabilidad
+    nombre_vacuna VARCHAR(100) NOT NULL, -- Ej: 'Quíntuple Canina', 'Antirrábica'
+    fecha_aplicacion DATE NOT NULL DEFAULT CURRENT_DATE,
+    proxima_dosis DATE, -- Clave para alertas y recordatorios
+    observaciones TEXT,
+    CONSTRAINT fk_vacuna_mascota FOREIGN KEY (id_mascota) 
+        REFERENCES mascotas(id) ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT fk_vacuna_veterinario FOREIGN KEY (id_veterinario) 
+        REFERENCES usuarios(id) ON DELETE RESTRICT ON UPDATE CASCADE,
+    CONSTRAINT fk_vacuna_lote FOREIGN KEY (id_lote)  -- Si la vacuna se aplicó desde un lote de stock, se registra el lote para control de vencimientos y trazabilidad
+        REFERENCES lotes(id) ON DELETE SET NULL ON UPDATE CASCADE
+);
+-- 21. Tabla de Estudios Adjuntos (imágenes, radiografías, análisis de laboratorio, etc.) - NO CONTEMPLADA EN EL SPRINT 5, PERO SE DEJA LA ESTRUCTURA PARA FUTURO DESARROLLO
+CREATE TABLE estudios_adjuntos (
+    id SERIAL PRIMARY KEY,
+    id_consulta INT NOT NULL,
+    nombre_archivo VARCHAR(255) NOT NULL, -- Nombre descriptivo o de subida
+    url_archivo VARCHAR(255) NOT NULL,    -- Ej: '/uploads/consultas/rx-torax-123.jpg'
+    tipo_archivo VARCHAR(50),             -- Ej: 'image/jpeg', 'application/pdf' -- Se maneja desde el front con el FormData y en el back se usa el middleware multer para validar el tipo de archivo
+    fecha_subida TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_estudio_consulta FOREIGN KEY (id_consulta) 
+        REFERENCES consultas(id) ON DELETE CASCADE ON UPDATE CASCADE
+);
+-- 22. Antecedentes de prueba
+INSERT INTO antecedentes (id_mascota, tipo, descripcion, fecha_diagnostico) VALUES
+((SELECT id FROM mascotas WHERE nombre = 'Roko' LIMIT 1), 'Traumatismo', 'Pérdida de ojo izquierdo por accidente previo.', '2023-04-10'),
+((SELECT id FROM mascotas WHERE nombre = 'Michi' LIMIT 1), 'Alergia', 'Reacción alérgica severa a betalactámicos (Penicilina).', '2024-01-15');
+
+-- 23. Consultas de prueba
+INSERT INTO consultas (id_mascota, id_veterinario, motivo, peso_actual, temperatura, diagnostico, tratamiento, observaciones) VALUES
+(
+    (SELECT id FROM mascotas WHERE nombre = 'Roko' LIMIT 1),
+    (SELECT id FROM usuarios WHERE usuario = 'LauritaVet' LIMIT 1),
+    'Control anual y renguera en pata trasera derecha.',
+    20.80,
+    38.6,
+    'Contractura muscular leve sin compromiso óseo.',
+    'Reposo relativo por 5 días y Meloxicam cada 24hs.',
+    'Evoluciona favorablemente del peso.'
+),
+(
+    (SELECT id FROM mascotas WHERE nombre = 'Michi' LIMIT 1),
+    (SELECT id FROM usuarios WHERE usuario = 'LauritaVet' LIMIT 1),
+    'Falta de apetito y decaimiento general.',
+    3.65,
+    39.2,
+    'Gastroenteritis leve por ingesta de cuerpo extraño.',
+    'Dieta húmeda gastrointestinal y protector gástrico.',
+    'Controlar hidratación en 48hs.'
+);
+
+-- 24. Vacunas de prueba (usando los lotes existentes de tu stock)
+INSERT INTO vacunas (id_mascota, id_veterinario, id_lote, nombre_vacuna, fecha_aplicacion, proxima_dosis, observaciones) VALUES
+(
+    (SELECT id FROM mascotas WHERE nombre = 'Roko' LIMIT 1),
+    (SELECT id FROM usuarios WHERE usuario = 'LauritaVet' LIMIT 1),
+    (SELECT id FROM lotes WHERE codigo_lote = 'VAC-26-A' LIMIT 1),
+    'Vacuna Quíntuple Canina',
+    CURRENT_DATE,
+    CURRENT_DATE + INTERVAL '1 year',
+    'Toleró bien la aplicación sin reacciones adversas.'
+),
+(
+    (SELECT id FROM mascotas WHERE nombre = 'Michi' LIMIT 1),
+    (SELECT id FROM usuarios WHERE usuario = 'LauritaVet' LIMIT 1),
+    NULL, -- Aplicada externamente en otra clínica
+    'Triple Felina',
+    CURRENT_DATE - INTERVAL '6 month',
+    CURRENT_DATE + INTERVAL '6 month',
+    'Refuerzo colocado según libreta sanitaria previa.'
+);
