@@ -44,7 +44,7 @@ export default function Ventas() {
     setLoading(true);
 
     try {
-      const response = await axios.get(`${API_URL}/ventas/lista-ventas`);
+      const response = await axios.get(`${API_URL}/ventas/lista-ventas`, { withCredentials: true });
 
       const listaVentas = response.data.ventas || [];
 

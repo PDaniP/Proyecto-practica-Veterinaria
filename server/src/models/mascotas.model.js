@@ -7,7 +7,7 @@ const añadirMascotaADB = async (mascota) => {
 }
 
 const obtenerListaMascotas = async () => {
-    const {rows} = await db.query('SELECT * FROM mascotas');
+    const {rows} = await db.query('SELECT * FROM mascotas WHERE activo = TRUE');
     return rows;
 }
 

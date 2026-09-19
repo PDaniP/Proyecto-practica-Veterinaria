@@ -96,6 +96,7 @@ export default function FormularioNuevaMascota({ onClose }) {
       id_cliente: Number(idCliente),
       ...mascota,
       peso: null,
+      activo: true,
       numero_chip: tieneChip ? mascota.numero_chip || null : null,
     };
 

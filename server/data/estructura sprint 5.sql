@@ -58,6 +58,7 @@ CREATE TABLE clientes (
     direccion VARCHAR(255),
     localidad VARCHAR(100) NOT NULL,
     ciudad VARCHAR(100) NOT NULL,
+    activo BOOLEAN DEFAULT TRUE,
     fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 

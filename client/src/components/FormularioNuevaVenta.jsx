@@ -17,7 +17,7 @@ export default function FormularioNuevaVenta({ onClose, onVentaRegistrada }) {
   //para traer clientes desde la base de datos
   useEffect(() => {
     axios
-      .get("http://localhost:3000/clientes")
+      .get("http://localhost:3000/clientes", { withCredentials: true })
       .then((res) => setClientes(res.data.clientes))
       .catch((err) => console.error(err));
   }, []);
@@ -42,7 +42,7 @@ export default function FormularioNuevaVenta({ onClose, onVentaRegistrada }) {
   //para traer productos desde la base de datos
   useEffect(() => {
     axios
-      .get("http://localhost:3000/products")
+      .get("http://localhost:3000/products", { withCredentials: true })
       .then((res) => setProductos(res.data))
       .catch((err) => console.error(err));
   }, []);

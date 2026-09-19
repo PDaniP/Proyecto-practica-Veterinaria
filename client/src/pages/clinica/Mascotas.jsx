@@ -128,6 +128,13 @@ export default function Mascotas() {
                       Ver historia
                     </button>
                   </td>
+                  <td>
+                    {mascota.activo ? (
+                      <span className="estado-activo">Activo</span>
+                    ) : (
+                      <span className="estado-inactivo">Inactivo</span>
+                    )}
+                  </td>
                 </tr>
               ))}
             </tbody>
