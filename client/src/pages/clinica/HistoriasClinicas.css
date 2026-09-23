@@ -1,0 +1,142 @@
+.historia-clinica-page {
+  max-width: 960px;
+}
+
+.historia-clinica-header {
+  margin-bottom: 28px;
+  padding-bottom: 22px;
+  border-bottom: 1px solid var(--border);
+}
+
+.historia-clinica-header h1 {
+  margin: 0 0 8px;
+  color: var(--vet-purple);
+  font-size: clamp(2rem, 5vw, 3.5rem);
+}
+
+.historia-clinica-eyebrow {
+  margin-bottom: 8px;
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.historia-clinica-owner {
+  color: var(--text-muted);
+}
+
+.historia-clinica-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.historia-clinica-section {
+  padding: 22px;
+  border: 1px solid var(--vet-purple-border);
+  border-radius: var(--radius-sm);
+  background: var(--vet-purple-bg);
+}
+
+.historia-clinica-section h2 {
+  color: var(--vet-purple);
+}
+
+.historia-datos-lista {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  margin: 0;
+}
+
+.historia-datos-lista dt {
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.historia-datos-lista dd {
+  margin: 3px 0 0;
+  color: var(--text);
+}
+
+.historia-seccion-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.historia-seccion-heading h2 {
+  margin-bottom: 0;
+}
+
+.historia-lista,
+.historia-atenciones-lista {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.historia-lista li,
+.historia-atenciones-lista li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--vet-purple-border);
+}
+
+.historia-lista li:last-child,
+.historia-atenciones-lista li:last-child {
+  border-bottom: 0;
+}
+
+.historia-lista time,
+.historia-atenciones-lista time {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  white-space: nowrap;
+}
+
+.historia-atenciones-lista {
+  gap: 0;
+}
+
+.historia-atenciones-lista li {
+  justify-content: flex-start;
+}
+
+.historia-atenciones-lista li > time {
+  min-width: 100px;
+}
+
+.historia-atenciones-lista div {
+  display: grid;
+  gap: 3px;
+}
+
+.historia-atenciones-lista span {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+@media (max-width: 700px) {
+  .historia-clinica-grid,
+  .historia-datos-lista {
+    grid-template-columns: 1fr;
+  }
+
+  .historia-seccion-heading {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
