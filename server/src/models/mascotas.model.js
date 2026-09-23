@@ -27,7 +27,7 @@ const obtenerVacunas = async (id_mascota) => {
     return rows;
 }
 const obtenerConsultas = async (id_mascota) => {
-    const {rows} = await db.query('SELECT fecha_consulta, motivo, diagnostico, tratamiento, observaciones FROM consultas WHERE id_mascota = $1', [id_mascota]);
+    const {rows} = await db.query('SELECT consultas.id, consultas.fecha_consulta, consultas.motivo, consultas.diagnostico, consultas.tratamiento, consultas.observaciones, usuarios.nombre AS nombre_veterinario FROM consultas LEFT JOIN usuarios ON consultas.id_veterinario = usuarios.id WHERE consultas.id_mascota = $1', [id_mascota]);
     return rows;
 }
 

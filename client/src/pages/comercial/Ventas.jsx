@@ -57,7 +57,7 @@ export default function Ventas() {
         listaVentas.map(async (venta) => {
           try {
             const res = await axios.get(
-              `${API_URL}/ventas/detalles-venta/${venta.id}`,
+              `${API_URL}/ventas/detalles-venta/${venta.id}`, {withCredentials: true}
             );
 
             resumen[venta.id] = res.data.detalles || [];
@@ -71,7 +71,7 @@ export default function Ventas() {
           }
         }),
       );
-
+      
       setProductosPorVenta(resumen);
     } catch (error) {
       console.error("Error al cargar las ventas:", error);
@@ -88,6 +88,7 @@ export default function Ventas() {
     try {
       const res = await axios.get(
         `${API_URL}/ventas/detalles-venta/${venta.id}`,
+        { withCredentials: true }
       );
       setDetalleSeleccionado(res.data.detalles || []);
     } catch (error) {
@@ -182,6 +183,7 @@ export default function Ventas() {
 
   const resumenProductos = (idVenta) => {
     const detalles = productosPorVenta[idVenta];
+    
 
     if (!detalles || detalles.length === 0) return "—";
 

@@ -9,7 +9,7 @@
 }
 
 .historia-clinica-header h1 {
-  margin: 0 0 8px;
+  margin: 0;
   color: var(--vet-purple);
   font-size: clamp(2rem, 5vw, 3.5rem);
 }
@@ -24,7 +24,10 @@
 }
 
 .historia-clinica-owner {
-  color: var(--text-muted);
+  margin: 14px 0 0;
+  color: var(--vet-purple);
+  font-size: 1.1rem;
+  font-weight: 600;
 }
 
 .historia-clinica-grid {
@@ -52,15 +55,21 @@
   margin: 0;
 }
 
+.historia-datos-lista > div {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+
 .historia-datos-lista dt {
-  color: var(--text-muted);
-  font-size: 0.75rem;
-  font-weight: 700;
+  color: var(--vet-purple);
+  font-size: 0.8rem;
+  font-weight: 800;
   text-transform: uppercase;
 }
 
 .historia-datos-lista dd {
-  margin: 3px 0 0;
+  margin: 0;
   color: var(--text);
 }
 

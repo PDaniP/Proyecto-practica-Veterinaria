@@ -2,7 +2,7 @@ import db from '../config/db.js';
 
 
 const obtenerListaClientes = async () => {
-    const {rows} = await db.query('SELECT * FROM clientes WHERE activo = TRUE');
+    const {rows} = await db.query('SELECT * FROM clientes WHERE activo = TRUE AND id > 2');
     return rows;
 }
 

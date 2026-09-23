@@ -123,7 +123,7 @@ export default function Mascotas() {
                   <td>
                     <button
                       className="btn-editar"
-                      onClick={() => navigate("/historias-clinicas")}
+                      onClick={() => navigate(`/historias-clinicas/${mascota.id}`)}
                     >
                       Ver historia
                     </button>

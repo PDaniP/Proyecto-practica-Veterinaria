@@ -1,4 +1,8 @@
 -- 0. Limpieza de tablas pre-existentes
+DROP TABLE IF EXISTS estudios_adjuntos;
+DROP TABLE IF EXISTS vacunas;
+DROP TABLE IF EXISTS consultas;
+DROP TABLE IF EXISTS antecedentes;
 DROP TABLE IF EXISTS detalle_ventas;
 DROP TABLE IF EXISTS servicios;
 DROP TABLE IF EXISTS ventas;

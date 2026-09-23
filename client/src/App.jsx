@@ -31,7 +31,7 @@ function App() {
               <Route path="/ventas" element={<Ventas />} />
               <Route path="/clientes" element={<Clientes />} />
               <Route path="/mascotas" element={<Mascotas />} />
-              <Route path="/historias-clinicas" element={<HistoriasClinicas />} />
+              <Route path="/historias-clinicas/:id" element={<HistoriasClinicas />} />
             </Route>
           </Routes>
         </main>

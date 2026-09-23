@@ -1,46 +1,54 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import axios from "axios";
+import { useParams } from "react-router-dom"
 import Modal from "../../components/Modal";
+import "../comercial/Productos.css";
 import "./HistoriasClinicas.css";
 
-const historiaInicial = {
-  mascota: {
-    nombre: "Luna",
-    especie: "Canino",
-    raza: "Labrador",
-    edad: "4 años",
-    sexo: "Hembra",
-  },
-  dueño: "María González",
-  alergias: "No posee alergias conocidas",
-  vacunas: [
-    { nombre: "Antirrábica", fecha: "12/03/2025" },
-    { nombre: "Séxtuple canina", fecha: "12/03/2025" },
-    { nombre: "Bordetella", fecha: "20/06/2024" },
-  ],
-  atenciones: [
-    {
-      fecha: "12/03/2025",
-      motivo: "Control anual y vacunación",
-      veterinario: "Dra. Valentina Ruiz",
-    },
-    {
-      fecha: "20/06/2024",
-      motivo: "Consulta dermatológica",
-      veterinario: "Dr. Nicolás Pérez",
-    },
-  ],
+const formatearFecha = (fecha) => {
+  if (!fecha) return "-";
+
+  const [fechaSinHora] = fecha.split("T");
+  const [año, mes, dia] = fechaSinHora.split("-");
+
+  return dia && mes && año ? `${dia}/${mes}/${año}` : fecha;
 };
 
 export default function HistoriasClinicas() {
+  const { id } = useParams();
+  const [historia, setHistoria] = useState(null);
+  const [cargando, setCargando] = useState(true);
+  const [error, setError] = useState("");
   const [modalVacunaAbierto, setModalVacunaAbierto] = useState(false);
-  const historia = historiaInicial;
+  
+useEffect(() => {
+  const cargarHistoria = async () => {
+    try {
+      const response = await axios.get(`http://localhost:3000/mascotas/historia/${id}`, { withCredentials: true});
+      setHistoria(response.data.historiaClinica);
+    } catch (error) {
+      console.error("Error al cargar la historia clinica:", error);
+      setError("No se pudo cargar la historia clinica.");
+    } finally {
+      setCargando(false);
+    }
+  };
+  cargarHistoria();
+}, [id]);
+
+if (cargando) {
+  return <p className="productos-loading">Cargando historia clinica...</p>;
+}
+
+if (error || !historia) {
+  return <p className="productos-empty">{error || "Historia no encontrada."}</p>
+}
 
   return (
     <section className="page-shell historia-clinica-page">
       <header className="historia-clinica-header">
         <div>
-          <p className="historia-clinica-eyebrow">Registro clínico</p>
-          <h1>Historia clínica de {historia.mascota.nombre}</h1>
+          <h1>Historia clínica de {historia.nombre}</h1>
           <p className="historia-clinica-owner">Dueño: {historia.dueño}</p>
         </div>
       </header>
@@ -50,27 +58,23 @@ export default function HistoriasClinicas() {
           <h2>Datos de la mascota</h2>
           <dl className="historia-datos-lista">
             <div>
-              <dt>Nombre</dt>
-              <dd>{historia.mascota.nombre}</dd>
+              <dt>Especie:</dt>
+              <dd>{historia.especie}</dd>
             </div>
             <div>
-              <dt>Especie</dt>
-              <dd>{historia.mascota.especie}</dd>
+              <dt>Raza:</dt>
+              <dd>{historia.raza || "-"}</dd>
             </div>
             <div>
-              <dt>Raza</dt>
-              <dd>{historia.mascota.raza}</dd>
+              <dt>Edad:</dt>
+              <dd>{historia.edad}</dd>
             </div>
             <div>
-              <dt>Edad</dt>
-              <dd>{historia.mascota.edad}</dd>
+              <dt>Sexo:</dt>
+              <dd>{historia.sexo}</dd>
             </div>
             <div>
-              <dt>Sexo</dt>
-              <dd>{historia.mascota.sexo}</dd>
-            </div>
-            <div>
-              <dt>Alergias</dt>
+              <dt>Alergias:</dt>
               <dd>{historia.alergias}</dd>
             </div>
           </dl>
@@ -99,18 +103,39 @@ export default function HistoriasClinicas() {
       </div>
 
       <section className="historia-clinica-section">
-        <h2>Atenciones previas</h2>
-        <ul className="historia-atenciones-lista">
-          {historia.atenciones.map((atencion) => (
-            <li key={`${atencion.fecha}-${atencion.motivo}`}>
-              <time>{atencion.fecha}</time>
-              <div>
-                <strong>{atencion.motivo}</strong>
-                <span>{atencion.veterinario}</span>
-              </div>
-            </li>
-          ))}
-        </ul>
+        <div className="historia-seccion-heading">
+          <h2>Historial de consultas</h2>
+          <button className="btn-primary" type="button">
+            + Nueva Consulta
+          </button>
+        </div>
+        <div className="tabla-wrapper">
+          <table className="productos-tabla">
+            <thead>
+              <tr>
+                <th scope="col">Fecha</th>
+                <th scope="col">Descripción</th>
+                <th scope="col">Veterinario</th>
+              </tr>
+            </thead>
+            <tbody>
+              {historia.consultas.map((consulta) => (
+                <tr key={consulta.id}>
+                  <td>
+                    <time dateTime={consulta.fecha_consulta}>
+                      {formatearFecha(consulta.fecha_consulta)}
+                    </time>
+                  </td>
+                  <td>
+                    <strong>{consulta.motivo}</strong>
+                    
+                  </td>
+                  <td>{consulta.nombre_veterinario || "No informado"}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </section>
 
       <Modal

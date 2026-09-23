@@ -183,18 +183,22 @@
 html:has(.productos-page),
 html:has(.ventas-page),
 html:has(.mascotas-page),
+html:has(.historia-clinica-page),
 body:has(.productos-page),
 body:has(.ventas-page),
-body:has(.mascotas-page) {
+body:has(.mascotas-page),
+body:has(.historia-clinica-page) {
   scrollbar-width: none;
 }
 
 html:has(.productos-page)::-webkit-scrollbar,
 html:has(.ventas-page)::-webkit-scrollbar,
 html:has(.mascotas-page)::-webkit-scrollbar,
+html:has(.historia-clinica-page)::-webkit-scrollbar,
 body:has(.productos-page)::-webkit-scrollbar,
 body:has(.ventas-page)::-webkit-scrollbar,
-body:has(.mascotas-page)::-webkit-scrollbar {
+body:has(.mascotas-page)::-webkit-scrollbar,
+body:has(.historia-clinica-page)::-webkit-scrollbar {
   display: none;
 }
 
