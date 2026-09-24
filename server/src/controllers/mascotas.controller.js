@@ -73,7 +73,31 @@ const historiaClinica = async (req, res) => {
         const vacunas = await obtenerVacunas(id);
         const consultas = await obtenerConsultas(id);
         const antecedentes = await obtenerAntecedentes(id);
-        res.status(200).json({ message: 'Historia clínica obtenida correctamente', historiaClinica: { nombre: datos.nombre, especie: datos.especie, raza: datos.raza, vacunas, consultas, antecedentes } });
+        if (!datos) {
+    return res.status(404).json({
+        message: 'Mascota no encontrada'
+    });
+}
+
+res.status(200).json({
+    message: 'Historia clínica obtenida correctamente',
+    historiaClinica: {
+        id: datos.id,
+        nombre: datos.nombre,
+        especie: datos.especie,
+        raza: datos.raza,
+        fecha_nacimiento: datos.fecha_nacimiento,
+        sexo: datos.genero,
+        alergias: datos.alergias,
+        observaciones: datos.observaciones,
+        activo: datos.activo,
+        numero_chip: datos.numero_chip,
+        dueño: datos.id_cliente,
+        vacunas: vacunas,
+        consultas: consultas,
+        antecedentes: antecedentes
+    }
+});
     } catch (error) {
         res.status(500).json({ message: 'Error al obtener la historia clínica', error });
     }

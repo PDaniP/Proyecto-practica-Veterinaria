@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-import { useParams } from "react-router-dom"
+import { useParams } from "react-router-dom";
 import Modal from "../../components/Modal";
 import "../comercial/Productos.css";
 import "./HistoriasClinicas.css";
@@ -20,29 +20,64 @@ export default function HistoriasClinicas() {
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState("");
   const [modalVacunaAbierto, setModalVacunaAbierto] = useState(false);
-  
-useEffect(() => {
-  const cargarHistoria = async () => {
-    try {
-      const response = await axios.get(`http://localhost:3000/mascotas/historia/${id}`, { withCredentials: true});
-      setHistoria(response.data.historiaClinica);
-    } catch (error) {
-      console.error("Error al cargar la historia clinica:", error);
-      setError("No se pudo cargar la historia clinica.");
-    } finally {
-      setCargando(false);
+
+  useEffect(() => {
+    const cargarHistoria = async () => {
+      try {
+        const [historiaResponse, clientesResponse] = await Promise.all([
+          axios.get(`http://localhost:3000/mascotas/historia/${id}`, {
+            withCredentials: true,
+          }),
+          axios.get("http://localhost:3000/clientes", {
+            withCredentials: true,
+          }),
+        ]);
+
+        const historiaData = historiaResponse.data.historiaClinica;
+        const cliente = clientesResponse.data.clientes.find(
+          (item) => item.id === Number(historiaData.dueño),
+        );
+
+        setHistoria({
+          ...historiaData,
+          dueño: cliente
+            ? `${cliente.nombre} ${cliente.apellido}`
+            : "Dueño no disponible",
+        });
+      } catch (error) {
+        console.error("Error al cargar la historia clinica:", error);
+        setError("No se pudo cargar la historia clinica.");
+      } finally {
+        setCargando(false);
+      }
+    };
+    cargarHistoria();
+  }, [id]);
+
+  if (cargando) {
+    return <p className="productos-loading">Cargando historia clinica...</p>;
+  }
+
+  if (error || !historia) {
+    return (
+      <p className="productos-empty">{error || "Historia no encontrada."}</p>
+    );
+  }
+
+  const calcularEdad = (fechaNacimiento) => {
+    if (!fechaNacimiento) return "Desconocida";
+
+    const hoy = new Date();
+    const nacimiento = new Date(fechaNacimiento);
+    let edad = hoy.getFullYear() - nacimiento.getFullYear();
+    const mes = hoy.getMonth() - nacimiento.getMonth();
+
+    if (mes < 0 || (mes === 0 && hoy.getDate() < nacimiento.getDate())) {
+      edad--;
     }
+
+    return `${edad} años`;
   };
-  cargarHistoria();
-}, [id]);
-
-if (cargando) {
-  return <p className="productos-loading">Cargando historia clinica...</p>;
-}
-
-if (error || !historia) {
-  return <p className="productos-empty">{error || "Historia no encontrada."}</p>
-}
 
   return (
     <section className="page-shell historia-clinica-page">
@@ -66,16 +101,28 @@ if (error || !historia) {
               <dd>{historia.raza || "-"}</dd>
             </div>
             <div>
+              <dt>Fecha nac:</dt>
+              <dd>{formatearFecha(historia.fecha_nacimiento)}</dd>
+            </div>
+            <div>
               <dt>Edad:</dt>
-              <dd>{historia.edad}</dd>
+              <dd>{calcularEdad(historia.fecha_nacimiento)}</dd>
             </div>
             <div>
               <dt>Sexo:</dt>
               <dd>{historia.sexo}</dd>
             </div>
             <div>
+              <dt>Estado:</dt>
+              <dd>{historia.activo ? "Activo" : "Inactivo"}</dd>
+            </div>
+            <div>
               <dt>Alergias:</dt>
               <dd>{historia.alergias}</dd>
+            </div>
+            <div>
+              <dt>Observaciones:</dt>
+              <dd>{historia.observaciones || "-"}</dd>
             </div>
           </dl>
         </section>
@@ -93,9 +140,11 @@ if (error || !historia) {
           </div>
           <ul className="historia-lista">
             {historia.vacunas.map((vacuna) => (
-              <li key={`${vacuna.nombre}-${vacuna.fecha}`}>
-                <span>{vacuna.nombre}</span>
-                <time>{vacuna.fecha}</time>
+              <li key={`${vacuna.nombre_vacuna}-${vacuna.fecha_aplicacion}`}>
+                <span>{vacuna.nombre_vacuna}</span>
+                <time dateTime={vacuna.fecha_aplicacion}>
+                  {formatearFecha(vacuna.fecha_aplicacion)}
+                </time>
               </li>
             ))}
           </ul>
@@ -128,7 +177,6 @@ if (error || !historia) {
                   </td>
                   <td>
                     <strong>{consulta.motivo}</strong>
-                    
                   </td>
                   <td>{consulta.nombre_veterinario || "No informado"}</td>
                 </tr>
