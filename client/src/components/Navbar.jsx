@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { NavLink, useNavigate } from 'react-router-dom'
 import logo from '../assets/Logo Veterinaria.png'
 import axios from 'axios'
@@ -90,10 +90,18 @@ export default function Navbar() {
         ))}
       </nav>
         {mostrarBotones && (
-          <div className="user-section">
+          <button
+            type="button"
+            className="user-section"
+            onClick={() => {
+              setMenuOpen(false)
+              navigate('/perfil')
+            }}
+            aria-label="Ver perfil"
+          >
             <span className="user-avatar">{currentUser.avatar}</span>
             <span className="user-name">{currentUser.name}</span>
-          </div>
+          </button>
         )}
         {mostrarBotones && (
       <button className="logout-button" onClick={cerrarSesion}>

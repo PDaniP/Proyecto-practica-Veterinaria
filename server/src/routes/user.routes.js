@@ -12,6 +12,14 @@ router.post('/logout', validarUsuario, userController.cerrarSesion)
 
 router.get('/comprobar', userController.comprobarUsuario)
 
+router.get('/perfil', validarUsuario, userController.obtenerPerfil)
+
+router.get('/lista', validarUsuario, userController.obtenerUsuarios)
+
+router.patch('/datos/:id', validarUsuario, userController.editarDatosPropios)
+
+router.get('/roles', validarUsuario, userController.obtenerRoles)
+
 router.get('/ventas/:id_cliente', validarUsuario, obtenerRegistroVentaPorCliente)
 
 router.post('/add',  userController.crearUsuario)

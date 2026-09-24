@@ -1,0 +1,132 @@
+.panel-control-page {
+  width: 100%;
+}
+
+.panel-control-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 1.75rem;
+  flex-wrap: wrap;
+}
+
+.panel-control-toolbar h1 {
+  margin: 0;
+  color: var(--vet-purple);
+  font-size: 2rem;
+}
+
+.panel-control-search {
+  flex: 1;
+  min-width: 220px;
+  max-width: 460px;
+  height: 38px;
+  padding: 0 14px;
+  border: 1.5px solid var(--vet-purple-border);
+  border-radius: 999px;
+  outline: none;
+  background: #fff;
+  color: var(--text);
+  font-size: 0.92rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.panel-control-search:focus {
+  border-color: var(--vet-purple);
+  box-shadow: 0 0 0 3px rgba(125, 31, 153, 0.12);
+}
+
+.usuarios-tabla-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  border: 1.5px solid var(--vet-purple-border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-md);
+}
+
+.usuarios-tabla {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+  font-size: 0.91rem;
+}
+
+.usuarios-tabla thead {
+  background: var(--vet-purple);
+  color: #fff;
+}
+
+.usuarios-tabla th {
+  padding: 13px 16px;
+  text-align: left;
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.usuarios-tabla tbody tr {
+  border-bottom: 1px solid var(--vet-purple-border);
+  transition: background 0.15s ease;
+}
+
+.usuarios-tabla tbody tr:last-child {
+  border-bottom: none;
+}
+
+.usuarios-tabla tbody tr:hover {
+  background: var(--vet-purple-bg);
+}
+
+.usuarios-tabla td {
+  padding: 12px 16px;
+  color: var(--text);
+  vertical-align: middle;
+}
+
+.usuario-estado {
+  display: inline-block;
+  padding: 5px 10px;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.usuario-estado.activo {
+  background: #e8f5eb;
+  color: var(--success);
+}
+
+.usuario-estado.inactivo {
+  background: var(--danger-bg);
+  color: var(--danger);
+}
+
+.usuarios-loading,
+.usuarios-empty,
+.usuarios-error {
+  padding: 24px;
+  border-radius: var(--radius);
+  background: #fff;
+  box-shadow: var(--shadow-md);
+}
+
+.usuarios-error {
+  border: 1px solid #fecaca;
+  color: #b91c1c;
+  background: #fef2f2;
+}
+
+@media (max-width: 640px) {
+  .panel-control-toolbar h1 {
+    font-size: 1.65rem;
+  }
+
+  .panel-control-search {
+    order: 3;
+    width: 100%;
+    max-width: none;
+  }
+}

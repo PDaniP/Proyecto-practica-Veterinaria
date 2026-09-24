@@ -10,6 +10,8 @@ import Mascotas from './pages/clinica/Mascotas.jsx'
 import HistoriasClinicas from './pages/clinica/historiasClinicas.jsx'
 import Login from './pages/auth/Login.jsx'
 import { VerificacionToken } from './pages/auth/Login.jsx'
+import Perfil from './pages/auth/Perfil.jsx'
+import PanelControl from './pages/auth/PanelControl.jsx'
 import FormularioProductos from './components/FormularioProductos.jsx'
 
 
@@ -31,6 +33,8 @@ function App() {
               <Route path="/ventas" element={<Ventas />} />
               <Route path="/clientes" element={<Clientes />} />
               <Route path="/mascotas" element={<Mascotas />} />
+              <Route path="/perfil" element={<Perfil />} />
+              <Route path="/panel-control" element={<PanelControl />} />
               <Route path="/historias-clinicas/:id" element={<HistoriasClinicas />} />
             </Route>
           </Routes>
