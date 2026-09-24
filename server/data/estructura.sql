@@ -43,7 +43,6 @@ INSERT INTO roles (nombre, descripcion) VALUES
 -- 4. Carga de Usuarios de Prueba (Administrador general, Usuario: Admin, Contraseña: admin)
 INSERT INTO usuarios (nombre, usuario, email, password_hash, id_rol) VALUES 
 ('Administrador', 'Admin', 'admin@gmail.com', '$2b$10$uH0.iNNUi9hykxRX5Xg1c.BZz.iFarkF9FPCLSVEW8meVjVl4kG82', (SELECT id FROM roles WHERE nombre = 'Administrador')),
-('Pablo Picasso', 'Pablo', 'pablo@gmail.com', '$2b$10$lE101vGpb9/NGmFipsGCnO.4JNLvFvgcSKOBTpPAx25Npq42q2pdC', (SELECT id FROM roles WHERE nombre = 'Administrador')),
 ('Carlos Gómez', 'CarlitosVet', 'admin@veterinaria.com', 'admin123', (SELECT id FROM roles WHERE nombre = 'Administrador')),
 ('Dra. Laura Martínez', 'LauritaVet', 'laura.vet@veterinaria.com', '$2y$10$S9bB7X4mF8gH2jK1l3m4n5o6p7q8r9s...', (SELECT id FROM roles WHERE nombre = 'Veterinario')),
 ('Matias Silva', 'MatiVet', 'ventas@veterinaria.com', '$2y$10$U7vW8x9y0z1a2b3c4d5e6f7g8h9i0j...', (SELECT id FROM roles WHERE nombre = 'Administrativo/Vendedor'));
