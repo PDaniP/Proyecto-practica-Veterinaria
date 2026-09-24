@@ -116,7 +116,13 @@ export default function HistoriasClinicas() {
               <dt>Estado:</dt>
               <dd>{historia.activo ? "Activo" : "Inactivo"}</dd>
             </div>
-            <div>
+            
+          </dl>
+        </section>
+
+        <section className="historia-clinica-section">
+          <div className="historia-datos-lista historia-observaciones-lista">
+          <div>
               <dt>Alergias:</dt>
               <dd>{historia.alergias}</dd>
             </div>
@@ -124,30 +130,7 @@ export default function HistoriasClinicas() {
               <dt>Observaciones:</dt>
               <dd>{historia.observaciones || "-"}</dd>
             </div>
-          </dl>
-        </section>
-
-        <section className="historia-clinica-section">
-          <div className="historia-seccion-heading">
-            <h2>Vacunas</h2>
-            <button
-              className="btn-primary"
-              type="button"
-              onClick={() => setModalVacunaAbierto(true)}
-            >
-              + Nueva vacuna
-            </button>
-          </div>
-          <ul className="historia-lista">
-            {historia.vacunas.map((vacuna) => (
-              <li key={`${vacuna.nombre_vacuna}-${vacuna.fecha_aplicacion}`}>
-                <span>{vacuna.nombre_vacuna}</span>
-                <time dateTime={vacuna.fecha_aplicacion}>
-                  {formatearFecha(vacuna.fecha_aplicacion)}
-                </time>
-              </li>
-            ))}
-          </ul>
+            </div>
         </section>
       </div>
 
@@ -165,6 +148,7 @@ export default function HistoriasClinicas() {
                 <th scope="col">Fecha</th>
                 <th scope="col">Descripción</th>
                 <th scope="col">Veterinario</th>
+                <th scope="col">Detalles</th>
               </tr>
             </thead>
             <tbody>
@@ -179,6 +163,11 @@ export default function HistoriasClinicas() {
                     <strong>{consulta.motivo}</strong>
                   </td>
                   <td>{consulta.nombre_veterinario || "No informado"}</td>
+                  <td>
+                  <button className="btn-primary" type="button">
+                    Ver detalles
+                  </button>
+                  </td>
                 </tr>
               ))}
             </tbody>
