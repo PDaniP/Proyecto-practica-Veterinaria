@@ -18,6 +18,9 @@ export default function FormularioNuevaMascota({ onClose }) {
     numero_chip: "",
     observaciones: "",
   });
+  const [especies, setEspecies] = useState([]);
+  const [razas, setRazas] = useState([]);
+  const [errorEspecies, setErrorEspecies] = useState("");
 
   useEffect(() => {
     const styleId = "formulario-nueva-mascota-styles";
@@ -46,6 +49,13 @@ export default function FormularioNuevaMascota({ onClose }) {
     return nombreCompleto.toLowerCase().includes(busquedaDueño.toLowerCase());
   });
 
+  useEffect(() => {
+    axios
+      .get("http://localhost:3000/especies", { withCredentials: true })
+      .then((response) => setEspecies(response.data.especies ?? []))
+      .catch(() => setErrorEspecies("No se pudo cargar las especies"));
+  }, []);
+
   const cambiarTipoDueño = (event) => {
     const tipo = event.target.value;
     setTipoDueño(tipo);
@@ -68,8 +78,7 @@ export default function FormularioNuevaMascota({ onClose }) {
   const handleGeneroChange = (generoSeleccionado) => {
     setMascota((actual) => ({
       ...actual,
-      genero:
-        actual.genero === generoSeleccionado ? "" : generoSeleccionado,
+      genero: actual.genero === generoSeleccionado ? "" : generoSeleccionado,
     }));
   };
 
@@ -115,6 +124,34 @@ export default function FormularioNuevaMascota({ onClose }) {
     }
   };
 
+  const cambiarEspecie = async (event) => {
+    const idEspecie = event.target.value;
+    const especieSeleccionada = especies.find(
+      (especie) => String(especie.id) === idEspecie,
+    );
+
+    setMascota((actual) => ({
+      ...actual,
+      especie: especieSeleccionada?.nombre || "",
+      raza: "",
+    }));
+
+    setRazas([]);
+
+    if (!idEspecie) return;
+
+    try {
+      const response = await axios.get(
+        `http://localhost:3000/especies/${idEspecie}/razas`,
+        { withCredentials: true },
+      );
+
+      setRazas(response.data.razas ?? []);
+    } catch {
+      setRazas([]);
+    }
+  };
+
   return (
     <div className="pet-form-container">
       <div className="card">
@@ -136,28 +173,44 @@ export default function FormularioNuevaMascota({ onClose }) {
 
           <div className="field">
             <label htmlFor="especie">Especie</label>
-            <input
-              type="text"
+            <select
               className="form-control"
               id="especie"
-              name="especie"
-              value={mascota.especie}
-              onChange={handleChange}
+              value={
+                especies.find((especie) => especie.nombre === mascota.especie)
+                  ?.id
+              }
+              onChange={cambiarEspecie}
               required
-            />
+            >
+              <option value="">Seleccione una especie</option>
+              {especies.map((especie) => (
+                <option key={especie.id} value={especie.id}>
+                  {especie.nombre}
+                </option>
+              ))}
+            </select>
+            {errorEspecies && <p>{errorEspecies}</p>}
           </div>
 
           <div className="field">
             <label htmlFor="raza">Raza</label>
-            <input
-              type="text"
+            <select
               className="form-control"
               id="raza"
               name="raza"
               value={mascota.raza}
               onChange={handleChange}
+              disabled={!mascota.especie || razas.length === 0}
               required
-            />
+            >
+              <option value="">Seleccione una raza</option>
+              {razas.map((raza) => (
+                <option key={raza.id} value={raza.nombre}>
+                  {raza.nombre}
+                </option>
+              ))}
+            </select>
           </div>
 
           <div className="field sexo-field">
@@ -284,7 +337,7 @@ export default function FormularioNuevaMascota({ onClose }) {
               />
             </div>
           )}
-          
+
           <div className="field">
             <label htmlFor="observaciones">Observaciones</label>
             <textarea
