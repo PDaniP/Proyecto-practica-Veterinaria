@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { useParams } from "react-router-dom";
 import Modal from "../../components/Modal";
+import FormularioConsulta from "../../components/FormularioConsulta";
+import DetalleConsulta from "../../components/DetalleConsulta";
 import "../comercial/Productos.css";
 import "./HistoriasClinicas.css";
 
@@ -14,12 +16,35 @@ const formatearFecha = (fecha) => {
   return dia && mes && año ? `${dia}/${mes}/${año}` : fecha;
 };
 
+const estadoProximaDosis = (fecha) => {
+  if (!fecha) return "";
+
+  const [fechaSinHora] = fecha.split("T");
+  const hoy = new Date();
+  const limite = new Date();
+  limite.setDate(hoy.getDate() + 15);
+
+  const aISO = (date) => date.toISOString().slice(0, 10);
+
+  if (fechaSinHora < aISO(hoy)) return "vencida";
+  if (fechaSinHora <= aISO(limite)) return "proxima";
+  return "";
+};
+
+const porFechaDescendente = (campo) => (a, b) =>
+  String(b[campo] ?? "").localeCompare(String(a[campo] ?? ""));
+
 export default function HistoriasClinicas() {
   const { id } = useParams();
   const [historia, setHistoria] = useState(null);
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState("");
-  const [modalVacunaAbierto, setModalVacunaAbierto] = useState(false);
+  const [modalConsultaAbierto, setModalConsultaAbierto] = useState(false);
+  const [consultaSeleccionada, setConsultaSeleccionada] = useState(null);
+
+  // Cambiar este contador vuelve a pedir la historia (se usa después de guardar)
+  const [version, setVersion] = useState(0);
+  const recargarHistoria = () => setVersion((actual) => actual + 1);
 
   useEffect(() => {
     const cargarHistoria = async () => {
@@ -52,7 +77,7 @@ export default function HistoriasClinicas() {
       }
     };
     cargarHistoria();
-  }, [id]);
+  }, [id, version]);
 
   if (cargando) {
     return <p className="productos-loading">Cargando historia clinica...</p>;
@@ -78,6 +103,13 @@ export default function HistoriasClinicas() {
 
     return `${edad} años`;
   };
+
+  const vacunas = [...(historia.vacunas ?? [])].sort(
+    porFechaDescendente("fecha_aplicacion"),
+  );
+  const consultas = [...(historia.consultas ?? [])].sort(
+    porFechaDescendente("fecha_consulta"),
+  );
 
   return (
     <section className="page-shell historia-clinica-page">
@@ -115,29 +147,28 @@ export default function HistoriasClinicas() {
             <div>
               <dt>Estado:</dt>
               <dd>{historia.activo ? "Activo" : "Inactivo"}</dd>
-            </div>                      
+            </div>
           </dl>
         </section>
 
-
         <section className="historia-clinica-section">
-          <h2>Datos de la mascota</h2>
+          <h2>Datos clínicos</h2>
           <dl className="historia-datos-lista">
             <div>
               <dt>Alergias:</dt>
-              <dd>{historia.alergias}</dd>
+              <dd>{historia.alergias || "-"}</dd>
             </div>
             <div className="historia-observaciones-fila">
               <dt>Observaciones:</dt>
               <dd>{historia.observaciones || "-"}</dd>
-            </div>            
+            </div>
           </dl>
         </section>
       </div>
 
       <section className="historia-clinica-section historia-vacunas-section">
         <h2>Vacunas aplicadas</h2>
-        {historia.vacunas?.length ? (
+        {vacunas.length ? (
           <div className="historia-vacunas-wrapper">
             <table className="historia-vacunas-tabla">
               <thead>
@@ -148,13 +179,33 @@ export default function HistoriasClinicas() {
                 </tr>
               </thead>
               <tbody>
-                {historia.vacunas.map((vacuna, index) => (
-                  <tr key={`${vacuna.nombre_vacuna}-${vacuna.fecha_aplicacion}-${index}`}>
-                    <td>{vacuna.nombre_vacuna || "-"}</td>
-                    <td>{formatearFecha(vacuna.fecha_aplicacion)}</td>
-                    <td>{formatearFecha(vacuna.proxima_dosis)}</td>
-                  </tr>
-                ))}
+                {vacunas.map((vacuna, index) => {
+                  const estado = estadoProximaDosis(vacuna.proxima_dosis);
+
+                  return (
+                    <tr
+                      key={`${vacuna.nombre_vacuna}-${vacuna.fecha_aplicacion}-${index}`}
+                    >
+                      <td>{vacuna.nombre_vacuna || "-"}</td>
+                      <td>{formatearFecha(vacuna.fecha_aplicacion)}</td>
+                      <td>
+                        {vacuna.proxima_dosis ? (
+                          <span
+                            className={`historia-dosis ${
+                              estado ? `historia-dosis-${estado}` : ""
+                            }`}
+                          >
+                            {formatearFecha(vacuna.proxima_dosis)}
+                            {estado === "vencida" && " · vencida"}
+                            {estado === "proxima" && " · próxima"}
+                          </span>
+                        ) : (
+                          "-"
+                        )}
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
@@ -166,48 +217,79 @@ export default function HistoriasClinicas() {
       <section className="historia-clinica-section">
         <div className="historia-seccion-heading">
           <h2>Historial de consultas</h2>
-          <button className="btn-primary" type="button">
+          <button
+            className="btn-primary"
+            type="button"
+            onClick={() => setModalConsultaAbierto(true)}
+          >
             + Nueva Consulta
           </button>
         </div>
-        <div className="tabla-wrapper">
-          <table className="productos-tabla">
-            <thead>
-              <tr>
-                <th scope="col">Fecha</th>
-                <th scope="col">Descripción</th>
-                <th scope="col">Veterinario</th>
-                <th scope="col">Detalles</th>
-              </tr>
-            </thead>
-            <tbody>
-              {historia.consultas.map((consulta) => (
-                <tr key={consulta.id}>
-                  <td>
-                    <time dateTime={consulta.fecha_consulta}>
-                      {formatearFecha(consulta.fecha_consulta)}
-                    </time>
-                  </td>
-                  <td>
-                    <strong>{consulta.motivo}</strong>
-                  </td>
-                  <td>{consulta.nombre_veterinario || "No informado"}</td>
-                  <td>
-                  <button className="btn-primary" type="button">
-                    Ver detalles
-                  </button>
-                  </td>
+        {consultas.length ? (
+          <div className="tabla-wrapper">
+            <table className="productos-tabla">
+              <thead>
+                <tr>
+                  <th scope="col">Fecha</th>
+                  <th scope="col">Descripción</th>
+                  <th scope="col">Veterinario</th>
+                  <th scope="col">Detalles</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody>
+                {consultas.map((consulta) => (
+                  <tr key={consulta.id}>
+                    <td>
+                      <time dateTime={consulta.fecha_consulta}>
+                        {formatearFecha(consulta.fecha_consulta)}
+                      </time>
+                    </td>
+                    <td>
+                      <strong>{consulta.motivo}</strong>
+                    </td>
+                    <td>{consulta.nombre_veterinario || "No informado"}</td>
+                    <td>
+                      <button
+                        className="btn-primary"
+                        type="button"
+                        onClick={() => setConsultaSeleccionada(consulta.id)}
+                      >
+                        Ver detalles
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        ) : (
+          <p className="historia-vacunas-vacio">No hay consultas registradas.</p>
+        )}
       </section>
 
       <Modal
-        isOpen={modalVacunaAbierto}
-        onClose={() => setModalVacunaAbierto(false)}
-      />
+        isOpen={modalConsultaAbierto}
+        onClose={() => setModalConsultaAbierto(false)}
+      >
+        <FormularioConsulta
+          idMascota={historia.id}
+          nombreMascota={historia.nombre}
+          onClose={() => setModalConsultaAbierto(false)}
+          onGuardado={recargarHistoria}
+        />
+      </Modal>
+
+      <Modal
+        isOpen={consultaSeleccionada !== null}
+        onClose={() => setConsultaSeleccionada(null)}
+      >
+        {consultaSeleccionada !== null && (
+          <DetalleConsulta
+            idConsulta={consultaSeleccionada}
+            onClose={() => setConsultaSeleccionada(null)}
+          />
+        )}
+      </Modal>
     </section>
   );
 }

@@ -192,3 +192,22 @@
     flex-direction: column;
   }
 }
+
+/* Próxima dosis de vacunas */
+.historia-dosis {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.historia-dosis-vencida {
+  color: #991b1b;
+  background: #fee2e2;
+}
+
+.historia-dosis-proxima {
+  color: #92400e;
+  background: #fef3c7;
+}
