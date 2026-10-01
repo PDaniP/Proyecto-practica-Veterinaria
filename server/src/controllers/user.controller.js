@@ -18,7 +18,7 @@ const userLogin = async (req, res) => {
 
         const user = users.find(u => u.usuario === usuario);
         if (user && await bcrypt.compare(password, user.password_hash)) {
-            const token = jwt.sign({ id: user.id, usuario: user.usuario, rol: user.rol }, JWT_SECRET, { expiresIn: '1d' });
+            const token = jwt.sign({ id: user.id, usuario: user.usuario, rol: user.id_rol }, JWT_SECRET, { expiresIn: '1d' });//perdon matu cambie "rol: user.rol" por "rol: user.id_rol"
             res.cookie("token", token, {
                 httpOnly: true,
                 secure: false, 
@@ -51,6 +51,55 @@ const comprobarUsuario = (req, res) => {
         res.status(401).json({ message: 'Token inválido' });
     }
     
+};
+
+const obtenerPerfil = async (req, res) => {
+    try {
+        const usuario = await userModel.obtenerUsuarioPorId(req.user.id);
+
+        if (!usuario) {
+            return res.status(404).json({ message: 'Usuario no encontrado' });
+        }
+
+        res.status(200).json({ user: usuario });
+    } catch (error) {
+        res.status(500).json({ message: 'Error al obtener el perfil', error });
+    }
+};
+
+const obtenerUsuarios = async (req, res) => {
+    try {
+        const usuarios = await userModel.obtenerUsuarios();
+        res.status(200).json({ usuarios });
+    } catch (error) {
+        res.status(500).json({ message: 'Error al obtener los usuarios', error });
+    }
+};
+
+const editarDatosPropios = async (req, res) => {
+    try {
+        const { usuario, email, password } = req.body;
+
+        if (!usuario?.trim() || !email?.trim()) {
+            return res.status(400).json({ message: 'El usuario y el email son obligatorios' });
+        }
+
+        const password_hash = password?.trim()
+            ? await bcrypt.hash(password, 10)
+            : null;
+        const usuarioEditado = await userModel.editarDatosUsuarioADB(req.user.id, {
+            usuario: usuario.trim(),
+            email: email.trim(),
+            password_hash,
+        });
+
+        res.status(200).json({ message: 'Datos actualizados correctamente', user: usuarioEditado });
+    } catch (error) {
+        if (error.code === '23505') {
+            return res.status(409).json({ message: 'El email ya está en uso' });
+        }
+        res.status(500).json({ message: 'Error al actualizar los datos', error });
+    }
 };
 
 const cerrarSesion = (req, res) => {
@@ -107,11 +156,24 @@ const eliminarUsuario = async (req, res) => {
     }
 }; 
 
+const obtenerRoles = async (req, res) => {
+    try {
+        const roles = await userModel.obtenerRoles();
+        res.status(200).json({ roles });
+    } catch (error) {
+        res.status(500).json({ message: 'Error al obtener los roles', error });
+    }
+};
+
 export default {
     userLogin,
     comprobarUsuario,
+    obtenerPerfil,
+    obtenerUsuarios,
+    editarDatosPropios,
     cerrarSesion,
     crearUsuario,
     editarUsuario,
-    eliminarUsuario
+    eliminarUsuario,
+    obtenerRoles
 }

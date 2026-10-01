@@ -80,15 +80,61 @@
   transform: translateY(-1px);
 }
 
+.user-menu {
+  position: relative
+}
+
 .user-section {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 8px 16px;
-  background: rgba(255, 255, 255, 0.1);
+  gap: 8px;
+  border: 0;
+  padding: 8px 10px;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
   border-radius: 999px;
   border: 1px solid rgba(255, 255, 255, 0.15);
   margin-left: auto;
+}
+
+.user-section:hover {
+  opacity: 0.9;
+}
+
+.user-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 1000;
+  min-width: 190px;
+  padding: 8px 0;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+.user-dropdown-item {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 10px 16px;
+  border: 0;
+  background: transparent;
+  color: #1f2937;
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+  font: inherit;
+}
+
+.user-dropdown-item:hover {
+  background: #f3f4f6;
+}
+
+.logout-item {
+  border-top: 1px solid #e5e7eb;
 }
 
 .user-avatar {
@@ -183,18 +229,22 @@
 html:has(.productos-page),
 html:has(.ventas-page),
 html:has(.mascotas-page),
+html:has(.historia-clinica-page),
 body:has(.productos-page),
 body:has(.ventas-page),
-body:has(.mascotas-page) {
+body:has(.mascotas-page),
+body:has(.historia-clinica-page) {
   scrollbar-width: none;
 }
 
 html:has(.productos-page)::-webkit-scrollbar,
 html:has(.ventas-page)::-webkit-scrollbar,
 html:has(.mascotas-page)::-webkit-scrollbar,
+html:has(.historia-clinica-page)::-webkit-scrollbar,
 body:has(.productos-page)::-webkit-scrollbar,
 body:has(.ventas-page)::-webkit-scrollbar,
-body:has(.mascotas-page)::-webkit-scrollbar {
+body:has(.mascotas-page)::-webkit-scrollbar,
+body:has(.historia-clinica-page)::-webkit-scrollbar {
   display: none;
 }
 

@@ -84,10 +84,12 @@ const objeterRegistroVentaPorCliente = async (req, res) => {
     }
 }
 
+
+
 export default {
     listaClientes,
     añadirCliente,
     editarCliente,
     eliminarCliente,
-    objeterRegistroVentaPorCliente
+    objeterRegistroVentaPorCliente,
 };

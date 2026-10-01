@@ -123,10 +123,17 @@ export default function Mascotas() {
                   <td>
                     <button
                       className="btn-editar"
-                      onClick={() => navigate("/historias-clinicas")}
+                      onClick={() => navigate(`/historias-clinicas/${mascota.id}`)}
                     >
                       Ver historia
                     </button>
+                  </td>
+                  <td>
+                    {mascota.activo ? (
+                      <span className="estado-activo">Activo</span>
+                    ) : (
+                      <span className="estado-inactivo">Inactivo</span>
+                    )}
                   </td>
                 </tr>
               ))}

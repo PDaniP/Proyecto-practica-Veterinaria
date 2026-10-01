@@ -1,0 +1,192 @@
+/* Estilos compartidos: formulario de consulta, formulario de vacuna y detalle de consulta */
+
+.cf-container {
+  box-sizing: border-box;
+  width: 100%;
+}
+
+.cf-titulo {
+  margin: 0 0 4px;
+  color: var(--vet-purple, #7d1f99);
+  font-size: 1.6rem;
+  font-weight: 600;
+}
+
+.cf-subtitulo {
+  margin: 0 0 20px;
+  color: var(--text-muted, #6b7280);
+  font-size: 0.9rem;
+}
+
+.cf-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.cf-fila {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.cf-fila-3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.cf-campo {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.cf-campo label {
+  color: #374151;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.cf-campo input,
+.cf-campo select,
+.cf-campo textarea {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 10px 12px;
+  color: #111;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  background: #f9fafb;
+  font: inherit;
+  font-size: 0.9rem;
+}
+
+.cf-campo textarea {
+  min-height: 80px;
+  resize: vertical;
+}
+
+.cf-campo input:focus,
+.cf-campo select:focus,
+.cf-campo textarea:focus {
+  outline: none;
+  border-color: #8b5cf6;
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.16);
+}
+
+.cf-ayuda {
+  margin: 0;
+  color: var(--text-muted, #6b7280);
+  font-size: 0.78rem;
+}
+
+.cf-obligatorio {
+  color: #b91c1c;
+}
+
+/* Bloque opcional de vacuna dentro de la consulta */
+.cf-vacuna-bloque {
+  padding: 16px;
+  border: 1px solid var(--vet-purple-border, #e3c7ec);
+  border-radius: 10px;
+  background: var(--vet-purple-bg, #faf3fc);
+}
+
+.cf-vacuna-toggle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+  color: var(--vet-purple, #7d1f99);
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.cf-vacuna-toggle input {
+  width: 17px;
+  height: 17px;
+  accent-color: #534ab7;
+}
+
+.cf-vacuna-campos {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-top: 16px;
+}
+
+.cf-error {
+  margin: 0;
+  padding: 10px 12px;
+  color: #991b1b;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  background: #fef2f2;
+  font-size: 0.85rem;
+}
+
+.cf-acciones {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 6px;
+}
+
+.cf-btn-cancelar {
+  height: 38px;
+  padding: 0 20px;
+  color: #374151;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  background: #fff;
+  font-size: 0.92rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.cf-btn-cancelar:hover {
+  background: #f3f4f6;
+}
+
+.cf-form button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Detalle de consulta */
+.cf-detalle {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  margin: 0;
+}
+
+.cf-detalle > div {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.cf-detalle dt {
+  color: var(--vet-purple, #7d1f99);
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.cf-detalle dd {
+  margin: 0;
+  color: var(--text, #000);
+  white-space: pre-wrap;
+}
+
+.cf-detalle .cf-detalle-ancho {
+  grid-column: 1 / -1;
+}
+
+@media (max-width: 600px) {
+  .cf-fila,
+  .cf-fila-3,
+  .cf-detalle {
+    grid-template-columns: 1fr;
+  }
+}

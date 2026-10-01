@@ -17,7 +17,7 @@ export default function FormularioNuevaVenta({ onClose, onVentaRegistrada }) {
   //para traer clientes desde la base de datos
   useEffect(() => {
     axios
-      .get("http://localhost:3000/clientes")
+      .get("http://localhost:3000/clientes", { withCredentials: true })
       .then((res) => setClientes(res.data.clientes))
       .catch((err) => console.error(err));
   }, []);
@@ -42,7 +42,7 @@ export default function FormularioNuevaVenta({ onClose, onVentaRegistrada }) {
   //para traer productos desde la base de datos
   useEffect(() => {
     axios
-      .get("http://localhost:3000/products")
+      .get("http://localhost:3000/products", { withCredentials: true })
       .then((res) => setProductos(res.data))
       .catch((err) => console.error(err));
   }, []);
@@ -194,14 +194,14 @@ export default function FormularioNuevaVenta({ onClose, onVentaRegistrada }) {
                 setTipoCliente(tipo);
                 setBusqueda("");
 
-                // cambiar el uso de la id cuando arregle la tabla, por el id 1
+                
                 if (tipo === "generico") {
                   const clienteGeneral = clientes.find(
-                    (cliente) => Number(cliente.id) === 7,
+                    (cliente) => Number(cliente.id) === 1,
                   );
 
                   setClienteSeleccionado(
-                    clienteGeneral ?? { id: 7, nombre: "Cliente", apellido: "General" },
+                    clienteGeneral ?? { id: 1, nombre: "Cliente", apellido: "General" },
                   );
                   return;
                 }
@@ -443,7 +443,7 @@ const formStyles = `
 }
 
 .field label {
-  width: 140px
+  width: 140px;
   text-align: right;
   font-size: 12px;
   font-weight: 500;

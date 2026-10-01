@@ -8,6 +8,7 @@ import cookieParser from 'cookie-parser';
 import ventasRoutes from './routes/ventas.routes.js'
 import clientesRoutes from './routes/clientes.routes.js'
 import mascotasRoutes from './routes/mascotas.routes.js'
+import especiesRoutes from "./routes/especies.routes.js"
 
 const app = express();
 
@@ -31,6 +32,7 @@ app.use('/products', productRoutes);
 app.use('/ventas', ventasRoutes);
 app.use('/clientes', clientesRoutes);
 app.use('/mascotas', mascotasRoutes);
+app.use("/especies", especiesRoutes);
 
 const PORT = process.env.PORT || 3000;
 
