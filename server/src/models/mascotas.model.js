@@ -62,8 +62,8 @@ const añadirVacuna = async (vacuna) => {
 }
 
 const añadirConsulta = async (consulta) => {
-    const {id_mascota,id_veterinario,fecha_consulta,peso,temperatura,motivo,diagnostico,tratamiento,observaciones} = consulta;
-    const {rows} = await db.query('INSERT INTO consultas (id_mascota,id_veterinario,fecha_consulta,peso,temperatura,motivo,diagnostico,tratamiento,observaciones) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) RETURNING *', [id_mascota,id_veterinario,fecha_consulta,peso,temperatura,motivo,diagnostico,tratamiento,observaciones]);
+    const {id_mascota,id_veterinario,fecha_consulta,peso_actual,temperatura,motivo,diagnostico,tratamiento,observaciones} = consulta;
+    const {rows} = await db.query('INSERT INTO consultas (id_mascota,id_veterinario,fecha_consulta,peso_actual,temperatura,motivo,diagnostico,tratamiento,observaciones) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) RETURNING *', [id_mascota,id_veterinario,fecha_consulta,peso_actual,temperatura,motivo,diagnostico,tratamiento,observaciones]);
     return rows[0];
 }
 

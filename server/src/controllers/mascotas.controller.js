@@ -1,4 +1,5 @@
 import mascotasModel from '../models/mascotas.model.js';
+import { actualizarStockLote } from '../models/ventas.model.js';
 
 const { añadirMascotaADB, obtenerListaMascotas, editarMascotaADB, eliminarMascotaADB, obtenerVacunas, obtenerConsultas, obtenerAntecedentes, datosMascota, añadirVacuna, añadirConsulta, añadirAntecedente, obtenerVacunaPorId, obtenerConsultaPorId } = mascotasModel;
 
@@ -105,9 +106,8 @@ res.status(200).json({
 
 const registrarConsulta = async (req, res) => {
     try {
-        const {id_mascota, fecha_consulta,peso,temperatura, motivo, diagnostico, tratamiento, observaciones,id_lote,nombre_vacuna,fecha_aplicacion,proxima_dosis,observaciones_vacuna} = req.body;
-        console.log('Datos de la consulta recibidos:', req.body);
-        if(!id_mascota || !fecha_consulta || !peso || !temperatura || !motivo || !diagnostico || !tratamiento || !observaciones) {
+        const {id_mascota, fecha_consulta,peso_actual,temperatura, motivo, diagnostico, tratamiento, observaciones,id_lote,nombre_vacuna,fecha_aplicacion,proxima_dosis,observaciones_vacuna} = req.body;
+        if(!id_mascota || !fecha_consulta || !peso_actual || !temperatura || !motivo || !diagnostico || !tratamiento || !observaciones) {
             return res.status(400).json({ message: 'Faltan datos obligatorios de la consulta' });
         }
         if(id_mascota){
@@ -115,7 +115,7 @@ const registrarConsulta = async (req, res) => {
                 id_mascota,
                 id_veterinario: req.user.id,
                 fecha_consulta,
-                peso,
+                peso_actual,
                 temperatura,
                 motivo,
                 diagnostico,
@@ -123,6 +123,7 @@ const registrarConsulta = async (req, res) => {
                 observaciones
             };
             const consultaRegistrada = await añadirConsulta(consulta);
+            console.log('Consulta registrada:', consultaRegistrada);
             if(!consultaRegistrada) {
             return res.status(500).json({ message: 'Error al registrar la consulta' });
             }
@@ -140,15 +141,19 @@ const registrarConsulta = async (req, res) => {
             id_veterinario: req.user.id,
             observaciones: observaciones_vacuna
         };
+        console.log('Actualizando stock del lote:', id_lote);
+        await actualizarStockLote(id_lote, 1); // Actualiza el stock del lote restando 1 unidad
         const vacunaRegistrada = await añadirVacuna(vacuna);
+        console.log('Vacuna registrada:', vacunaRegistrada);
         if(!vacunaRegistrada) {
             return res.status(500).json({ message: 'Error al registrar la vacuna' });
         }
         }
-        res.status(200).json({ message: 'Vacuna registrada correctamente', vacuna: vacunaRegistrada });
-        res.status(200).json({ message: 'Consulta registrada correctamente', consulta: consultaRegistrada });
+        
+        
+        res.status(200).json({ message: 'Operacion registrada correctamente'});
     } catch (error) {
-        res.status(500).json({ message: 'Error al registrar la consulta', error });
+        res.status(500).json({ message: 'Error al registrar la consulta', error: error.message });
     }
 }
 
