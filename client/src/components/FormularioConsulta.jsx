@@ -79,7 +79,7 @@ export default function FormularioConsulta({ idMascota, nombreMascota, onClose, 
     const datos = {
       id_mascota: idMascota,
       fecha_consulta: consulta.fecha_consulta,
-      peso: consulta.peso === "" ? null : Number(consulta.peso),
+      peso_actual: consulta.peso === "" ? null : Number(consulta.peso),//paso de peso a peso_actual porque el server pedia peso_actual porque el controlador lo recibe como ausente
       temperatura:
         consulta.temperatura === "" ? null : Number(consulta.temperatura),
       motivo: consulta.motivo.trim(),

@@ -31,11 +31,12 @@ const obtenerVacunaPorId = async (id_vacuna) => {
     return rows[0];
 }
 const obtenerConsultas = async (id_mascota) => {
-    const {rows} = await db.query('SELECT consultas.id, consultas.fecha_consulta, consultas.motivo, consultas.diagnostico, consultas.tratamiento, consultas.observaciones, usuarios.nombre AS nombre_veterinario FROM consultas LEFT JOIN usuarios ON consultas.id_veterinario = usuarios.id WHERE consultas.id_mascota = $1', [id_mascota]);
+    const {rows} = await db.query('SELECT consultas.id, consultas.fecha_consulta, consultas.peso_actual, consultas.temperatura, consultas.motivo, consultas.diagnostico, consultas.tratamiento, consultas.observaciones, usuarios.nombre AS nombre_veterinario FROM consultas LEFT JOIN usuarios ON consultas.id_veterinario = usuarios.id WHERE consultas.id_mascota = $1', [id_mascota]);
     return rows;
 }
 const obtenerConsultaPorId = async (id_consulta) => {
-    const {rows} = await db.query('SELECT consultas.id, consultas.fecha_consulta, consultas.motivo, consultas.diagnostico, consultas.tratamiento, consultas.observaciones, usuarios.nombre AS nombre_veterinario FROM consultas LEFT JOIN usuarios ON consultas.id_veterinario = usuarios.id WHERE consultas.id = $1', [id_consulta]);
+    //Agregue consultas.peso_actual y consultas.temperatura a la query para que devuelva esos datos tambien- Pablo
+    const {rows} = await db.query('SELECT consultas.id, consultas.fecha_consulta, consultas.peso_actual, consultas.temperatura, consultas.motivo, consultas.diagnostico, consultas.tratamiento, consultas.observaciones, usuarios.nombre AS nombre_veterinario FROM consultas LEFT JOIN usuarios ON consultas.id_veterinario = usuarios.id WHERE consultas.id = $1', [id_consulta]);
     return rows[0];
 }
 

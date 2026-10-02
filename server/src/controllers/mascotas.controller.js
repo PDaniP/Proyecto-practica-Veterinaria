@@ -107,7 +107,8 @@ res.status(200).json({
 const registrarConsulta = async (req, res) => {
     try {
         const {id_mascota, fecha_consulta,peso_actual,temperatura, motivo, diagnostico, tratamiento, observaciones,id_lote,nombre_vacuna,fecha_aplicacion,proxima_dosis,observaciones_vacuna} = req.body;
-        if(!id_mascota || !fecha_consulta || !peso_actual || !temperatura || !motivo || !diagnostico || !tratamiento || !observaciones) {
+        //Voy a quitar !temperatura y !observaciones porque no son "obligatorios" en el formulario y bloquean la creacion- Pablo
+        if(!id_mascota || !fecha_consulta || !peso_actual || !motivo || !diagnostico || !tratamiento) {
             return res.status(400).json({ message: 'Faltan datos obligatorios de la consulta' });
         }
         if(id_mascota){
