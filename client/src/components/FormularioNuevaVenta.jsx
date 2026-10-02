@@ -183,8 +183,8 @@ export default function FormularioNuevaVenta({ onClose, onVentaRegistrada }) {
         <h2 className="card-title">Nueva Venta</h2>
 
         <form className="form">
-          <div className="field">
-            <label htmlFor="cliente">Cliente</label>
+          <div className="field cliente-field">
+            <label htmlFor="cliente">Cliente:</label>
 
             <select
               id="cliente"
@@ -406,7 +406,6 @@ const formStyles = `
   align-items: flex-start;
   justify-content: center;
   padding: 110px 20px 20px 20px;
-  box-sizing: border-box;
 }
 
 .card {
@@ -433,7 +432,11 @@ const formStyles = `
 .form {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 10px;
+}
+
+.cliente-field + .cliente-seleccionado {
+  margin-top: -12px;
 }
 
 .field {
@@ -444,8 +447,8 @@ const formStyles = `
 
 .field label {
   width: 140px;
-  text-align: right;
-  font-size: 12px;
+  text-align: left;
+  font-size: 16px;
   font-weight: 500;
   color: #000000;
 }
@@ -458,7 +461,7 @@ const formStyles = `
   border-radius: 8px;
   border: 1px solid #e5e7eb;
   background: #f9fafb;
-  padding: 10px 12px;
+  padding: 10px 10px;
   font-size: 13px;
 }
 
@@ -479,18 +482,18 @@ const formStyles = `
 
 .selected-info {
   margin: 0;
-  padding: 10px 12px;
+  padding: 10px 10px;
   border-radius: 8px;
   background: #f5f3ff;
   color: #000000;
-  font-size: 13px;
+  font-size: 16px;
 }
 
 .cliente-seleccionado {
   display: flex;
   align-items: center;
   gap: 10px; 
-  margin-top: 10px;
+  margin-top: 0px;
 }
 
 
@@ -698,6 +701,16 @@ const formStyles = `
 
   .btn {
     width: 100%;
+  }
+
+  .field {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .field label {
+    width: auto;
+    text-align: left;
   }
 }
 `;
