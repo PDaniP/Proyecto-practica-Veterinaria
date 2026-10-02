@@ -49,7 +49,6 @@ const añadirLote = async (req,res) => {
 const editarProducto = async (req,res) => {
     const{precio_costo,precio_venta, stock_minimo} = req.body
     const {id} = req.params
-    console.log(precio_costo,precio_venta,stock_minimo,id)
     if(!precio_costo || !precio_venta || !stock_minimo){
         return res.status(401).json({message:"Error al añadir, existen campos vacios"})
     }
@@ -96,7 +95,6 @@ const listaCategorias = async (req,res) => {
 
 const listaLotes = async (req,res) => {
         const datosLoteYProductos = await productModel.obtenerLoteConProducto()
-        console.log(datosLoteYProductos)
         if(!datosLoteYProductos || datosLoteYProductos.length < 1){
             return res.status(401).json({message:"No existen datos"})
     }
