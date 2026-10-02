@@ -111,6 +111,11 @@ export default function HistoriasClinicas() {
     porFechaDescendente("fecha_consulta"),
   );
 
+  const limitarTexto = (nombre) => {
+    const texto = nombre || "-";
+    return texto.length > 50 ? `${texto.slice(0, 49)}…` : texto;
+  };
+
   return (
     <section className="page-shell historia-clinica-page">
       <header className="historia-clinica-header">
@@ -171,6 +176,11 @@ export default function HistoriasClinicas() {
         {vacunas.length ? (
           <div className="historia-vacunas-wrapper">
             <table className="historia-vacunas-tabla">
+              <colgroup>
+                <col className="historia-vacunas-col-nombre" />
+                <col className="historia-vacunas-col-fecha" />
+                <col className="historia-vacunas-col-proxima" />
+              </colgroup>
               <thead>
                 <tr>
                   <th scope="col">Vacuna</th>
@@ -186,7 +196,9 @@ export default function HistoriasClinicas() {
                     <tr
                       key={`${vacuna.nombre_vacuna}-${vacuna.fecha_aplicacion}-${index}`}
                     >
-                      <td>{vacuna.nombre_vacuna || "-"}</td>
+                      <td title={vacuna.nombre_vacuna || ""}>
+                        {limitarTexto(vacuna.nombre_vacuna)}
+                      </td>
                       <td>{formatearFecha(vacuna.fecha_aplicacion)}</td>
                       <td>
                         {vacuna.proxima_dosis ? (
@@ -227,11 +239,17 @@ export default function HistoriasClinicas() {
         </div>
         {consultas.length ? (
           <div className="tabla-wrapper">
-            <table className="productos-tabla">
+            <table className="productos-tabla historia-consultas-tabla">
+              <colgroup>
+                <col className="consultas-col-fecha" />
+                <col className="consultas-col-motivo" />
+                <col className="consultas-col-veterinario" />
+                <col className="consultas-col-detalles" />
+              </colgroup>
               <thead>
                 <tr>
                   <th scope="col">Fecha</th>
-                  <th scope="col">Descripción</th>
+                  <th scope="col">Motivo</th>
                   <th scope="col">Veterinario</th>
                   <th scope="col">Detalles</th>
                 </tr>
@@ -244,8 +262,8 @@ export default function HistoriasClinicas() {
                         {formatearFecha(consulta.fecha_consulta)}
                       </time>
                     </td>
-                    <td>
-                      <strong>{consulta.motivo}</strong>
+                    <td title={consulta.motivo || ""}>
+                      <strong>{limitarTexto(consulta.motivo, 60)}</strong>
                     </td>
                     <td>{consulta.nombre_veterinario || "No informado"}</td>
                     <td>
@@ -263,7 +281,9 @@ export default function HistoriasClinicas() {
             </table>
           </div>
         ) : (
-          <p className="historia-vacunas-vacio">No hay consultas registradas.</p>
+          <p className="historia-vacunas-vacio">
+            No hay consultas registradas.
+          </p>
         )}
       </section>
 

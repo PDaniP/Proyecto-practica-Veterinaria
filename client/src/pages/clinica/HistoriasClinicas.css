@@ -93,12 +93,22 @@
   width: 100%;
   border-collapse: collapse;
   text-align: left;
+  table-layout: fixed;
 }
 
 .historia-vacunas-tabla th,
 .historia-vacunas-tabla td {
   padding: 10px 12px;
   border-bottom: 1px solid var(--vet-purple-border);
+}
+
+.historia-vacunas-col-nombre {
+  width: 60%;
+}
+
+.historia-vacunas-col-fecha,
+.historia-vacunas-col-proxima {
+  width: 20%;
 }
 
 .historia-vacunas-tabla th {
@@ -179,6 +189,27 @@
 .historia-atenciones-lista span {
   color: var(--text-muted);
   font-size: 0.9rem;
+}
+
+.historia-consultas-tabla {
+  width: 100%;
+  table-layout: fixed;
+}
+
+.consultas-col-fecha {
+  width: 15%;
+}
+
+.consultas-col-motivo {
+  width: 50%;
+}
+
+.consultas-col-veterinario {
+  width: 15%;
+}
+
+.consultas-col-detalles {
+  width: 20%;
 }
 
 @media (max-width: 700px) {
