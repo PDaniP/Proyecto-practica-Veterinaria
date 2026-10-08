@@ -4,10 +4,9 @@ import CamposVacuna from "./CamposVacuna.jsx";
 import {
   hoy,
   vacunaVacia,
-  prepararVacuna,
-  validarVacuna,
 } from "../utils/vacuna.js";
 import "./FormulariosClinicos.css";
+import { motivosConsulta } from "../utils/motivosConsulta.js";
 
 export default function FormularioConsulta({ idMascota, nombreMascota, onClose, onGuardado }) {
   const [consulta, setConsulta] = useState({
@@ -24,8 +23,22 @@ export default function FormularioConsulta({ idMascota, nombreMascota, onClose, 
   const [error, setError] = useState("");
   const [guardando, setGuardando] = useState(false);
 
+  const motivoSeleccionado = motivosConsulta.find(
+    (motivo) => motivo.nombre === consulta.motivo
+  );
+
   const handleChange = (event) => {
     const { name, value } = event.target;
+
+    if (name === "motivo") {
+      setConsulta((actual) => ({
+        ...actual,
+        motivo: value,
+        diagnostico: "",
+      }));
+      return;
+    }
+
     setConsulta((actual) => ({ ...actual, [name]: value }));
   };
 
@@ -65,14 +78,6 @@ export default function FormularioConsulta({ idMascota, nombreMascota, onClose, 
       return;
     }
 
-    if (aplicoVacuna) {
-      const mensaje = validarVacuna(vacuna);
-      if (mensaje) {
-        setError(mensaje);
-        return;
-      }
-    }
-
     setError("");
     setGuardando(true);
 
@@ -86,7 +91,6 @@ export default function FormularioConsulta({ idMascota, nombreMascota, onClose, 
       diagnostico: consulta.diagnostico.trim(),
       tratamiento: consulta.tratamiento.trim(),
       observaciones: consulta.observaciones.trim() || null,
-      ...(aplicoVacuna ? prepararVacuna(vacuna) : {}),
     };
 
     try {
@@ -161,24 +165,32 @@ export default function FormularioConsulta({ idMascota, nombreMascota, onClose, 
           <label htmlFor="consulta-motivo">
             Motivo de la consulta <span className="cf-obligatorio">*</span>
           </label>
-          <textarea
-            id="consulta-motivo"
-            name="motivo"
-            value={consulta.motivo}
-            onChange={handleChange}
-          ></textarea>
+          <select name="motivo" id="consulta-motivo" value={consulta.motivo} onChange={handleChange}>
+            <option value="">Seleccione un motivo</option>
+            {motivosConsulta.map((motivo) => (
+              <option value={motivo.nombre} key={motivo.id}>
+                {motivo.nombre}
+              </option>
+            ))}
+          </select>
         </div>
 
         <div className="cf-campo">
           <label htmlFor="consulta-diagnostico">
             Diagnóstico <span className="cf-obligatorio">*</span>
           </label>
-          <textarea
-            id="consulta-diagnostico"
-            name="diagnostico"
-            value={consulta.diagnostico}
-            onChange={handleChange}
-          ></textarea>
+
+          <select name="diagnostico" id="consulta-diagnostico" value={consulta.diagnostico} onChange={handleChange} disabled={!motivoSeleccionado}>
+            <option value="">
+              {motivoSeleccionado ? "Seleccione un diagnostico" : "Primero seleccione un motivo"}
+            </option>
+
+            {motivoSeleccionado?.diagnosticos.map((diagnostico) => (
+              <option value={diagnostico} key={diagnostico}>
+                {diagnostico}
+              </option>
+            ))}
+          </select>
         </div>
 
         <div className="cf-campo">
@@ -211,7 +223,7 @@ export default function FormularioConsulta({ idMascota, nombreMascota, onClose, 
               checked={aplicoVacuna}
               onChange={(event) => setAplicoVacuna(event.target.checked)}
             />
-            Se aplicó una vacuna en esta consulta
+            Se usaron insumos
           </label>
 
           {aplicoVacuna && (

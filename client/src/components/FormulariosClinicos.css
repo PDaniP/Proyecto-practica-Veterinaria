@@ -40,6 +40,127 @@
   gap: 6px;
 }
 
+.cf-autocomplete {
+  position: relative;
+}
+
+.cf-sugerencias {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  left: 0;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  max-height: 180px;
+  overflow-y: auto;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.cf-sugerencia {
+  border-bottom: 1px solid #f3f4f6;
+  color: #111;
+  font-size: 0.85rem;
+}
+
+.cf-sugerencia:last-child {
+  border-bottom: none;
+}
+
+.cf-sugerencia button {
+  width: 100%;
+  padding: 10px 12px;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.cf-sugerencia button:hover {
+  background: #f9fafb;
+}
+
+.cf-insumo-tabla-contenedor {
+  margin-top: 8px;
+  overflow-x: auto;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  background: #fff;
+}
+
+.cf-insumo-tabla {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.82rem;
+  text-align: left;
+}
+
+.cf-insumo-tabla th,
+.cf-insumo-tabla td {
+  padding: 9px 10px;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.cf-insumo-tabla th {
+  color: #374151;
+  background: #f9fafb;
+  font-weight: 600;
+}
+
+.cf-insumo-tabla tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.cf-insumo-tabla tfoot th {
+  border-top: 1px solid #e5e7eb;
+  border-bottom: none;
+  background: #f9fafb;
+}
+
+.cf-insumo-cantidad {
+  box-sizing: border-box;
+  width: 48px;
+  padding: 8px 6px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  background: #fff;
+  color: #111;
+  font-size: 13px;
+  text-align: center;
+}
+
+.cf-insumo-cantidad::-webkit-inner-spin-button {
+  opacity: 1;
+  height: 20px;
+}
+
+.cf-insumo-vacio {
+  color: #6b7280;
+  text-align: center;
+}
+
+.cf-insumo-quitar {
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 999px;
+  background: #fee2e2;
+  color: #f80303;
+  cursor: pointer;
+}
+
+.cf-insumo-quitar:hover {
+  background: #fecaca;
+}
+
 .cf-campo label {
   color: #374151;
   font-size: 0.8rem;

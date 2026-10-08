@@ -1,30 +1,66 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { hoy } from "../utils/vacuna.js";
+
+const categorias_atencion = [
+  "Higiene y Cuidado Diario",
+  "Medicamentos y Fármacos",
+  "Vacunas",
+  "Descartables e Insumos Médicos",
+  "Servicios Clínicos y Estética",
+];
 
 export default function CamposVacuna({ valor, onChange, prefijo = "vacuna" }) {
-  const [lotes, setLotes] = useState([]);
-  const [errorLotes, setErrorLotes] = useState("");
+  const [categorias, setCategorias] = useState([]);
+  const [errorCategorias, setErrorCategorias] = useState("");
+  const [categoriaSeleccionada, setCategoriaSeleccionada] = useState("");
+  const [productos, setProductos] = useState([]);
+  const [errorProductos, setErrorProductos] = useState("");
+  const [busquedaProducto, setBusquedaProducto] = useState("");
+  const [mostrarSugerencias, setMostrarSugerencias] = useState(false);
+  const [productosSeleccionados, setProductosSeleccionados] = useState([]);
 
   useEffect(() => {
     axios
-      .get("http://localhost:3000/products/product/lotes", {
+      .get("http://localhost:3000/products/product/categorias", {
         withCredentials: true,
       })
-      .then((response) => setLotes(response.data.datos ?? []))
-      .catch(() => setErrorLotes("No se pudieron cargar los lotes."));
+      .then((response) => {
+        const permitidas = response.data.filter((categoria) =>
+          categorias_atencion.includes(categoria.nombre),
+        );
+
+        setCategorias(permitidas);
+      })
+      .catch(() => {
+        setErrorCategorias("No se pudieron cargar las categorías.");
+      });
+
+    axios
+      .get("http://localhost:3000/products/", {
+        withCredentials: true,
+      })
+      .then((response) => {
+        setProductos(response.data);
+      })
+      .catch(() => {
+        setErrorProductos("No se pudieron cargar los productos.");
+      });
   }, []);
 
-  const lotesDisponibles = lotes.filter((lote) => {
-    if (!lote.id) return false;
-    if (lote.categoria && lote.categoria !== "Vacunas") return false;
-    if (lote.activo === false) return false;
-    if (Number(lote.stock_actual) <= 0) return false;
-    if (lote.fecha_vencimiento && lote.fecha_vencimiento.slice(0, 10) < hoy()) {
-      return false;
-    }
-    return true;
-  });
+  const productosDeCategoria = productos.filter(
+    (producto) => String(producto.id_categoria) === categoriaSeleccionada,
+  );
+  const productosCoincidentes = productosDeCategoria.filter((producto) =>
+    producto.nombre
+      .toLowerCase()
+      .includes(busquedaProducto.trim().toLowerCase()),
+  );
+  const totalInsumos = productosSeleccionados.reduce(
+    (total, producto) =>
+      total +
+      (Number(producto.precio_venta) || 0) * (Number(producto.cantidad) || 0),
+    0,
+  );
 
   const actualizar = (cambios) => onChange({ ...valor, ...cambios });
 
@@ -33,48 +69,185 @@ export default function CamposVacuna({ valor, onChange, prefijo = "vacuna" }) {
     actualizar({ [name]: value });
   };
 
-  const elegirLote = (event) => {
-    const id = event.target.value;
-    const lote = lotesDisponibles.find((item) => String(item.id) === id);
+  const cambiarCategoria = (event) => {
+    setCategoriaSeleccionada(event.target.value);
+    setBusquedaProducto("");
+    setMostrarSugerencias(false);
+  };
 
-    actualizar({
-      id_lote: id,
-      nombre_vacuna: lote ? lote.nombre_producto : valor.nombre_vacuna,
-    });
+  const seleccionarProducto = (producto) => {
+    setProductosSeleccionados((actuales) =>
+      actuales.some((item) => item.id === producto.id)
+        ? actuales
+        : [...actuales, { ...producto, cantidad: 1 }],
+    );
+    setBusquedaProducto("");
+    setMostrarSugerencias(false);
+  };
+
+  const cambiarCantidad = (id, cantidad) => {
+    const cantidadValida = Math.max(1, Number.parseInt(cantidad, 10) || 1);
+    setProductosSeleccionados((actuales) =>
+      actuales.map((producto) =>
+        producto.id === id
+          ? { ...producto, cantidad: cantidadValida }
+          : producto,
+      ),
+    );
+  };
+
+  const quitarProducto = (id) => {
+    setProductosSeleccionados((actuales) =>
+      actuales.filter((producto) => producto.id !== id),
+    );
   };
 
   return (
     <>
       <div className="cf-campo">
-        <label htmlFor={`${prefijo}-lote`}>Lote (opcional)</label>
+        <label htmlFor={`${prefijo}-categoria`}>Tipo de insumo</label>
+
         <select
-          id={`${prefijo}-lote`}
-          value={valor.id_lote}
-          onChange={elegirLote}
+          id={`${prefijo}-categoria`}
+          value={categoriaSeleccionada}
+          onChange={cambiarCategoria}
         >
-          <option value="">Sin lote / vacuna externa</option>
-          {lotesDisponibles.map((lote) => (
-            <option key={lote.id} value={lote.id}>
-              {lote.nombre_producto} · Lote {lote.codigo_lote} · vence{" "}
-              {lote.fecha_vencimiento?.slice(0, 10)}
+          <option value="">Seleccione una categoria</option>
+          {categorias.map((categoria) => (
+            <option key={categoria.id} value={categoria.id}>
+              {categoria.nombre}
             </option>
           ))}
         </select>
-        {errorLotes && <p className="cf-ayuda">{errorLotes}</p>}
+        {errorCategorias && <p className="cf-ayuda">{errorCategorias}</p>}
+        {errorProductos && <p className="cf-ayuda">{errorProductos}</p>}
       </div>
 
       <div className="cf-campo">
         <label htmlFor={`${prefijo}-nombre`}>
-          Nombre de la vacuna <span className="cf-obligatorio">*</span>
+          Nombre del insumo <span className="cf-obligatorio">*</span>
         </label>
-        <input
-          type="text"
-          id={`${prefijo}-nombre`}
-          name="nombre_vacuna"
-          placeholder="Ej: Quíntuple Canina, Antirrábica"
-          value={valor.nombre_vacuna}
-          onChange={handleChange}
-        />
+        <div className="cf-autocomplete">
+          <input
+            type="text"
+            id={`${prefijo}-nombre`}
+            placeholder="Ej: Quíntuple Canina, Antirrábica"
+            disabled={!categoriaSeleccionada}
+            autoComplete="off"
+            value={busquedaProducto}
+            onFocus={() => setMostrarSugerencias(true)}
+            onChange={(event) => {
+              setBusquedaProducto(event.target.value);
+              setMostrarSugerencias(true);
+            }}
+          />
+
+          {mostrarSugerencias && busquedaProducto.trim() && (
+            <ul className="cf-sugerencias">
+              {productosCoincidentes.length === 0 ? (
+                <li className="cf-sugerencia">No se encontró el producto</li>
+              ) : (
+                productosCoincidentes.map((producto) => (
+                  <li key={producto.id} className="cf-sugerencia">
+                    <button type="button" onClick={() => seleccionarProducto(producto)}>
+                      {producto.nombre}
+                      {producto.marca ? ` - ${producto.marca}` : ""}
+                    </button>
+                  </li>
+                ))
+              )}
+            </ul>
+          )}
+        </div>
+      </div>
+
+      <div className="cf-insumo-tabla-contenedor">
+        <table className="cf-insumo-tabla">
+          <thead>
+            <tr>
+              <th>Tipo de insumo</th>
+              <th>Producto</th>
+              <th>Cantidad</th>
+              <th>Precio de venta</th>
+              <th>Subtotal</th>
+              <th aria-label="Acciones"></th>
+            </tr>
+          </thead>
+          <tbody>
+            {productosSeleccionados.length === 0 ? (
+              <tr>
+                <td colSpan="6" className="cf-insumo-vacio">
+                  Aún no hay productos seleccionados.
+                </td>
+              </tr>
+            ) : (
+              productosSeleccionados.map((producto) => (
+                <tr key={producto.id}>
+                  <td>
+                    {categorias.find(
+                      (categoria) =>
+                        String(categoria.id) === String(producto.id_categoria),
+                    )?.nombre || "-"}
+                  </td>
+                  <td>
+                    {producto.nombre}
+                    {producto.marca ? ` - ${producto.marca}` : ""}
+                  </td>
+                  <td>
+                    <input
+                      type="number"
+                      className="cf-insumo-cantidad"
+                      min="1"
+                      step="1"
+                      aria-label={`Cantidad de ${producto.nombre}`}
+                      value={producto.cantidad || 1}
+                      onChange={(event) =>
+                        cambiarCantidad(producto.id, event.target.value)
+                      }
+                    />
+                  </td>
+                  <td>
+                    ${(Number(producto.precio_venta) || 0).toLocaleString("es-AR", {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    })}
+                  </td>
+                  <td>
+                    ${(
+                      (Number(producto.precio_venta) || 0) *
+                      (Number(producto.cantidad) || 0)
+                    ).toLocaleString("es-AR", {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    })}
+                  </td>
+                  <td>
+                    <button
+                      type="button"
+                      className="cf-insumo-quitar"
+                      aria-label={`Quitar ${producto.nombre}`}
+                      onClick={() => quitarProducto(producto.id)}
+                    >
+                      ✕
+                    </button>
+                  </td>
+                </tr>
+              ))
+            )}
+          </tbody>
+          <tfoot>
+            <tr>
+              <th colSpan="4">Total</th>
+              <th colSpan="2">
+                $
+                {totalInsumos.toLocaleString("es-AR", {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                })}
+              </th>
+            </tr>
+          </tfoot>
+        </table>
       </div>
 
       <div className="cf-fila">
