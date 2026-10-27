@@ -50,7 +50,6 @@ INSERT INTO usuarios (nombre, usuario, email, password_hash, id_rol) VALUES
 ('Carlos Gómez', 'CarlitosVet', 'carlos.gomez@veterinaria.com', 'admin123', (SELECT id FROM roles WHERE nombre = 'Administrador')),
 ('Dra. Laura Martínez', 'LauritaVet', 'laura.vet@veterinaria.com', '$2y$10$S9bB7X4mF8gH2jK1l3m4n5o6p7q8r9s...', (SELECT id FROM roles WHERE nombre = 'Veterinario')),
 ('Matias Silva', 'MatiVet', 'ventas@veterinaria.com', '$2y$10$U7vW8x9y0z1a2b3c4d5e6f7g8h9i0j...', (SELECT id FROM roles WHERE nombre = 'Administrativo/Vendedor'));
--- 5. Tabla de clientes
 CREATE TABLE clientes (
     id SERIAL PRIMARY KEY,
     nombre VARCHAR(100) NOT NULL,
@@ -63,21 +62,22 @@ CREATE TABLE clientes (
     localidad VARCHAR(100) NOT NULL,
     ciudad VARCHAR(100) NOT NULL,
     fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    activo BOOLEAN DEFAULT TRUE
+    activo BOOLEAN DEFAULT TRUE,
+    recibe_notificaciones BOOLEAN DEFAULT FALSE -- Campo para notificaciones
 );
+
 -- 6. Insertamos clientes ficticios
-INSERT INTO clientes (nombre, apellido, dni, email, telefono, telefono_alternativo, direccion, localidad, ciudad) VALUES 
-('Consumidor', 'Final', '99999999', 'consumidor@veterinaria.com', '0000000', '0000001', 'Mostrador', 'San Pedro', 'San Pedro'),
-('sin dueño', 'sin dueño', '11111111', 'sin.dueño@veterinaria.com', '111111', '111112', 'Mostrador', 'San Pedro', 'San Pedro'),
-('Juan', 'Pérez', '38444555', 'juan.perez@gmail.com', '3329-154422', '3329-154423', 'Mitre 1230, San Pedro', 'San Pedro', 'San Pedro'),
-('María', 'Rodríguez', '40111222', 'maria.rodriguez@gmail.com', '3329-155566', '3329-155567', 'Pellegrini 450, San Pedro', 'San Pedro', 'San Pedro');
+INSERT INTO clientes (nombre, apellido, dni, email, telefono, telefono_alternativo, direccion, localidad, ciudad, recibe_notificaciones) VALUES 
+('Consumidor', 'Final', '99999999', 'consumidor@veterinaria.com', '0000000', '0000001', 'Mostrador', 'San Pedro', 'San Pedro', FALSE),
+('sin dueño', 'sin dueño', '11111111', 'sin.dueño@veterinaria.com', '111111', '111112', 'Mostrador', 'San Pedro', 'San Pedro', FALSE),
+('Juan', 'Pérez', '38444555', 'juan.perez@gmail.com', '3329-154422', '3329-154423', 'Mitre 1230', 'San Pedro', 'San Pedro', FALSE),
+('Alex', 'Galarza García', '44869923', 'alecachogalarza@live.com.ar', '3329-409514', '3329-555555', 'Veteranos de Malvinas 70', 'Río Tala', 'San Pedro', TRUE);
 -- 7. Tabla de Categorías
 CREATE TABLE categorias (
     id SERIAL PRIMARY KEY,
     nombre VARCHAR(100) NOT NULL UNIQUE,
     descripcion VARCHAR(255)
 );
-
 -- 8. Tabla de Productos e Insumos
 CREATE TABLE productos (
     id SERIAL PRIMARY KEY,
@@ -272,7 +272,7 @@ INSERT INTO mascotas (id_cliente, nombre, id_especie, id_raza, fecha_nacimiento,
     '2020-05-15', 20.50, 'Macho', 'Ninguna, es una bestia', 'Le falta un ojo', '012345678912345'
 ),
 (
-    (SELECT id FROM clientes WHERE dni = '40111222' LIMIT 1), 
+    (SELECT id FROM clientes WHERE dni = '44869923' LIMIT 1), 
     'Michi', 
     (SELECT id FROM especies WHERE nombre = 'Gato'),
     (SELECT id FROM razas WHERE nombre = 'Común Europeo / Mestizo' AND id_especie = (SELECT id FROM especies WHERE nombre = 'Gato')), 
@@ -391,11 +391,14 @@ VALUES (
 -- 25. Tabla turnos
 CREATE TABLE turnos (
     id SERIAL PRIMARY KEY,
-    nombre_contacto VARCHAR(100) NOT NULL,   -- Se usa solo si mascota_id es NULL (mascota nueva)
-    telefono_contacto VARCHAR(50) NOT NULL, -- Se usa solo si mascota_id es NULL (mascota nueva)
+    cliente_id INT REFERENCES clientes(id) ON DELETE SET NULL, -- Relación única con cliente registrado para evitar redundancia
+    nombre_contacto VARCHAR(100) NOT NULL,   -- Se usa para contacto nuevo o para el nombre particular del turno
+    telefono_contacto VARCHAR(50) NOT NULL,  -- El número al que se enviará el WhatsApp
     profesional_id INT REFERENCES usuarios(id) ON DELETE SET NULL, -- Profesional asignado (puede ser asignado después)
     fecha_hora TIMESTAMP NOT NULL, -- Fecha y hora del turno
     motivo VARCHAR(255) NOT NULL, -- Motivo de la consulta o atención
     estado VARCHAR(30) DEFAULT 'pendiente', -- 'pendiente', 'cancelado', 'completado'
-    observaciones TEXT -- Algún detalle adicional sobre el turno
+    observaciones TEXT,
+    recibe_notificaciones BOOLEAN DEFAULT FALSE, 
+    recordatorio_enviado BOOLEAN DEFAULT FALSE   
 );

@@ -1,19 +1,21 @@
 import db from '../config/db.js';
 
 const guardarTurno = async (turno) => {
-    const {nombre_contacto, telefono_contacto, profesional_id, fecha_hora,motivo, observaciones} = turno;
+    // AGREGADO: cliente_id y recibe_notificaciones
+    const {cliente_id, nombre_contacto, telefono_contacto, profesional_id, fecha_hora, motivo, observaciones, recibe_notificaciones} = turno;
     const {rows} = await db.query(
-        'INSERT INTO turnos (nombre_contacto, telefono_contacto, profesional_id, fecha_hora, motivo, observaciones) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
-        [nombre_contacto, telefono_contacto, profesional_id, fecha_hora, motivo, observaciones || null]
+        'INSERT INTO turnos (cliente_id, nombre_contacto, telefono_contacto, profesional_id, fecha_hora, motivo, observaciones, recibe_notificaciones) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *',
+        [cliente_id || null, nombre_contacto, telefono_contacto, profesional_id, fecha_hora, motivo, observaciones || null, recibe_notificaciones || false]
     );
     return rows[0];
 }
 
 const editarTurno = async (id, turno) => {
-    const {profesional_id, fecha_hora,motivo, estado, observaciones} = turno;
+    // AGREGADO: recibe_notificaciones
+    const {profesional_id, fecha_hora, motivo, estado, observaciones, recibe_notificaciones} = turno;
     const {rows} = await db.query(
-        'UPDATE turnos SET (profesional_id, fecha_hora, motivo, estado, observaciones) = ($1, $2, $3, $4, $5) WHERE id = $6 RETURNING *',
-        [profesional_id, fecha_hora, motivo, estado, observaciones || null, id]
+        'UPDATE turnos SET (profesional_id, fecha_hora, motivo, estado, observaciones, recibe_notificaciones) = ($1, $2, $3, $4, $5, $6) WHERE id = $7 RETURNING *',
+        [profesional_id, fecha_hora, motivo, estado, observaciones || null, recibe_notificaciones || false, id]
     );
     return rows[0];
 }

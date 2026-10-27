@@ -30,7 +30,6 @@ export default function FormularioTurno({
   useEffect(() => {
     if (turnoEditar) {
       const fechaHora = String(turnoEditar.fecha_hora ?? "").replace(" ", "T");
-
       const [fechaTurno, horaTurno = ""] = fechaHora.split("T");
 
       setFecha(fechaTurno);
@@ -42,6 +41,8 @@ export default function FormularioTurno({
           : String(turnoEditar.profesional_id),
       );
       setObservaciones(turnoEditar.observaciones ?? "");
+      // AGREGADO: Cargar el estado del recordatorio si estamos editando
+      setRecordatorioWhatsApp(Boolean(turnoEditar.recibe_notificaciones)); 
       setError("");
     } else {
       setNombreContacto("");
@@ -54,6 +55,7 @@ export default function FormularioTurno({
       setClienteSeleccionado(null);
       setBusquedaCliente("");
       setUsarClienteRegistrado(true);
+      setRecordatorioWhatsApp(false); // AGREGADO: Limpiar estado
       setError("");
     }
   }, [turnoEditar]);
@@ -131,11 +133,13 @@ export default function FormularioTurno({
     try {
       setGuardando(true);
 
+      // AGREGADO: Sumamos recibe_notificaciones para que viaje al backend
       const datosTurno = {
         profesional_id: profesionalId ? Number(profesionalId) : null,
         fecha_hora: `${fecha}T${hora}:00`,
         motivo: motivo.trim(),
         observaciones: observaciones.trim() || null,
+        recibe_notificaciones: recordatorioWhatsApp, 
       };
 
       if (turnoEditar) {
@@ -145,6 +149,8 @@ export default function FormularioTurno({
         });
       } else {
         await asignarTurno({
+          // AGREGADO: Mandamos el cliente_id si existe
+          cliente_id: usarClienteRegistrado && clienteSeleccionado ? clienteSeleccionado.id : null,
           nombre_contacto: nombreContacto.trim(),
           telefono_contacto: telefonoContacto.trim(),
           ...datosTurno,
@@ -332,7 +338,7 @@ export default function FormularioTurno({
           checked={recordatorioWhatsApp}
           onChange={(e) => setRecordatorioWhatsApp(e.target.checked)}
         />
-        Enviar recordatorio por WhatsApp (próximamente)
+        Enviar recordatorio por WhatsApp
       </label>
 
       {error && (

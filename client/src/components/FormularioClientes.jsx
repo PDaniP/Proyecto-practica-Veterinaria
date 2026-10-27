@@ -1,10 +1,9 @@
 import { useState, useEffect } from 'react'
-import axios from 'axios'
+import axios from 'axios' // Podés borrar esto si usás solo tu instancia 'api'
 import api from "../../config/api.js";
 
 // const API_URL = 'http://localhost:3000/clientes'
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-
 
 export default function FormularioClientes({ clienteInicial, onClose }) {
   const esEdicion = Boolean(clienteInicial)
@@ -19,6 +18,7 @@ export default function FormularioClientes({ clienteInicial, onClose }) {
     direccion: '',
     localidad: '',
     ciudad: '',
+    recibe_notificaciones: false, // Nuevo campo
   })
 
   const [errores, setErrores] = useState({})
@@ -37,13 +37,18 @@ export default function FormularioClientes({ clienteInicial, onClose }) {
         direccion: clienteInicial.direccion || '',
         localidad: clienteInicial.localidad || '',
         ciudad: clienteInicial.ciudad || '',
+        recibe_notificaciones: Boolean(clienteInicial.recibe_notificaciones), // Nuevo campo
       })
     }
   }, [clienteInicial])
 
   const handleChange = (e) => {
-    const { name, value } = e.target
-    setCliente((prev) => ({ ...prev, [name]: value }))
+    const { name, value, type, checked } = e.target
+    setCliente((prev) => ({ 
+      ...prev, 
+      // Si es checkbox guarda el booleano 'checked', sino el texto 'value'
+      [name]: type === 'checkbox' ? checked : value 
+    }))
   }
 
   const validar = () => {
@@ -90,6 +95,7 @@ export default function FormularioClientes({ clienteInicial, onClose }) {
           direccion: '',
           localidad: '',
           ciudad: '',
+          recibe_notificaciones: false,
         })
       }
 
@@ -245,6 +251,20 @@ export default function FormularioClientes({ clienteInicial, onClose }) {
           {errores.ciudad && <p className="error">{errores.ciudad}</p>}
         </div>
 
+        {/* NUEVO CAMPO: Checkbox de notificaciones */}
+        <div className="field checkbox-field">
+          <label htmlFor="recibe_notificaciones" className="checkbox-label">
+            <input
+              id="recibe_notificaciones"
+              type="checkbox"
+              name="recibe_notificaciones"
+              checked={cliente.recibe_notificaciones}
+              onChange={handleChange}
+            />
+            Desea recibir notificaciones por WhatsApp
+          </label>
+        </div>
+
         <button className="btn" type="submit" disabled={enviando}>
           {enviando ? 'Guardando...' : esEdicion ? 'Guardar cambios' : 'Guardar'}
         </button>
@@ -302,6 +322,30 @@ const formStyles = `
   background: #f9fafb;
   padding: 10px 12px;
   font-size: 13px;
+}
+
+/* Estilos específicos para que el checkbox quede alineado */
+.checkbox-field {
+  flex-direction: row;
+  align-items: center;
+  margin-top: 10px;
+  margin-bottom: 20px;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-size: 14px !important;
+}
+
+.checkbox-field input[type="checkbox"] {
+  flex: none; /* Para que el checkbox no intente ocupar todo el ancho */
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+  margin: 0;
 }
 
 .field .hint {

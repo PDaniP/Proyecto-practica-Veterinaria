@@ -11,9 +11,11 @@ import mascotasRoutes from './routes/mascotas.routes.js'
 import especiesRoutes from "./routes/especies.routes.js"
 import estudiosRoutes from "./routes/estudios.routes.js"
 import turnosRoutes from './routes/turnos.routes.js';
-
+import { client } from './config/whatsapp.js';
+import { iniciarCronRecordatorios } from './config/cron.js';
 const app = express();
-
+client.initialize();
+iniciarCronRecordatorios();
 app.use(cors({
   origin: [process.env.FRONTEND_URL,  
     'http://localhost:5173'
