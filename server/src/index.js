@@ -14,7 +14,9 @@ import turnosRoutes from './routes/turnos.routes.js';
 import { client } from './config/whatsapp.js';
 import { iniciarCronRecordatorios } from './config/cron.js';
 const app = express();
-client.initialize();
+client.initialize().catch(error => {
+  console.error('Error initializing WhatsApp client:', error);
+});
 iniciarCronRecordatorios();
 app.use(cors({
   origin: [process.env.FRONTEND_URL,  

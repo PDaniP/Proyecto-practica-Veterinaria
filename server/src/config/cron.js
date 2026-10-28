@@ -46,5 +46,5 @@ export const iniciarCronRecordatorios = () => {
         } catch (error) {
             console.error('❌ Error ejecutando el cron de recordatorios:', error);
         }
-    });
+    }, { timezone: 'America/Argentina/Buenos_Aires' });
 };
