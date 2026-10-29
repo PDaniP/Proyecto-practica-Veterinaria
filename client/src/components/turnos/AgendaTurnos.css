@@ -45,6 +45,17 @@
     background: #f2f2f2;
 }
 
+.agenda-turnos__acciones .button-añadir {
+    border-color: #198754;
+    background: #198754;
+    color: #ffffff;
+}
+
+.agenda-turnos__acciones .button-añadir:hover {
+    border-color: #157347;
+    background: #157347;
+}
+
 
 /* Navegación entre fechas */
 .agenda-turnos__navegacion {

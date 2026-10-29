@@ -93,7 +93,7 @@ export default function AgendaTurnos({
 
 
         <div className="agenda-turnos__acciones">
-          <button type="button" onClick={onNuevoTurno}>
+          <button className="button-añadir" type="button" onClick={onNuevoTurno}>
             Añadir turno
           </button>
 
