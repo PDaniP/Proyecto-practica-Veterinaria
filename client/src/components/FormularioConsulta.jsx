@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import CamposVacuna from "./CamposVacuna.jsx";
+import NuevoMotivo from "./NuevoMotivo.jsx";
 import { hoy, vacunaVacia } from "../utils/vacuna.js";
 import "./FormulariosClinicos.css";
 //import { motivosConsulta } from "../utils/motivosConsulta.js";
@@ -70,6 +71,21 @@ export default function FormularioConsulta({ idMascota, nombreMascota, onClose, 
   );
 */
   const esVacunacion = motivoActual?.motivo === "Vacunación";
+
+  const handleMotivoCreado = (motivoNuevo) => {
+    setMotivos((actuales) =>
+      actuales.some((motivo) => String(motivo.id) === String(motivoNuevo.id))
+        ? actuales
+        : [...actuales, motivoNuevo],
+    );
+    setConsulta((actual) => ({
+      ...actual,
+      motivo_id: String(motivoNuevo.id),
+      diagnostico: "",
+      proxima_dosis: "",
+    }));
+    setErrorMotivos("");
+  };
 
   const handleChange = (event) => {
     const { name, value } = event.target;
@@ -263,15 +279,18 @@ export default function FormularioConsulta({ idMascota, nombreMascota, onClose, 
           <label htmlFor="consulta-motivo">
             Motivo de la consulta <span className="cf-obligatorio">*</span>
           </label>
-          <select name="motivo_id" id="consulta-motivo" value={consulta.motivo_id} onChange={handleChange} required>
-            <option value="">{cargandoMotivos ? "Cargando motivos..." : "Seleccione un motivo"}</option>
+          <div className="cf-motivo-control">
+            <select name="motivo_id" id="consulta-motivo" value={consulta.motivo_id} onChange={handleChange} required>
+              <option value="">{cargandoMotivos ? "Cargando motivos..." : "Seleccione un motivo"}</option>
 
-            {motivos.map((motivo) => (
-              <option value={motivo.id} key={motivo.id}>
-                {motivo.motivo}
-              </option>
-            ))}
-          </select>
+              {motivos.map((motivo) => (
+                <option value={motivo.id} key={motivo.id}>
+                  {motivo.motivo}
+                </option>
+              ))}
+            </select>
+            <NuevoMotivo onMotivoCreado={handleMotivoCreado} />
+          </div>
 
           {errorMotivos && <p className="cf-error" role="alert">{errorMotivos}</p>}
         </div>

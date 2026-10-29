@@ -295,11 +295,11 @@ CREATE TABLE diagnosticos (
     diagnostico TEXT NOT NULL
 );
 
--- AGREGADO. Crear la tabla de motivos (depende de diagnósticos)
+-- Un motivo puede crearse antes de asociarle un diagnóstico
 CREATE TABLE motivos (
     id SERIAL PRIMARY KEY,
     motivo TEXT NOT NULL,
-    id_diagnostico INTEGER NOT NULL,
+    id_diagnostico INTEGER,
     CONSTRAINT fk_motivo_diagnostico FOREIGN KEY (id_diagnostico) 
         REFERENCES diagnosticos(id) ON DELETE RESTRICT ON UPDATE CASCADE
 );

@@ -194,6 +194,93 @@
   box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.16);
 }
 
+.cf-motivo-control {
+  display: flex;
+  align-items: stretch;
+  gap: 10px;
+}
+
+.cf-motivo-control select {
+  flex: 1;
+  min-width: 0;
+}
+
+.cf-btn-nuevo-motivo {
+  flex-shrink: 0;
+  height: 38px;
+  padding: 0 14px;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #4caf50, #2e7d32);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.cf-btn-nuevo-motivo:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.cf-btn-nuevo-motivo:active {
+  transform: scale(0.96);
+}
+
+.cf-motivo-modal {
+  width: 100%;
+  max-width: 420px;
+}
+
+.cf-motivo-modal h3 {
+  margin: 0 0 16px;
+  color: var(--vet-purple, #7d1f99);
+}
+
+.cf-motivo-modal label {
+  display: block;
+  margin-bottom: 6px;
+  color: #374151;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.cf-motivo-modal input {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 10px 12px;
+  color: #111;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  background: #f9fafb;
+  font: inherit;
+  font-size: 0.9rem;
+}
+
+.cf-motivo-modal input:focus {
+  outline: none;
+  border-color: #8b5cf6;
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.16);
+}
+
+.cf-btn-guardar-motivo {
+  height: 38px;
+  padding: 0 20px;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  background: #534ab7;
+  font-size: 0.92rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.cf-btn-guardar-motivo:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 .cf-ayuda {
   margin: 0;
   color: var(--text-muted, #6b7280);
