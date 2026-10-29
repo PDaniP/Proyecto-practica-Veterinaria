@@ -26,7 +26,7 @@ export default function NuevoMotivo({ onMotivoCreado }) {
     setError("");
 
     try {
-      const { data } = await api.post("mascotas/motivos/añadir", {
+      const { data } = await api.post("mascotas/motivos/anadir", {
         motivo: motivoLimpio,
       });
 

@@ -303,6 +303,10 @@ CREATE TABLE motivos (
     CONSTRAINT fk_motivo_diagnostico FOREIGN KEY (id_diagnostico) 
         REFERENCES diagnosticos(id) ON DELETE RESTRICT ON UPDATE CASCADE
 );
+ALTER TABLE diagnosticos
+    ADD COLUMN id_motivo INTEGER
+    REFERENCES motivos(id) ON DELETE CASCADE ON UPDATE CASCADE;
+
 -- 19. Tabla de Consultas Médicas
 CREATE TABLE consultas (
     id SERIAL PRIMARY KEY,
@@ -358,6 +362,11 @@ INSERT INTO diagnosticos (diagnostico) VALUES
 INSERT INTO motivos (motivo, id_diagnostico) VALUES 
     ('Control anual y renguera en pata trasera derecha.', (SELECT id FROM diagnosticos WHERE diagnostico = 'Contractura muscular leve sin compromiso óseo.' LIMIT 1)),
     ('Falta de apetito y decaimiento general.', (SELECT id FROM diagnosticos WHERE diagnostico = 'Gastroenteritis leve por ingesta de cuerpo extraño.' LIMIT 1));
+
+UPDATE diagnosticos d
+SET id_motivo = m.id
+FROM motivos m
+WHERE m.id_diagnostico = d.id;
 
 -- Insertamos las consultas referenciando al motivo_id
 INSERT INTO consultas (id_mascota, id_veterinario, motivo_id, peso_actual, temperatura, tratamiento, observaciones) VALUES

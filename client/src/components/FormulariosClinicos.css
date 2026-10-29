@@ -219,34 +219,61 @@
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.cf-btn-nuevo-motivo:hover {
+.cf-btn-nuevo-diagnostico {
+  flex-shrink: 0;
+  height: 38px;
+  padding: 0 14px;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #4caf50, #2e7d32);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.cf-btn-nuevo-diagnostico:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.cf-btn-nuevo-motivo:hover,
+.cf-btn-nuevo-diagnostico:not(:disabled):hover {
   transform: translateY(-1px);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
-.cf-btn-nuevo-motivo:active {
+.cf-btn-nuevo-motivo:active,
+.cf-btn-nuevo-diagnostico:not(:disabled):active {
   transform: scale(0.96);
 }
 
-.cf-motivo-modal {
+.cf-motivo-modal,
+.cf-diagnostico-modal {
   width: 100%;
   max-width: 420px;
 }
 
-.cf-motivo-modal h3 {
+.cf-motivo-modal h3,
+.cf-diagnostico-modal h3 {
   margin: 0 0 16px;
   color: var(--vet-purple, #7d1f99);
 }
 
-.cf-motivo-modal label {
+.cf-motivo-modal label,
+.cf-diagnostico-modal label {
   display: block;
+  margin-top: 12px;
   margin-bottom: 6px;
   color: #374151;
   font-size: 0.85rem;
   font-weight: 600;
 }
 
-.cf-motivo-modal input {
+.cf-motivo-modal input,
+.cf-diagnostico-modal input,
+.cf-diagnostico-modal select {
   box-sizing: border-box;
   width: 100%;
   padding: 10px 12px;
@@ -258,7 +285,9 @@
   font-size: 0.9rem;
 }
 
-.cf-motivo-modal input:focus {
+.cf-motivo-modal input:focus,
+.cf-diagnostico-modal input:focus,
+.cf-diagnostico-modal select:focus {
   outline: none;
   border-color: #8b5cf6;
   box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.16);

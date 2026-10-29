@@ -103,9 +103,8 @@ const añadirDetalleConsulta = async (detalle) => {
 const obtenerDiagnosticosPorMotivo = async (motivoId) => {
     const { rows } = await db.query(
         `SELECT d.id, d.diagnostico
-         FROM motivos m
-         JOIN diagnosticos d ON d.id = m.id_diagnostico
-         WHERE m.id = $1
+         FROM diagnosticos d
+         WHERE d.id_motivo = $1
          ORDER BY d.diagnostico`,
         [motivoId]
     );

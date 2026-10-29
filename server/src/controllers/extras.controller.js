@@ -14,7 +14,12 @@ const añadirMotivo = async (req, res) => {
 const añadirDiagnosticoSegunMotivo = async (req, res) => {
     try {
         const { id_motivo, diagnostico } = req.body;
-        const nuevoDiagnostico = await extrasModel.añadirDiagnosticoSegunMotivo(id_motivo, diagnostico);
+        const motivoId = Number(id_motivo);
+        if (!Number.isInteger(motivoId) || motivoId <= 0 || typeof diagnostico !== "string" || !diagnostico.trim()) {
+            return res.status(400).json({ message: "Seleccione un motivo e ingrese un diagnóstico válido" });
+        }
+
+        const nuevoDiagnostico = await extrasModel.añadirDiagnosticoSegunMotivo(motivoId, diagnostico.trim());
         res.status(201).json(nuevoDiagnostico);
     } catch (error) {
         console.error("Error al añadir el diagnóstico:", error);

@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import CamposVacuna from "./CamposVacuna.jsx";
+import NuevoDiagnostico from "./NuevoDiagnostico.jsx";
 import NuevoMotivo from "./NuevoMotivo.jsx";
 import { hoy, vacunaVacia } from "../utils/vacuna.js";
 import "./FormulariosClinicos.css";
@@ -85,6 +86,33 @@ export default function FormularioConsulta({ idMascota, nombreMascota, onClose, 
       proxima_dosis: "",
     }));
     setErrorMotivos("");
+  };
+
+  const handleDiagnosticoCreado = (diagnosticoNuevo) => {
+    const motivoId = String(diagnosticoNuevo.id_motivo);
+
+    setMotivos((actuales) =>
+      actuales.map((motivo) =>
+        String(motivo.id) === motivoId
+          ? { ...motivo, id_diagnostico: diagnosticoNuevo.id }
+          : motivo,
+      ),
+    );
+
+    if (motivoId !== consulta.motivo_id) return;
+
+    setDiagnosticos((actuales) =>
+      actuales.some(
+        (diagnostico) => String(diagnostico.id) === String(diagnosticoNuevo.id),
+      )
+        ? actuales
+        : [...actuales, diagnosticoNuevo],
+    );
+    setConsulta((actual) => ({
+      ...actual,
+      diagnostico: diagnosticoNuevo.diagnostico,
+    }));
+    setErrorDiagnosticos("");
   };
 
   const handleChange = (event) => {
@@ -313,29 +341,36 @@ export default function FormularioConsulta({ idMascota, nombreMascota, onClose, 
         <div className="cf-campo">
           <label htmlFor="consulta-diagnostico">Diagnóstico</label>
 
-          <select
-            name="diagnostico"
-            id="consulta-diagnostico"
-            value={consulta.diagnostico}
-            onChange={handleChange}
-            disabled={!consulta.motivo_id || cargandoDiagnosticos || diagnosticos.length === 0}
-          >
-            <option value="">
-              {!consulta.motivo_id
-                ? "Primero seleccione un motivo"
-                : cargandoDiagnosticos
-                  ? "Cargando diagnósticos..."
-                  : diagnosticos.length === 0
-                    ? "No hay diagnósticos para este motivo"
-                    : "Seleccione un diagnóstico"}
-            </option>
-
-            {diagnosticos.map((diagnostico) => (
-              <option value={diagnostico.diagnostico} key={diagnostico.id}>
-                {diagnostico.diagnostico}
+          <div className="cf-motivo-control">
+            <select
+              name="diagnostico"
+              id="consulta-diagnostico"
+              value={consulta.diagnostico}
+              onChange={handleChange}
+              disabled={!consulta.motivo_id || cargandoDiagnosticos || diagnosticos.length === 0}
+            >
+              <option value="">
+                {!consulta.motivo_id
+                  ? "Primero seleccione un motivo"
+                  : cargandoDiagnosticos
+                    ? "Cargando diagnósticos..."
+                    : diagnosticos.length === 0
+                      ? "No hay diagnósticos para este motivo"
+                      : "Seleccione un diagnóstico"}
               </option>
-            ))}
-          </select>
+
+              {diagnosticos.map((diagnostico) => (
+                <option value={diagnostico.diagnostico} key={diagnostico.id}>
+                  {diagnostico.diagnostico}
+                </option>
+              ))}
+            </select>
+            <NuevoDiagnostico
+              motivos={motivos}
+              motivoActualId={consulta.motivo_id}
+              onDiagnosticoCreado={handleDiagnosticoCreado}
+            />
+          </div>
 
           {errorDiagnosticos && (
             <p className="cf-error" role="alert">
