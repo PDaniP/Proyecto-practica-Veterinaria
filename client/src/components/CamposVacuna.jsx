@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
 import api from "../../config/api.js";
 
 const categorias_atencion = [
@@ -11,8 +10,7 @@ const categorias_atencion = [
 ];
 
 export default function CamposVacuna({
-  valor,
-  onChange,
+  productosSeleccionados = [],
   onProductosChange,
   prefijo = "vacuna",
 }) {
@@ -23,7 +21,6 @@ export default function CamposVacuna({
   const [errorProductos, setErrorProductos] = useState("");
   const [busquedaProducto, setBusquedaProducto] = useState("");
   const [mostrarSugerencias, setMostrarSugerencias] = useState(false);
-  const [productosSeleccionados, setProductosSeleccionados] = useState([]);
 
   useEffect(() => {
     api
@@ -57,20 +54,6 @@ export default function CamposVacuna({
       .toLowerCase()
       .includes(busquedaProducto.trim().toLowerCase()),
   );
-  const totalInsumos = productosSeleccionados.reduce(
-    (total, producto) =>
-      total +
-      (Number(producto.precio_venta) || 0) * (Number(producto.cantidad) || 0),
-    0,
-  );
-
-  const actualizar = (cambios) => onChange({ ...valor, ...cambios });
-
-  const handleChange = (event) => {
-    const { name, value } = event.target;
-    actualizar({ [name]: value });
-  };
-
   const cambiarCategoria = (event) => {
     setCategoriaSeleccionada(event.target.value);
     setBusquedaProducto("");
@@ -78,15 +61,12 @@ export default function CamposVacuna({
   };
 
   const seleccionarProducto = (producto) => {
-    setProductosSeleccionados((actuales) => {
-      if (actuales.some((item) => item.id === producto.id)) {
-        return actuales;
-      }
+    if (productosSeleccionados.some((item) => item.id === producto.id)) return;
 
-      const nuevos = [...actuales, { ...producto, cantidad: 1 }];
-      onProductosChange?.(nuevos);
-      return nuevos;
-    });
+    onProductosChange?.([
+      ...productosSeleccionados,
+      { ...producto, cantidad: 1 },
+    ]);
 
     setBusquedaProducto("");
     setMostrarSugerencias(false);
@@ -94,25 +74,19 @@ export default function CamposVacuna({
 
   const cambiarCantidad = (id, cantidad) => {
     const cantidadValida = Math.max(1, Number.parseInt(cantidad, 10) || 1);
-
-    setProductosSeleccionados((actuales) => {
-      const nuevos = actuales.map((producto) =>
+    onProductosChange?.(
+      productosSeleccionados.map((producto) =>
         producto.id === id
           ? { ...producto, cantidad: cantidadValida }
           : producto,
-      );
-
-      onProductosChange?.(nuevos);
-      return nuevos;
-    });
+      ),
+    );
   };
 
   const quitarProducto = (id) => {
-    setProductosSeleccionados((actuales) => {
-      const nuevos = actuales.filter((producto) => producto.id !== id);
-      onProductosChange?.(nuevos);
-      return nuevos;
-    });
+    onProductosChange?.(
+      productosSeleccionados.filter((producto) => producto.id !== id),
+    );
   };
 
   return (

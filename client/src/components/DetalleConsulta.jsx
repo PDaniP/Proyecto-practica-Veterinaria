@@ -13,15 +13,43 @@ export default function DetalleConsulta({ idConsulta, onClose }) {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    api
-      .get(`mascotas/historia/consulta/${idConsulta}`)
-      .then((response) => setConsulta(response.data))
-      .catch((err) => {
-        console.error("Error al cargar el detalle de la consulta:", err);
-        setError(
-          err.response?.data?.message || "No se pudo cargar la consulta.",
+    let activo = true;
+
+    const cargarConsulta = async () => {
+      try {
+        const { data } = await api.get(
+          `mascotas/historia/consulta/${idConsulta}`,
         );
-      });
+        const insumos =
+          typeof data.insumos === "string"
+            ? JSON.parse(data.insumos)
+            : data.insumos ?? [];
+
+        if (!Array.isArray(insumos)) {
+          throw new Error("La respuesta de insumos no tiene el formato esperado.");
+        }
+
+        if (activo) {
+          setConsulta({ ...data, insumos });
+          setError("");
+        }
+      } catch (err) {
+        console.error("Error al cargar el detalle de la consulta:", err);
+        if (activo) {
+          setError(
+            err.response?.data?.message ||
+              err.message ||
+              "No se pudo cargar la consulta.",
+          );
+          setConsulta(null);
+        }
+      }
+    };
+
+    cargarConsulta();
+    return () => {
+      activo = false;
+    };
   }, [idConsulta]);
 
   return (
@@ -70,6 +98,9 @@ export default function DetalleConsulta({ idConsulta, onClose }) {
                     <li key={insumo.id}>
                       {insumo.nombre || "Insumo no disponible"}
                       {insumo.marca ? ` - ${insumo.marca}` : ""}
+                      {insumo.cantidad != null
+                        ? ` (cantidad: ${insumo.cantidad})`
+                        : ""}
                       {insumo.codigo_lote
                         ? ` (lote: ${insumo.codigo_lote})`
                         : ""}

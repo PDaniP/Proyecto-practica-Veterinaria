@@ -188,6 +188,16 @@ export default function FormularioConsulta({ idMascota, nombreMascota, onClose, 
 
       //solo se envia una fecha si el motivo es vacunacion
       proxima_dosis: esVacunacion && consulta.proxima_dosis ? consulta.proxima_dosis : null,
+      insumos: aplicoVacuna
+        ? productosSeleccionados.map((producto) => ({
+            id_producto: Number(producto.id),
+            cantidad: Number(producto.cantidad),
+            proxima_dosis:
+              esVacunacion && consulta.proxima_dosis
+                ? consulta.proxima_dosis
+                : null,
+          }))
+        : [],
     };
 
     try {
@@ -417,6 +427,7 @@ export default function FormularioConsulta({ idMascota, nombreMascota, onClose, 
               <CamposVacuna
                 valor={vacuna}
                 onChange={setVacuna}
+                productosSeleccionados={productosSeleccionados}
                 onProductosChange={setProductosSeleccionados}
                 prefijo="consulta-vacuna"
               />

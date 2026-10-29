@@ -330,6 +330,7 @@ CREATE TABLE detalle_consulta (
     id SERIAL PRIMARY KEY,
     id_consulta INTEGER NOT NULL,
     id_lote INTEGER,             -- Opcional: si proviene de un lote/insumo de stock (ej. vacuna, antibiótico)
+    cantidad INTEGER NOT NULL DEFAULT 1 CHECK (cantidad > 0),
     proxima_dosis DATE,          -- Para alertas/recordatorios de refuerzos (PUEDE SER NULL SI NO HAY REFUERZO)
     observaciones TEXT,
     CONSTRAINT fk_detalle_consulta FOREIGN KEY (id_consulta) 
