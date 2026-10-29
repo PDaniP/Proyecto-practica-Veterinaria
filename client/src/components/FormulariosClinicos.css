@@ -416,6 +416,15 @@
   white-space: pre-wrap;
 }
 
+.cf-detalle-insumos {
+  margin: 0;
+  padding-left: 20px;
+}
+
+.cf-detalle-insumos li + li {
+  margin-top: 4px;
+}
+
 .cf-detalle .cf-detalle-ancho {
   grid-column: 1 / -1;
 }

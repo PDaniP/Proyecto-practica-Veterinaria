@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
 import "./FormulariosClinicos.css";
 import api from "../../config/api.js";
 
@@ -17,7 +16,12 @@ export default function DetalleConsulta({ idConsulta, onClose }) {
     api
       .get(`mascotas/historia/consulta/${idConsulta}`)
       .then((response) => setConsulta(response.data))
-      .catch(() => setError("No se pudo cargar la consulta."));
+      .catch((err) => {
+        console.error("Error al cargar el detalle de la consulta:", err);
+        setError(
+          err.response?.data?.message || "No se pudo cargar la consulta.",
+        );
+      });
   }, [idConsulta]);
 
   return (
@@ -56,6 +60,32 @@ export default function DetalleConsulta({ idConsulta, onClose }) {
           <div className="cf-detalle-ancho">
             <dt>Tratamiento</dt>
             <dd>{consulta.tratamiento || "-"}</dd>
+          </div>
+          <div className="cf-detalle-ancho">
+            <dt>Insumos utilizados</dt>
+            <dd>
+              {consulta.insumos?.length ? (
+                <ul className="cf-detalle-insumos">
+                  {consulta.insumos.map((insumo) => (
+                    <li key={insumo.id}>
+                      {insumo.nombre || "Insumo no disponible"}
+                      {insumo.marca ? ` - ${insumo.marca}` : ""}
+                      {insumo.codigo_lote
+                        ? ` (lote: ${insumo.codigo_lote})`
+                        : ""}
+                      {insumo.proxima_dosis
+                        ? ` — próxima dosis: ${formatearFecha(insumo.proxima_dosis)}`
+                        : ""}
+                      {insumo.observaciones
+                        ? ` — ${insumo.observaciones}`
+                        : ""}
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                "No se registraron insumos."
+              )}
+            </dd>
           </div>
           <div className="cf-detalle-ancho">
             <dt>Observaciones</dt>

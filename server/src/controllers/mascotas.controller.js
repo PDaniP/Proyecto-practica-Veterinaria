@@ -1,7 +1,7 @@
 import mascotasModel from '../models/mascotas.model.js';
 import { actualizarStockLote } from '../models/ventas.model.js';
 
-const { añadirMascotaADB, obtenerListaMascotas, editarMascotaADB, eliminarMascotaADB, obtenerDetalleConsulta, datosMascota, añadirConsulta, obtenerConsultaPorID, obtenerMotivos, editarConsulta, obtenerAntecedentes, obtenerDiagnosticosPorMotivo } = mascotasModel;
+const { añadirMascotaADB, obtenerListaMascotas, editarMascotaADB, eliminarMascotaADB, obtenerDetalleConsulta, datosMascota, añadirConsulta, obtenerConsultaPorID, obtenerMotivos, editarConsulta, obtenerAntecedentes, obtenerVacunasAplicadas, obtenerDiagnosticosPorMotivo } = mascotasModel;
 
 const listaMascotas = async (req, res) => {
     try {
@@ -73,6 +73,7 @@ const historiaClinica = async (req, res) => {
         const datos = await datosMascota(id);
         const consultas = await obtenerDetalleConsulta(id);
         const antecedentes = await obtenerAntecedentes(id);
+        const vacunas = await obtenerVacunasAplicadas(id);
 
         if (!datos) {
             return res.status(404).json({
@@ -97,6 +98,7 @@ const historiaClinica = async (req, res) => {
             dueño: datos.id_cliente,
             consultas: consultas,
             antecedentes: antecedentes,
+            vacunas: vacunas,
         }
     });
         } catch (error) {

@@ -58,11 +58,29 @@ const obtenerConsultaPorID = async (idConsulta) => {
             c.observaciones,
             m.motivo,
             d.diagnostico,
-            u.nombre AS nombre_veterinario
+            u.nombre AS nombre_veterinario,
+            COALESCE(detalles.insumos, '[]'::json) AS insumos
          FROM consultas c
          LEFT JOIN motivos m ON m.id = c.motivo_id
          LEFT JOIN diagnosticos d ON d.id = m.id_diagnostico
          LEFT JOIN usuarios u ON u.id = c.id_veterinario
+         LEFT JOIN LATERAL (
+            SELECT json_agg(
+                json_build_object(
+                    'id', dc.id,
+                    'nombre', p.nombre,
+                    'marca', p.marca,
+                    'codigo_lote', l.codigo_lote,
+                    'proxima_dosis', dc.proxima_dosis,
+                    'observaciones', dc.observaciones
+                )
+                ORDER BY dc.id
+            ) AS insumos
+            FROM detalle_consulta dc
+            LEFT JOIN lotes l ON l.id = dc.id_lote
+            LEFT JOIN productos p ON p.id = l.id_producto
+            WHERE dc.id_consulta = c.id
+         ) detalles ON true
          WHERE c.id = $1`,
         [idConsulta]
     );
@@ -85,6 +103,27 @@ const obtenerAntecedentes = async (id_mascota) => {
     const {rows} = await db.query('SELECT * FROM antecedentes WHERE id_mascota = $1', [id_mascota]);
     return rows;
 }
+
+const obtenerVacunasAplicadas = async (idMascota) => {
+    const { rows } = await db.query(
+        `SELECT
+            dc.id,
+            p.nombre AS nombre_vacuna,
+            c.fecha_consulta AS fecha_aplicacion,
+            dc.proxima_dosis
+         FROM detalle_consulta dc
+         JOIN consultas c ON c.id = dc.id_consulta
+         JOIN lotes l ON l.id = dc.id_lote
+         JOIN productos p ON p.id = l.id_producto
+         JOIN categorias cat ON cat.id = p.id_categoria
+         WHERE c.id_mascota = $1
+           AND LOWER(cat.nombre) = LOWER('Vacunas')
+         ORDER BY c.fecha_consulta DESC, dc.id DESC`,
+        [idMascota]
+    );
+
+    return rows;
+};
 
 const añadirConsulta = async (consulta) => {
     const {id_mascota,id_veterinario,motivo_id,fecha_consulta,peso_actual,temperatura,tratamiento,observaciones} = consulta;
@@ -128,6 +167,7 @@ export default {
     obtenerMotivos,
     datosMascota,
     obtenerAntecedentes,
+    obtenerVacunasAplicadas,
     añadirConsulta,
     añadirDetalleConsulta,
     obtenerDiagnosticosPorMotivo,
