@@ -223,7 +223,9 @@ export default function Ventas() {
       <div className="ventas-header">
         <h1>Ventas</h1>
         <div>
-        <button className="btn-primary" onClick={() => navigate('/reportes')}>Reporte de Ventas</button>
+        <button className="btn-primary" onClick={() => navigate('/reportes')}>
+          Reporte de Ventas
+        </button>
         <button onClick={abrirModal} className="btn-primary">
           Nueva Venta
         </button>

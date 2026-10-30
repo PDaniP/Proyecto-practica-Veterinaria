@@ -1,24 +1,18 @@
 import { useState, useEffect } from 'react'
-import axios from 'axios'
 import './FichaCliente.css'
 import api from "../../config/api.js";
+import { obtenerEspecies, obtenerRazas } from '../service/especiesService.js'
+import { useNavigate  } from 'react-router-dom';
 
 
 export default function FichaCliente({ clienteId, onClose }) {
+  const navigate = useNavigate();
   const [cliente, setCliente] = useState(null)
   const [mascotas, setMascotas] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
 
-  useEffect(() => {
-    if (clienteId) {
-      fetchFicha(clienteId)
-    }
-  }, [clienteId])
-
   const fetchFicha = async (id) => {
-    setLoading(true)
-    setError(null)
     try {
       const [resClientes, resMascotas] = await Promise.all([
         api.get("clientes").catch((err) => {
@@ -39,12 +33,40 @@ export default function FichaCliente({ clienteId, onClose }) {
         (m) => String(m.id_cliente) === String(id)
       )
 
+      const idsEspecies = [
+        ...new Set(
+          mascotasDelCliente
+            .map((mascota) => mascota.id_especie)
+            .filter((idEspecie) => idEspecie != null)
+            .map(Number)
+        ),
+      ]
+
+      const [especies, gruposRazas] = idsEspecies.length
+        ? await Promise.all([
+            obtenerEspecies(),
+            Promise.all(idsEspecies.map((idEspecie) => obtenerRazas(idEspecie))),
+          ])
+        : [[], []]
+      const nombresEspecies = new Map(
+        especies.map((especie) => [Number(especie.id), especie.nombre])
+      )
+      const nombresRazas = new Map(
+        gruposRazas.flat().map((raza) => [Number(raza.id), raza.nombre])
+      )
+      const mascotasConNombres = mascotasDelCliente.map((mascota) => ({
+        ...mascota,
+        especie: nombresEspecies.get(Number(mascota.id_especie)) || '—',
+        raza: nombresRazas.get(Number(mascota.id_raza)) || '—',
+      }))
+
+      setError(null)
       if (!clienteEncontrado) {
         setError('No se encontró el cliente solicitado.')
       }
 
       setCliente(clienteEncontrado || null)
-      setMascotas(mascotasDelCliente)
+      setMascotas(mascotasConNombres)
     } catch (err) {
       console.error('Error al cargar la ficha del cliente:', err)
       setError('Hubo un error al cargar la ficha del cliente.')
@@ -52,6 +74,12 @@ export default function FichaCliente({ clienteId, onClose }) {
       setLoading(false)
     }
   }
+
+  useEffect(() => {
+    if (clienteId) {
+      Promise.resolve().then(() => fetchFicha(clienteId))
+    }
+  }, [clienteId])
 
   const calcularEdad = (fechaNacimiento) => {
     if (!fechaNacimiento) return '—'
@@ -97,7 +125,9 @@ export default function FichaCliente({ clienteId, onClose }) {
           <h2 className="ficha-titulo">
             {cliente.nombre} {cliente.apellido}
           </h2>
+          <p className="ficha-subtitulo">Direccion: {cliente.direccion || '—'}</p>
           <p className="ficha-subtitulo">Teléfono: {cliente.telefono}</p>
+          <p className="ficha-subtitulo">Email: {cliente.email || '—'}</p>
         </div>
         {onClose && (
           <button className="ficha-btn-cerrar" onClick={onClose} aria-label="Cerrar ficha">
@@ -121,9 +151,10 @@ export default function FichaCliente({ clienteId, onClose }) {
                 <th>Especie</th>
                 <th>Raza</th>
                 <th>Edad</th>
-                <th>Peso</th>
+                {/*<th>Peso</th>*/}
                 <th>Género</th>
                 <th>Estado</th>
+                <th></th>
               </tr>
             </thead>
             <tbody>
@@ -133,13 +164,21 @@ export default function FichaCliente({ clienteId, onClose }) {
                   <td>{m.especie}</td>
                   <td>{m.raza || '—'}</td>
                   <td>{calcularEdad(m.fecha_nacimiento)}</td>
-                  <td>{m.peso ? `${m.peso} kg` : '—'}</td>
+                  {/*<td>{m.peso ? `${m.peso} kg` : '—'}</td>*/}
                   <td>{m.genero || '—'}</td>
                   <td>
                     <span className={`ficha-badge ${m.activo ? 'ficha-badge-ok' : 'ficha-badge-inactivo'}`}>
                       {m.activo ? 'Activa' : 'Inactiva'}
-                    </span>
+                    </span>                  
                   </td>
+                  <td>
+                  <button
+                    type="button"
+                    className='ficha-btn-historia'
+                    onClick={() => navigate(`/historias-clinicas/${m.id}`)}
+                  >
+                    Historia clinica
+                  </button></td>
                 </tr>
               ))}
             </tbody>

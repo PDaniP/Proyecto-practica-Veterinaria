@@ -1,13 +1,12 @@
-
 .historial-card {
-  background: #fff;
-  border-radius: 16px;
-  padding: 28px 32px;
   width: 100%;
-  max-width: 720px;
-  max-height: calc(100vh - 120px);
-  overflow-y: auto;
-  box-shadow: 0 4px 24px rgba(125, 31, 153, 0.15);
+  background: transparent;
+  border-radius: 0;
+  padding: 0;
+  max-width: none;
+  max-height: none;
+  overflow: visible;
+  box-shadow: none;
 }
 
 .historial-header {

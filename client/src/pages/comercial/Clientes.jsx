@@ -147,9 +147,9 @@ export default function Clientes() {
                 <th>Nombre</th>
                 <th>Apellido</th>
                 <th>DNI</th>
-                <th>Teléfono</th>
+            {/**<th>Teléfono</th>
                 <th>Dirección</th>
-                <th>Email</th>
+                <th>Email</th>*/}
                 <th></th>
                 <th></th>
                 <th></th>
@@ -165,9 +165,9 @@ export default function Clientes() {
                     <td>{c.nombre}</td>
                     <td>{c.apellido}</td>
                     <td>{c.dni}</td>
-                    <td>{c.telefono}</td>
+                {/**<td>{c.telefono}</td>
                     <td>{c.direccion}</td>
-                    <td>{c.email || '—'}</td>
+                    <td>{c.email || '—'}</td>*/}
                     <td>
                       <button className="btn-editar" onClick={() => abrirModalEditar(c)}>
                         Editar

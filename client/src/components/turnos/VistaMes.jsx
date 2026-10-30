@@ -237,15 +237,7 @@ export default function VistaMes({
 
           <section className="vista-mes__detalle">
             <h3>
-              Turnos del{" "}
-              {new Date(`${fechaSeleccionada}T12:00:00`).toLocaleDateString(
-                "es-AR",
-                {
-                  day: "numeric",
-                  month: "long",
-                  year: "numeric",
-                },
-              )}
+              Turnos de {nombreMes}
             </h3>
 
             {turnosSeleccionados.length === 0 ? (
