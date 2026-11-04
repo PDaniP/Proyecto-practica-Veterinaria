@@ -120,7 +120,13 @@ const productoPorId = async (req, res) => {
     res.status(200).json(datos,{message: 'Producto obtenido exitosamente'})
 } 
 
-
+const reporteCantidadProductos = async (req, res) => {
+    const datos = await productModel.reporteCantidadProductos()
+    if(!datos || datos.length < 1){
+        return res.status(401).json({message:"No existen datos"})
+    }
+    res.status(200).json({datos, message:"Datos obtenidos con exito"})
+}
 
 export default {listaProducto,
                 productoPorId,
@@ -131,4 +137,5 @@ export default {listaProducto,
                 añadirCategoria,
                 listaCategorias,
                 listaLotes,
+                reporteCantidadProductos
 }
