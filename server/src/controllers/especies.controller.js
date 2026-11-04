@@ -25,7 +25,20 @@ const listarRazas = async (req, res) => {
     }  
 };
 
+const ReporteCantidadMascotasPorEspecie = async (req, res) => {
+    try {
+        const reporte = await especiesModel.cantidadMascotasPorEspecie();
+        res.status(200).json({ reporte });
+    } catch (error) {
+        res.status(500).json({
+            message: "Error al obtener el reporte de cantidad de mascotas por especie",
+            error,
+        });
+    }
+};
+
 export default {
     listarEspecies,
     listarRazas,
+    ReporteCantidadMascotasPorEspecie
 }

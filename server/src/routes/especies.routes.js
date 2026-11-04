@@ -6,5 +6,6 @@ const router = express.Router();
 
 router.get("/", validarUsuario, especiesController.listarEspecies);
 router.get("/:idEspecie/razas", validarUsuario, especiesController.listarRazas);
+router.get("/reporte/cantidad-mascotas", validarUsuario, especiesController.ReporteCantidadMascotasPorEspecie);
 
 export default router;
