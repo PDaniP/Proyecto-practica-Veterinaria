@@ -1,0 +1,43 @@
+.grafico-stock-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  padding: 24px;
+  background: #f7f0fa;
+  border: 1.5px solid #e0c8ea;
+  border-radius: 10px;
+  box-sizing: border-box;
+}
+
+.grafico-stock-wrapper {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.grafico-stock-titulo {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #7d1f99;
+  margin: 0;
+  text-align: center;
+}
+
+.grafico-stock-chart {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+@media (max-width: 768px) {
+  .grafico-stock-container {
+    padding: 16px;
+  }
+
+  .grafico-stock-titulo {
+    font-size: 1rem;
+  }
+}

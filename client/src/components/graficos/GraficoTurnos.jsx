@@ -14,6 +14,7 @@ import {
   Cell,
 } from "recharts";
 import api from '../../../config/api.js';
+import './GraficoTurnos.css';
 
 const formatearFecha = (fecha) => {
     const año = fecha.getFullYear();
@@ -28,38 +29,48 @@ const GraficoTurnos = ({ data }) => {
   const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"];
 
   return (
-    <PieChart width={400} height={400}>
-      <Pie
-        data={data}
-        dataKey="cantidad"
-        nameKey="estado"
-        cx="50%"
-        cy="50%"
-        outerRadius={100}
-        fill="#8884d8"
-        label
-      >
-        {data.map((entry, index) => (
-          <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-        ))}
-      </Pie>
-      <Tooltip />
-      <Legend />
-    </PieChart>
+    <div className="grafico-turnos-grafico-item">
+      <h3 className="grafico-turnos-grafico-titulo">Distribución de Turnos</h3>
+      <div className="grafico-turnos-chart">
+        <PieChart width={400} height={400}>
+          <Pie
+            data={data}
+            dataKey="cantidad"
+            nameKey="estado"
+            cx="50%"
+            cy="50%"
+            outerRadius={100}
+            fill="#8884d8"
+            label
+          >
+            {data.map((entry, index) => (
+              <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+            ))}
+          </Pie>
+          <Tooltip />
+          <Legend />
+        </PieChart>
+      </div>
+    </div>
   );
 };
 const GraficoProfesional = ({ data }) => {
   const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"];
 
   return (
-    <BarChart width={400} height={400} data={data} layout='vertical'>
-      <CartesianGrid strokeDasharray="3 3" />
-      <XAxis type="number" />
-      <YAxis type="category" dataKey="profesional" />
-      <Tooltip />
-      <Legend />
-      <Bar dataKey="turnos_asignados" fill="#8884d8" />
-    </BarChart>
+    <div className="grafico-turnos-grafico-item">
+      <h3 className="grafico-turnos-grafico-titulo">Turnos por Profesional</h3>
+      <div className="grafico-turnos-chart">
+        <BarChart width={400} height={400} data={data} layout='vertical'>
+          <CartesianGrid strokeDasharray="3 3" />
+          <XAxis type="number" />
+          <YAxis type="category" dataKey="profesional" />
+          <Tooltip />
+          <Legend />
+          <Bar dataKey="turnos_asignados" fill="#8884d8" />
+        </BarChart>
+      </div>
+    </div>
   );
 };
 
@@ -81,16 +92,24 @@ const ReporteTurnos = () => {
         };
         fetchData();
     }, [fechaInicio, fechaFin]);
-    return (<><div>
-        <label>Fecha Inicio: </label>
-        <input type="date" value={fechaInicio} onChange={(e) => setFechaInicio(e.target.value)} />
-        <label>Fecha Fin: </label>
-        <input type="date" value={fechaFin} onChange={(e) => setFechaFin(e.target.value)} />
-    </div>
-    <div>
-    <GraficoTurnos data={turnosData} />
-    <GraficoProfesional data={profesionalData} />
-    </div></>);
+    return (
+      <div className="grafico-turnos-container">
+        <div className="grafico-turnos-filtros">
+          <div className="grafico-turnos-filtro-grupo">
+            <label>Fecha Inicio: </label>
+            <input type="date" value={fechaInicio} onChange={(e) => setFechaInicio(e.target.value)} />
+          </div>
+          <div className="grafico-turnos-filtro-grupo">
+            <label>Fecha Fin: </label>
+            <input type="date" value={fechaFin} onChange={(e) => setFechaFin(e.target.value)} />
+          </div>
+        </div>
+        <div className="grafico-turnos-graficos">
+          <GraficoTurnos data={turnosData} />
+          <GraficoProfesional data={profesionalData} />
+        </div>
+      </div>
+    );
 };
 
 export default ReporteTurnos;

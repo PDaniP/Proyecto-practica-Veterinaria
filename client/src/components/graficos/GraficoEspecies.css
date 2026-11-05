@@ -1,0 +1,43 @@
+.grafico-especies-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  padding: 24px;
+  background: #f7f0fa;
+  border: 1.5px solid #e0c8ea;
+  border-radius: 10px;
+  box-sizing: border-box;
+}
+
+.grafico-especies-wrapper {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.grafico-especies-titulo {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #7d1f99;
+  margin: 0;
+  text-align: center;
+}
+
+.grafico-especies-chart {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+@media (max-width: 768px) {
+  .grafico-especies-container {
+    padding: 16px;
+  }
+
+  .grafico-especies-titulo {
+    font-size: 1rem;
+  }
+}
