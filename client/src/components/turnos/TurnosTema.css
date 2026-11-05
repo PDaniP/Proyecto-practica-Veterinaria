@@ -1,0 +1,45 @@
+.agenda-turnos,
+.vista-semana,
+.vista-mes,
+.formulario-turno {
+  --turnos-primary: #6650a4;
+  --turnos-primary-hover: #514080;
+  --turnos-primary-soft: #f5f3fa;
+  --turnos-primary-border: #d5d2e4;
+  --turnos-text: #252525;
+  --turnos-muted: #666666;
+  --turnos-border: #e3e0eb;
+  --turnos-surface: #ffffff;
+  --turnos-surface-soft: #faf9fc;
+  --turnos-success: #198754;
+  --turnos-success-hover: #146c43;
+  --turnos-success-soft: #dff5e5;
+  --turnos-warning: #805800;
+  --turnos-warning-soft: #fff0cc;
+  --turnos-danger: #a00000;
+  --turnos-danger-soft: #ffe2e2;
+  --turnos-danger-action: #c83d45;
+  --turnos-danger-action-hover: #a92e35;
+  --turnos-neutral-soft: #eeeeee;
+  --turnos-focus: #b8a5ed;
+}
+
+.agenda-turnos button,
+.vista-semana button,
+.vista-mes button,
+.formulario-turno button {
+  font-family: inherit;
+}
+
+.agenda-turnos button:focus-visible,
+.vista-semana button:focus-visible,
+.vista-mes button:focus-visible,
+.formulario-turno button:focus-visible,
+.agenda-turnos input:focus-visible,
+.agenda-turnos select:focus-visible,
+.formulario-turno input:focus-visible,
+.formulario-turno select:focus-visible,
+.formulario-turno textarea:focus-visible {
+  outline: 3px solid var(--turnos-focus);
+  outline-offset: 2px;
+}

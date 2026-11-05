@@ -924,6 +924,15 @@ La conexión está en:
 server/src/config/db.js
 ```
 
+Para habilitar la configuración compartida del horario de turnos en una base de
+datos existente, ejecutá la migración desde la raíz del proyecto:
+
+```bash
+psql -d nombre_de_tu_base_de_datos -f server/data/migrations/20261105_horario_atencion.sql
+```
+
+La migración crea el horario inicial de lunes a sábado, de 09:00 a 17:00.
+
 Variables usadas por la conexión:
 
 ```env
@@ -1210,4 +1219,3 @@ Módulos pendientes o parcialmente implementados:
 - Gestión completa de mascotas.
 - Gestión completa de historias clínicas.
 - Seguridad avanzada de usuarios.
-

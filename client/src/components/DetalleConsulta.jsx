@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
 import "./FormulariosClinicos.css";
 import api from "../../config/api.js";
 
@@ -14,10 +13,43 @@ export default function DetalleConsulta({ idConsulta, onClose }) {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    api
-      .get(`mascotas/historia/consulta/${idConsulta}`)
-      .then((response) => setConsulta(response.data))
-      .catch(() => setError("No se pudo cargar la consulta."));
+    let activo = true;
+
+    const cargarConsulta = async () => {
+      try {
+        const { data } = await api.get(
+          `mascotas/historia/consulta/${idConsulta}`,
+        );
+        const insumos =
+          typeof data.insumos === "string"
+            ? JSON.parse(data.insumos)
+            : data.insumos ?? [];
+
+        if (!Array.isArray(insumos)) {
+          throw new Error("La respuesta de insumos no tiene el formato esperado.");
+        }
+
+        if (activo) {
+          setConsulta({ ...data, insumos });
+          setError("");
+        }
+      } catch (err) {
+        console.error("Error al cargar el detalle de la consulta:", err);
+        if (activo) {
+          setError(
+            err.response?.data?.message ||
+              err.message ||
+              "No se pudo cargar la consulta.",
+          );
+          setConsulta(null);
+        }
+      }
+    };
+
+    cargarConsulta();
+    return () => {
+      activo = false;
+    };
   }, [idConsulta]);
 
   return (
@@ -56,6 +88,35 @@ export default function DetalleConsulta({ idConsulta, onClose }) {
           <div className="cf-detalle-ancho">
             <dt>Tratamiento</dt>
             <dd>{consulta.tratamiento || "-"}</dd>
+          </div>
+          <div className="cf-detalle-ancho">
+            <dt>Insumos utilizados</dt>
+            <dd>
+              {consulta.insumos?.length ? (
+                <ul className="cf-detalle-insumos">
+                  {consulta.insumos.map((insumo) => (
+                    <li key={insumo.id}>
+                      {insumo.nombre || "Insumo no disponible"}
+                      {insumo.marca ? ` - ${insumo.marca}` : ""}
+                      {insumo.cantidad != null
+                        ? ` (cantidad: ${insumo.cantidad})`
+                        : ""}
+                      {insumo.codigo_lote
+                        ? ` (lote: ${insumo.codigo_lote})`
+                        : ""}
+                      {insumo.proxima_dosis
+                        ? ` — próxima dosis: ${formatearFecha(insumo.proxima_dosis)}`
+                        : ""}
+                      {insumo.observaciones
+                        ? ` — ${insumo.observaciones}`
+                        : ""}
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                "No se registraron insumos."
+              )}
+            </dd>
           </div>
           <div className="cf-detalle-ancho">
             <dt>Observaciones</dt>

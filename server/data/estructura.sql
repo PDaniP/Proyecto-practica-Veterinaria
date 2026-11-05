@@ -295,14 +295,18 @@ CREATE TABLE diagnosticos (
     diagnostico TEXT NOT NULL
 );
 
--- AGREGADO. Crear la tabla de motivos (depende de diagnósticos)
+-- Un motivo puede crearse antes de asociarle un diagnóstico
 CREATE TABLE motivos (
     id SERIAL PRIMARY KEY,
     motivo TEXT NOT NULL,
-    id_diagnostico INTEGER NOT NULL,
+    id_diagnostico INTEGER,
     CONSTRAINT fk_motivo_diagnostico FOREIGN KEY (id_diagnostico) 
         REFERENCES diagnosticos(id) ON DELETE RESTRICT ON UPDATE CASCADE
 );
+ALTER TABLE diagnosticos
+    ADD COLUMN id_motivo INTEGER
+    REFERENCES motivos(id) ON DELETE CASCADE ON UPDATE CASCADE;
+
 -- 19. Tabla de Consultas Médicas
 CREATE TABLE consultas (
     id SERIAL PRIMARY KEY,
@@ -326,6 +330,7 @@ CREATE TABLE detalle_consulta (
     id SERIAL PRIMARY KEY,
     id_consulta INTEGER NOT NULL,
     id_lote INTEGER,             -- Opcional: si proviene de un lote/insumo de stock (ej. vacuna, antibiótico)
+    cantidad INTEGER NOT NULL DEFAULT 1 CHECK (cantidad > 0),
     proxima_dosis DATE,          -- Para alertas/recordatorios de refuerzos (PUEDE SER NULL SI NO HAY REFUERZO)
     observaciones TEXT,
     CONSTRAINT fk_detalle_consulta FOREIGN KEY (id_consulta) 
@@ -358,6 +363,11 @@ INSERT INTO diagnosticos (diagnostico) VALUES
 INSERT INTO motivos (motivo, id_diagnostico) VALUES 
     ('Control anual y renguera en pata trasera derecha.', (SELECT id FROM diagnosticos WHERE diagnostico = 'Contractura muscular leve sin compromiso óseo.' LIMIT 1)),
     ('Falta de apetito y decaimiento general.', (SELECT id FROM diagnosticos WHERE diagnostico = 'Gastroenteritis leve por ingesta de cuerpo extraño.' LIMIT 1));
+
+UPDATE diagnosticos d
+SET id_motivo = m.id
+FROM motivos m
+WHERE m.id_diagnostico = d.id;
 
 -- Insertamos las consultas referenciando al motivo_id
 INSERT INTO consultas (id_mascota, id_veterinario, motivo_id, peso_actual, temperatura, tratamiento, observaciones) VALUES
@@ -402,3 +412,15 @@ CREATE TABLE turnos (
     recibe_notificaciones BOOLEAN DEFAULT FALSE, 
     recordatorio_enviado BOOLEAN DEFAULT FALSE   
 );
+
+CREATE TABLE horario_atencion (
+    id SMALLINT PRIMARY KEY CHECK (id = 1),
+    hora_inicio TIME NOT NULL,
+    hora_fin TIME NOT NULL,
+    dia_inicio SMALLINT NOT NULL CHECK (dia_inicio BETWEEN 1 AND 7),
+    dia_fin SMALLINT NOT NULL CHECK (dia_fin BETWEEN 1 AND 7),
+    CHECK (hora_inicio < hora_fin)
+);
+
+INSERT INTO horario_atencion (id, hora_inicio, hora_fin, dia_inicio, dia_fin)
+VALUES (1, '09:00', '17:00', 1, 6);

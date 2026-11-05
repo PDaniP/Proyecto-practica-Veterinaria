@@ -11,14 +11,14 @@ router.post('/add', validarUsuario, mascotasController.añadirMascota);
 router.get('/historia/:id', validarUsuario, mascotasController.historiaClinica);
 
 router.get('/motivos', validarUsuario, mascotasController.motivosConsultas);
-router.post('/motivos/añadir', validarUsuario, extrasController.añadirMotivo);
+router.post('/motivos/anadir', validarUsuario, extrasController.añadirMotivo);
 //agregue la siguiente ruta
 router.get(
   "/motivos/:motivoId/diagnosticos",
   validarUsuario,
   mascotasController.diagnosticosPorMotivo
 );
-router.post('/motivos/diagnostico/añadir', validarUsuario, extrasController.añadirDiagnosticoSegunMotivo);
+router.post('/motivos/diagnostico/anadir', validarUsuario, extrasController.añadirDiagnosticoSegunMotivo);
 router.post('/historia/consulta', validarUsuario, mascotasController.registrarConsulta);
 
 router.get('/historia/consulta/:id_consulta', validarUsuario, mascotasController.consultaPorId);

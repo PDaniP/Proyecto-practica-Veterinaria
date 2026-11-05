@@ -2,14 +2,17 @@ import { useEffect, useState } from "react";
 import api from "../../../config/api.js";
 import { asignarTurno, modificarTurno } from "../../service/turnosService";
 import "./FormularioTurnos.css";
+import "./TurnosTema.css";
 
 export default function FormularioTurno({
   profesionales = [],
   onClose,
   onGuardado,
   turnoEditar = null,
+  horarioAtencion = null,
 }) {
   const [clientes, setClientes] = useState([]);
+  const [motivos, setMotivos] = useState([]);
   const [busquedaCliente, setBusquedaCliente] = useState("");
   const [clienteSeleccionado, setClienteSeleccionado] = useState(null);
   const [usarClienteRegistrado, setUsarClienteRegistrado] = useState(true);
@@ -24,6 +27,8 @@ export default function FormularioTurno({
   const [recordatorioWhatsApp, setRecordatorioWhatsApp] = useState(false);
 
   const [cargandoClientes, setCargandoClientes] = useState(true);
+  const [cargandoMotivos, setCargandoMotivos] = useState(true);
+  const [errorMotivos, setErrorMotivos] = useState("");
   const [guardando, setGuardando] = useState(false);
   const [error, setError] = useState("");
 
@@ -79,6 +84,39 @@ export default function FormularioTurno({
     cargarClientes();
   }, []);
 
+  useEffect(() => {
+    let activo = true;
+
+    const cargarMotivos = async () => {
+      try {
+        const { data } = await api.get("mascotas/motivos", {
+          withCredentials: true,
+        });
+
+        if (!Array.isArray(data)) {
+          throw new Error("La respuesta de motivos no tiene el formato esperado.");
+        }
+
+        if (activo) setMotivos(data);
+      } catch (error) {
+        console.error("Error al cargar los motivos:", error);
+        if (activo) {
+          setErrorMotivos(
+            error.response?.data?.message || "No se pudieron cargar los motivos.",
+          );
+        }
+      } finally {
+        if (activo) setCargandoMotivos(false);
+      }
+    };
+
+    cargarMotivos();
+
+    return () => {
+      activo = false;
+    };
+  }, []);
+
   const clientesFiltrados = clientes.filter((cliente) => {
     const texto = busquedaCliente.trim().toLowerCase();
 
@@ -123,6 +161,28 @@ export default function FormularioTurno({
     if (!fecha || !hora || !motivo.trim()) {
       setError("Completá la fecha, la hora y el motivo del turno.");
       return;
+    }
+
+    if (horarioAtencion) {
+      const fechaSeleccionada = new Date(`${fecha}T12:00:00`);
+      const diaSemana = fechaSeleccionada.getDay() || 7;
+      const dentroDelRangoDias = horarioAtencion.dia_inicio <= horarioAtencion.dia_fin
+        ? diaSemana >= horarioAtencion.dia_inicio &&
+          diaSemana <= horarioAtencion.dia_fin
+        : diaSemana >= horarioAtencion.dia_inicio ||
+          diaSemana <= horarioAtencion.dia_fin;
+
+      if (!dentroDelRangoDias) {
+        setError("La fecha elegida está fuera de los días habilitados para turnos.");
+        return;
+      }
+
+      if (hora < horarioAtencion.hora_inicio || hora >= horarioAtencion.hora_fin) {
+        setError(
+          `El horario habilitado es de ${horarioAtencion.hora_inicio} a ${horarioAtencion.hora_fin}.`,
+        );
+        return;
+      }
     }
 
     if (!turnoEditar && usarClienteRegistrado && !clienteSeleccionado) {
@@ -203,7 +263,7 @@ export default function FormularioTurno({
             </label>
           </div>
 
-          {usarClienteRegistrado && (
+          {usarClienteRegistrado && !clienteSeleccionado && (
             <div className="formulario-turno__campo">
               <label htmlFor="buscar-cliente">
                 Buscar cliente por nombre o teléfono
@@ -224,7 +284,7 @@ export default function FormularioTurno({
 
               {cargandoClientes ? (
                 <p>Cargando clientes...</p>
-              ) : (
+              ) : busquedaCliente.trim() ? (
                 <div className="formulario-turno__resultados">
                   {clientesFiltrados.map((cliente) => (
                     <button
@@ -247,7 +307,28 @@ export default function FormularioTurno({
                     <p>No se encontraron clientes.</p>
                   )}
                 </div>
-              )}
+              ) : null}
+            </div>
+          )}
+
+          {usarClienteRegistrado && clienteSeleccionado && (
+            <div className="formulario-turno__cliente-seleccionado">
+              <span>
+                Cliente seleccionado: {clienteSeleccionado.nombre}{" "}
+                {clienteSeleccionado.apellido}
+              </span>
+              <button
+                type="button"
+                onClick={() => {
+                  setClienteSeleccionado(null);
+                  setBusquedaCliente("");
+                  setNombreContacto("");
+                  setTelefonoContacto("");
+                }}
+                aria-label="Cambiar cliente seleccionado"
+              >
+                Cambiar
+              </button>
             </div>
           )}
 
@@ -289,6 +370,8 @@ export default function FormularioTurno({
           id="hora-turno"
           type="time"
           value={hora}
+          min={horarioAtencion?.hora_inicio}
+          max={horarioAtencion?.hora_fin}
           onChange={(e) => setHora(e.target.value)}
           required
         />
@@ -296,13 +379,30 @@ export default function FormularioTurno({
 
       <div className="formulario-turno__campo">
         <label htmlFor="motivo-turno">Motivo del turno</label>
-        <input
+        <select
           id="motivo-turno"
           value={motivo}
           onChange={(e) => setMotivo(e.target.value)}
-          placeholder="Ej.: Consulta, vacunación, peluquería..."
           required
-        />
+          disabled={cargandoMotivos || motivos.length === 0}
+        >
+          <option value="">
+            {cargandoMotivos ? "Cargando motivos..." : "Seleccione un motivo"}
+          </option>
+          {motivo && !motivos.some((item) => item.motivo === motivo) && (
+            <option value={motivo}>{motivo}</option>
+          )}
+          {motivos.map((item) => (
+            <option value={item.motivo} key={item.id}>
+              {item.motivo}
+            </option>
+          ))}
+        </select>
+        {errorMotivos && (
+          <p className="formulario-turno__error" role="alert">
+            {errorMotivos}
+          </p>
+        )}
       </div>
 
       <div className="formulario-turno__campo">
