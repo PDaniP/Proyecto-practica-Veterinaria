@@ -1,15 +1,20 @@
 import { PieChart, Pie, Cell, Tooltip, Legend } from 'recharts'
 import api from '../../../config/api.js'
+import {useState, useEffect} from 'react'
 
-const data = await api.get('/especies/reporte/cantidad-mascotas').then(res => res.data.reporte.filter(item => item.cantidad > 0).map(item => ({
-  name: item.nombre,
-  value: Number(item.cantidad)
-})));
 
-const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
+const GraficoEspecies = () =>{ 
+  const [data, setData] = useState([]);
+  
+  useEffect(() => {
+    api.get('/especies/reporte/cantidad-mascotas')
+      .then(res => setData(res.data.reporte.filter(item => item.cantidad > 0).map(item => ({
+        name: item.nombre,
+        value: Number(item.cantidad)
+      }))));
+  }, []);
 
-console.log(data)
-const GraficoEspecies = () => (
+  return (
   <PieChart width={400} height={400}>
     <Pie
       data={data}
@@ -29,5 +34,5 @@ const GraficoEspecies = () => (
     <Legend />
   </PieChart>
 );
-
+}
 export default GraficoEspecies;

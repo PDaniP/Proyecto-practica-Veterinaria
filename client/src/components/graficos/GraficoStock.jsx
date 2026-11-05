@@ -1,10 +1,17 @@
 import { PieChart, Pie, Cell, Tooltip, Legend } from 'recharts'
-
+import {useState, useEffect} from 'react'
 import api from '../../../config/api.js'
 
 
-const data = await api.get('/products/reporte').then(res => res.data.reporte.filter(item => item.value > 0))
-const GraficoStock = () => (
+
+const GraficoStock = () => {
+  const [data, setData] = useState([]);
+  useEffect(() => {
+    api.get('/products/reporte')
+      .then(res => setData(res.data.reporte.filter(item => item.value > 0)));
+  }, []);
+
+  return (
   <PieChart width={600} height={600}>
     <Pie
       data={data}
@@ -24,5 +31,5 @@ const GraficoStock = () => (
     <Legend />
   </PieChart>
 );
-
+}
 export default GraficoStock;
