@@ -1,4 +1,3 @@
-import axios from "axios";
 import api from '../../config/api.js'
 
 const API_URL = 'turnos';
@@ -43,4 +42,18 @@ export const obtenerTurnosPorFecha = async (fecha) => {
   });
 
   return response.data.turnos ?? [];
+};
+
+export const obtenerHorarioAtencion = async () => {
+  const response = await api.get(`${API_URL}/horario`, {
+    withCredentials: true,
+  });
+  return response.data.horario;
+};
+
+export const actualizarHorarioAtencion = async (horario) => {
+  const response = await api.put(`${API_URL}/horario`, horario, {
+    withCredentials: true,
+  });
+  return response.data.horario;
 };

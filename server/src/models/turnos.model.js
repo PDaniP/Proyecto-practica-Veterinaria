@@ -52,6 +52,40 @@ const obtenerTurnosPorFecha = async (fecha) => {
     return rows;
 };
 
+const obtenerHorarioAtencion = async () => {
+    const { rows } = await db.query(
+        `SELECT
+            to_char(hora_inicio, 'HH24:MI') AS hora_inicio,
+            to_char(hora_fin, 'HH24:MI') AS hora_fin,
+            dia_inicio,
+            dia_fin
+         FROM horario_atencion
+         WHERE id = 1`
+    );
+
+    return rows[0];
+};
+
+const guardarHorarioAtencion = async (horario) => {
+    const { hora_inicio, hora_fin, dia_inicio, dia_fin } = horario;
+    const { rows } = await db.query(
+        `INSERT INTO horario_atencion (id, hora_inicio, hora_fin, dia_inicio, dia_fin)
+         VALUES (1, $1, $2, $3, $4)
+         ON CONFLICT (id) DO UPDATE SET
+            hora_inicio = EXCLUDED.hora_inicio,
+            hora_fin = EXCLUDED.hora_fin,
+            dia_inicio = EXCLUDED.dia_inicio,
+            dia_fin = EXCLUDED.dia_fin
+         RETURNING
+            to_char(hora_inicio, 'HH24:MI') AS hora_inicio,
+            to_char(hora_fin, 'HH24:MI') AS hora_fin,
+            dia_inicio,
+            dia_fin`,
+        [hora_inicio, hora_fin, dia_inicio, dia_fin]
+    );
+
+    return rows[0];
+};
 const reporteTurnos = async (fecha_inicio, fecha_fin) => {
     const query = `
         SELECT 
@@ -87,5 +121,7 @@ export default {
     completarTurno,
     datosTurno,
     obtenerTurnosPorFecha,
+    obtenerHorarioAtencion,
+    guardarHorarioAtencion,
     reporteTurnos
 };

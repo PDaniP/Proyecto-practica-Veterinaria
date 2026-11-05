@@ -15,6 +15,8 @@ import api from "../../config/api.js";
 import AgendaTurnos from "../components/turnos/AgendaTurnos.jsx";
 import {
   obtenerTurnosPorFecha,
+  obtenerHorarioAtencion,
+  actualizarHorarioAtencion,
   completarTurno,
   cancelarTurno,
 } from "../service/turnosService.js";
@@ -66,6 +68,12 @@ export default function Home() {
   const [cargandoTurnos, setCargandoTurnos] = useState(true);
   const [errorTurnos, setErrorTurnos] = useState("");
   const [fechaAgenda, setFechaAgenda] = useState(obtenerFechaActual);
+  const [horarioAtencion, setHorarioAtencion] = useState(null);
+  const [cargandoHorario, setCargandoHorario] = useState(true);
+  const [guardandoHorario, setGuardandoHorario] = useState(false);
+  const [errorHorario, setErrorHorario] = useState("");
+  const [mensajeHorario, setMensajeHorario] = useState("");
+  const [horarioBorrador, setHorarioBorrador] = useState(null);
 
   const [modalNuevoTurnoAbierto, setModalNuevoTurnoAbierto] = useState(false);
   const [actualizarturnos, setActualizarTurnos] = useState(0);
@@ -97,6 +105,36 @@ export default function Home() {
 
     cargarTurnos();
   }, [fechaAgenda, actualizarturnos]);
+
+  useEffect(() => {
+    let cancelado = false;
+
+    const cargarHorario = async () => {
+      try {
+        const horario = await obtenerHorarioAtencion();
+        if (!cancelado) {
+          setHorarioAtencion(horario);
+          setHorarioBorrador(horario);
+        }
+      } catch (error) {
+        console.error("Error al cargar el horario de atención:", error);
+        if (!cancelado) {
+          setErrorHorario(
+            error.response?.data?.message ||
+              "No se pudo cargar el horario de atención.",
+          );
+        }
+      } finally {
+        if (!cancelado) setCargandoHorario(false);
+      }
+    };
+
+    cargarHorario();
+
+    return () => {
+      cancelado = true;
+    };
+  }, []);
 
   useEffect(() => {
     const cargarProfesionales = async () => {
@@ -144,6 +182,33 @@ export default function Home() {
       setFechaInicio(formatearFecha(inicio));
       setFechaFin(obtenerFechaActual());
     }
+  };
+
+  const guardarHorario = async (nuevoHorario) => {
+    setGuardandoHorario(true);
+    setErrorHorario("");
+    setMensajeHorario("");
+
+    try {
+      const horarioGuardado = await actualizarHorarioAtencion(nuevoHorario);
+      setHorarioAtencion(horarioGuardado);
+      setHorarioBorrador(horarioGuardado);
+      setMensajeHorario("Horario guardado");
+    } catch (error) {
+      console.error("Error al guardar el horario de atención:", error);
+      setErrorHorario(
+        error.response?.data?.message ||
+          "No se pudo guardar el horario de atención.",
+      );
+    } finally {
+      setGuardandoHorario(false);
+    }
+  };
+
+  const cambiarHorarioBorrador = (actualizar) => {
+    setHorarioBorrador(actualizar);
+    setErrorHorario("");
+    setMensajeHorario("");
   };
 
   const manejarCompletarTurno = async (turno) => {
@@ -212,6 +277,13 @@ export default function Home() {
         onCancelarTurno={manejarCancelarTurno}
         onVerSemana={() => setModalSemanaAbierto(true)}
         onVerMes={() => setModalMesAbierto(true)}
+        horarioBorrador={horarioBorrador}
+        onCambiarHorario={cambiarHorarioBorrador}
+        cargandoHorario={cargandoHorario}
+        guardandoHorario={guardandoHorario}
+        errorHorario={errorHorario}
+        mensajeHorario={mensajeHorario}
+        onGuardarHorario={guardarHorario}
       />
 
       {stock.length > 0 && (
@@ -231,6 +303,7 @@ export default function Home() {
 
       <Modal
         isOpen={modalNuevoTurnoAbierto}
+        className="modal--agenda"
         onClose={() => {
           setModalNuevoTurnoAbierto(false);
           setTurnoEditar(null);
@@ -239,6 +312,7 @@ export default function Home() {
         <FormularioTurno
           profesionales={profesionales}
           turnoEditar={turnoEditar}
+          horarioAtencion={horarioAtencion}
           onClose={() => {
             setModalNuevoTurnoAbierto(false);
             setTurnoEditar(null);
@@ -252,12 +326,14 @@ export default function Home() {
       <Modal
         isOpen={modalSemanaAbierto}
         onClose={() => setModalSemanaAbierto(false)}
+        className="modal--wide modal--agenda"
       >
         <VistaSemana
           profesionales={profesionales}
           profesionalSeleccionado={profesionalSeleccionado}
           estadoSeleccionado={estadoSeleccionado}
           actualizarTurnos={actualizarturnos}
+          horarioAtencion={horarioAtencion}
           onEditarTurno={(turno) => {
             setTurnoEditar(turno);
             setModalSemanaAbierto(false);
@@ -267,7 +343,11 @@ export default function Home() {
         />
       </Modal>
 
-      <Modal isOpen={modalMesAbierto} onClose={() => setModalMesAbierto(false)}>
+      <Modal
+        isOpen={modalMesAbierto}
+        onClose={() => setModalMesAbierto(false)}
+        className="modal--agenda"
+      >
         <VistaMes
           profesionalSeleccionado={profesionalSeleccionado}
           estadoSeleccionado={estadoSeleccionado}

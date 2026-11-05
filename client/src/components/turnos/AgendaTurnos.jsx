@@ -1,5 +1,15 @@
-//import { useState } from "react";
 import "./AgendaTurnos.css";
+import "./TurnosTema.css";
+
+const diasSemana = [
+  { valor: 1, nombre: "Lunes" },
+  { valor: 2, nombre: "Martes" },
+  { valor: 3, nombre: "Miércoles" },
+  { valor: 4, nombre: "Jueves" },
+  { valor: 5, nombre: "Viernes" },
+  { valor: 6, nombre: "Sábado" },
+  { valor: 7, nombre: "Domingo" },
+];
 
 export default function AgendaTurnos({
   turnos = [],
@@ -19,12 +29,23 @@ export default function AgendaTurnos({
   onCancelarTurno,
   onVerSemana,
   onVerMes,
+  horarioBorrador = null,
+  onCambiarHorario,
+  cargandoHorario = false,
+  guardandoHorario = false,
+  errorHorario = "",
+  mensajeHorario = "",
+  onGuardarHorario,
 }) {
-  /*
-  const [profesionalSeleccionado, setProfesionalSeleccionado] =
-    useState("todos");
-  const [estadoSeleccionado, setEstadoSeleccionado] = useState("todos");
-*/
+  const guardarHorario = (event) => {
+    event.preventDefault();
+    onGuardarHorario?.(horarioBorrador);
+  };
+
+  const horarioValido =
+    horarioBorrador &&
+    horarioBorrador.hora_inicio < horarioBorrador.hora_fin;
+
   const turnosFiltrados = turnos.filter((turno) => {
     const coincideProfesional =
       profesionalSeleccionado === "todos" ||
@@ -51,59 +72,160 @@ export default function AgendaTurnos({
   return (
     <section className="agenda-turnos">
       <div className="agenda-turnos__encabezados">
-        
-<div>
-  <h2>Agenda de turnos</h2>
+        <div className="agenda-turnos__encabezados-izquierda">
+          <div>
+            <h2>Agenda de turnos</h2>
 
-  <p>
-    Turnos programados para el{" "}
-    {new Date(
-      `${fechaAgenda}T12:00:00`
-    ).toLocaleDateString("es-AR", {
-      weekday: "long",
-      day: "2-digit",
-      month: "long",
-      year: "numeric",
-    })}
-  </p>
+            <p>
+              Turnos programados para el{" "}
+              {new Date(`${fechaAgenda}T12:00:00`).toLocaleDateString("es-AR", {
+                weekday: "long",
+                day: "2-digit",
+                month: "long",
+                year: "numeric",
+              })}
+            </p>
 
-  <div className="agenda-turnos__navegacion">
-    <button
-      type="button"
-      onClick={() => onCambiarDia(-1)}
-    >
-      Día anterior
-    </button>
+            <div className="agenda-turnos__navegacion">
+              <button type="button" onClick={() => onCambiarDia(-1)}>
+                Día anterior
+              </button>
 
-    <button
-      type="button"
-      onClick={onVolverHoy}
-    >
-      Hoy
-    </button>
+              <button type="button" onClick={onVolverHoy}>
+                Hoy
+              </button>
 
-    <button
-      type="button"
-      onClick={() => onCambiarDia(1)}
-    >
-      Día siguiente
-    </button>
-  </div>
-</div>
+              <button type="button" onClick={() => onCambiarDia(1)}>
+                Día siguiente
+              </button>
+            </div>
+          </div>
 
+          <div className="agenda-turnos__acciones">
+            <button
+              className="button-añadir"
+              type="button"
+              onClick={onNuevoTurno}
+            >
+              Añadir turno
+            </button>
 
-        <div className="agenda-turnos__acciones">
-          <button type="button" onClick={onNuevoTurno}>
-            Añadir turno
-          </button>
+            <button type="button" onClick={onVerSemana}>
+              Ver semana
+            </button>
 
-          <button type="button" onClick={onVerSemana}>
-            Ver semana
-          </button>
+            <button type="button" onClick={onVerMes}>
+              Ver mes
+            </button>
+          </div>
+        </div>
 
-          <button type="button" onClick={onVerMes}>
-            Ver mes
-          </button>
+        <div className="agenda-turnos__encabezados-derecha">
+          <form
+            className="agenda-turnos__configuracion-horario"
+            onSubmit={guardarHorario}
+          >
+            <h3>Horario de atención</h3>
+            {cargandoHorario || !horarioBorrador ? (
+              <p className="agenda-turnos__estado-horario">
+                {errorHorario || "Cargando horario..."}
+              </p>
+            ) : (
+              <>
+                <div className="agenda-turnos__controles-horario">
+                  <label>
+                    Desde
+                    <input
+                      type="time"
+                      value={horarioBorrador.hora_inicio}
+                      required
+                      onChange={(event) =>
+                        onCambiarHorario((actual) => ({
+                          ...actual,
+                          hora_inicio: event.target.value,
+                        }))
+                      }
+                    />
+                  </label>
+
+                  <label>
+                    Hasta
+                    <input
+                      type="time"
+                      value={horarioBorrador.hora_fin}
+                      required
+                      onChange={(event) =>
+                        onCambiarHorario((actual) => ({
+                          ...actual,
+                          hora_fin: event.target.value,
+                        }))
+                      }
+                    />
+                  </label>
+
+                  <label>
+                    Día inicial
+                    <select
+                      value={horarioBorrador.dia_inicio}
+                      onChange={(event) =>
+                        onCambiarHorario((actual) => ({
+                          ...actual,
+                          dia_inicio: Number(event.target.value),
+                        }))
+                      }
+                    >
+                      {diasSemana.map((dia) => (
+                        <option key={dia.valor} value={dia.valor}>
+                          {dia.nombre}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+
+                  <label>
+                    Día final
+                    <select
+                      value={horarioBorrador.dia_fin}
+                      onChange={(event) =>
+                        onCambiarHorario((actual) => ({
+                          ...actual,
+                          dia_fin: Number(event.target.value),
+                        }))
+                      }
+                    >
+                      {diasSemana.map((dia) => (
+                        <option key={dia.valor} value={dia.valor}>
+                          {dia.nombre}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                </div>
+
+                <div className="agenda-turnos__guardar-horario-fila">
+                  <button
+                    className="agenda-turnos__guardar-horario"
+                    type="submit"
+                    disabled={!horarioValido || guardandoHorario}
+                  >
+                    {guardandoHorario ? "Guardando..." : "Guardar horario"}
+                  </button>
+                  {mensajeHorario && (
+                    <span
+                      className="agenda-turnos__estado-horario"
+                      role="status"
+                    >
+                      {mensajeHorario}
+                    </span>
+                  )}
+                </div>
+              </>
+            )}
+            {errorHorario && !cargandoHorario && (
+              <p className="agenda-turnos__error-horario">{errorHorario}</p>
+            )}
+          </form>
+
         </div>
       </div>
 

@@ -1,13 +1,12 @@
-
 .ficha-card {
-  background: #fff;
-  border-radius: 16px;
-  padding: 28px 32px;
   width: 100%;
-  max-width: 720px;
-  max-height: calc(100vh - 120px);
-  overflow-y: auto;
-  box-shadow: 0 4px 24px rgba(125, 31, 153, 0.15);
+  background: transparent;
+  border-radius: 0;
+  padding: 0;
+  max-width: none;
+  max-height: none;
+  overflow: visible;
+  box-shadow: none;
 }
 
 .ficha-header {
@@ -160,4 +159,27 @@
 
 .ficha-error {
   color: #a32d2d;
+}
+
+.ficha-btn-historia {
+  padding: 6px 12px;
+  border: 1.5px solid #7d1f99;
+  border-radius: 6px;
+  background: #7d1f99;
+  color: #fff;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s, transform 0.15s;
+}
+
+.ficha-btn-historia:hover {
+  background: #9b3db8;
+  border-color: #9b3db8;
+  transform: translateY(-1px);
+}
+
+.ficha-btn-historia:focus-visible {
+  outline: 3px solid rgba(125, 31, 153, 0.3);
+  outline-offset: 2px;
 }

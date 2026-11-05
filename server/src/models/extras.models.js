@@ -9,11 +9,26 @@ const añadirMotivo = async (motivo) => {
 };
 
 const añadirDiagnosticoSegunMotivo = async (id_motivo, diagnostico) => {
-    const { rows } = await db.query(
-        'INSERT INTO diagnosticos (diagnostico, id_motivo) VALUES ($1, $2) RETURNING *',
-        [diagnostico, id_motivo]
-    );
-    return rows[0];
+    const client = await db.pool.connect();
+
+    try {
+        await client.query('BEGIN');
+        const { rows } = await client.query(
+            'INSERT INTO diagnosticos (diagnostico, id_motivo) VALUES ($1, $2) RETURNING *',
+            [diagnostico, id_motivo]
+        );
+        await client.query(
+            'UPDATE motivos SET id_diagnostico = $1 WHERE id = $2',
+            [rows[0].id, id_motivo]
+        );
+        await client.query('COMMIT');
+        return rows[0];
+    } catch (error) {
+        await client.query('ROLLBACK');
+        throw error;
+    } finally {
+        client.release();
+    }
 };
 
 export default {

@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
 import CamposVacuna from "./CamposVacuna.jsx";
 import { hoy, vacunaVacia } from "../utils/vacuna.js";
 import "./FormulariosClinicos.css";
@@ -7,7 +6,6 @@ import "./FormulariosClinicos.css";
 import api from "../../config/api.js";
 
 export default function FormularioEdicionConsulta({
-  idMascota,
   nombreMascota,
   onClose,
   onGuardado,
@@ -17,7 +15,7 @@ export default function FormularioEdicionConsulta({
   const [formulario, setFormulario] = useState({
     peso: consulta.peso_actual ?? "",
     temperatura: consulta.temperatura ?? "",
-    motivo_id: consulta.motivo_id ?? "",
+    motivo_id: String(consulta.motivo_id ?? ""),
     diagnostico: consulta.diagnostico ?? "",
     tratamiento: consulta.tratamiento ?? "",
     observaciones: consulta.observaciones ?? "",
@@ -25,6 +23,9 @@ export default function FormularioEdicionConsulta({
   });
   const [aplicoVacuna, setAplicoVacuna] = useState(false);
   const [vacuna, setVacuna] = useState(vacunaVacia());
+  const [productosSeleccionados, setProductosSeleccionados] = useState([]);
+  const [cargandoInsumos, setCargandoInsumos] = useState(true);
+  const [errorInsumos, setErrorInsumos] = useState("");
   const [error, setError] = useState("");
   const [guardando, setGuardando] = useState(false);
   const [motivos, setMotivos] = useState([]);
@@ -43,6 +44,47 @@ export default function FormularioEdicionConsulta({
   );
 
   const esVacunacion = motivoActual?.motivo === "Vacunación";
+
+  useEffect(() => {
+    let activo = true;
+
+    const cargarInsumos = async () => {
+      try {
+        const { data } = await api.get(
+          `mascotas/historia/consulta/${consulta.id}`,
+        );
+        if (!activo) return;
+
+        const insumos = Array.isArray(data.insumos) ? data.insumos : [];
+        setProductosSeleccionados(
+          insumos.map((insumo) => ({
+            id: insumo.id_producto,
+            id_categoria: insumo.id_categoria,
+            nombre: insumo.nombre,
+            marca: insumo.marca,
+            cantidad: insumo.cantidad,
+          })),
+        );
+        setAplicoVacuna(insumos.length > 0);
+      } catch (err) {
+        console.error("Error al cargar los insumos de la consulta:", err);
+        if (activo) {
+          setErrorInsumos(
+            err.response?.data?.message ||
+              "No se pudieron cargar los insumos de la consulta.",
+          );
+        }
+      } finally {
+        if (activo) setCargandoInsumos(false);
+      }
+    };
+
+    cargarInsumos();
+
+    return () => {
+      activo = false;
+    };
+  }, [consulta.id]);
 
   useEffect(() => {
     let activo = true;
@@ -100,19 +142,6 @@ export default function FormularioEdicionConsulta({
     cargarDiagnosticos();
   }, [formulario.motivo_id]);
 
-  useEffect(() => {
-    if (motivos.length === 0) return;
-
-    const motivoDeLaConsulta = motivos.find(
-      (motivo) => motivo.motivo === consulta.motivo,
-    );
-
-    setFormulario((actual) => ({
-      ...actual,
-      motivo_id: String(consulta.motivo_id ?? motivoDeLaConsulta?.id ?? ""),
-    }));
-  }, [motivos, consulta.motivo_id, consulta.motivo]);
-
   const handleChange = (event) => {
     const { name, value } = event.target;
 
@@ -145,25 +174,28 @@ export default function FormularioEdicionConsulta({
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    if (cargandoInsumos || errorInsumos) {
+      setError(
+        errorInsumos || "Espere a que se carguen los insumos de la consulta.",
+      );
+      return;
+    }
+
     //el unico campo obligatorio sera el motivo
-    if (
-      //!consulta.fecha_consulta ||
-      !consulta.motivo_id //||
-      //!consulta.diagnostico.trim() ||
-      //!consulta.tratamiento.trim()
-    ) {
+    if (!formulario.motivo_id) {
       setError("Seleccione el motivo de la consulta.");
       return;
     }
 
-    if (consulta.peso !== "" && Number(consulta.peso) <= 0) {
+    if (formulario.peso !== "" && Number(formulario.peso) <= 0) {
       setError("El peso debe ser mayor a 0.");
       return;
     }
 
     if (
-      consulta.temperatura !== "" &&
-      (Number(consulta.temperatura) < 30 || Number(consulta.temperatura) > 45)
+      formulario.temperatura !== "" &&
+      (Number(formulario.temperatura) < 30 ||
+        Number(formulario.temperatura) > 45)
     ) {
       setError("Revise la temperatura: debe estar entre 30 y 45 °C.");
       return;
@@ -176,9 +208,10 @@ export default function FormularioEdicionConsulta({
       //id_mascota: idMascota,
       //la fecha se obtiene al momento de guardar
       //fecha_consulta: consulta.fecha_consulta,
-      //peso_actual: consulta.peso === "" ? null : Number(consulta.peso), //paso de peso a peso_actual porque el server pedia peso_actual porque el controlador lo recibe como ausente
-      //temperatura:
-      //  consulta.temperatura === "" ? null : Number(consulta.temperatura),
+      peso_actual:
+        formulario.peso === "" ? null : Number(formulario.peso),
+      temperatura:
+        formulario.temperatura === "" ? null : Number(formulario.temperatura),
       motivo_id: formulario.motivo_id,
       diagnostico: formulario.diagnostico.trim(),
       tratamiento: formulario.tratamiento || "",
@@ -187,6 +220,16 @@ export default function FormularioEdicionConsulta({
       //solo se envia una fecha si el motivo es vacunacion
       proxima_dosis:
         esVacunacion && formulario.proxima_dosis ? formulario.proxima_dosis : null,
+      insumos: aplicoVacuna
+        ? productosSeleccionados.map((producto) => ({
+            id_producto: Number(producto.id),
+            cantidad: Number(producto.cantidad),
+            proxima_dosis:
+              esVacunacion && formulario.proxima_dosis
+                ? formulario.proxima_dosis
+                : null,
+          }))
+        : [],
     };
     
     try {
@@ -336,6 +379,12 @@ export default function FormularioEdicionConsulta({
           </select>
         </div>
 
+        {errorDiagnosticos && (
+          <p className="cf-error" role="alert">
+            {errorDiagnosticos}
+          </p>
+        )}
+
         <div className="cf-campo">
           <label htmlFor="consulta-tratamiento">Tratamiento</label>
           <textarea
@@ -367,11 +416,18 @@ export default function FormularioEdicionConsulta({
             Se usaron insumos
           </label>
 
+          {cargandoInsumos && (
+            <p className="cf-ayuda">Cargando insumos de la consulta...</p>
+          )}
+          {errorInsumos && <p className="cf-error" role="alert">{errorInsumos}</p>}
+
           {aplicoVacuna && (
             <div className="cf-vacuna-campos">
               <CamposVacuna
                 valor={vacuna}
                 onChange={setVacuna}
+                productosSeleccionados={productosSeleccionados}
+                onProductosChange={setProductosSeleccionados}
                 prefijo="consulta-vacuna"
               />
             </div>
@@ -389,7 +445,11 @@ export default function FormularioEdicionConsulta({
             Cancelar
           </button>
 
-          <button type="submit" className="btn-primary" disabled={guardando}>
+          <button
+            type="submit"
+            className="btn-primary"
+            disabled={guardando || cargandoInsumos || Boolean(errorInsumos)}
+          >
             {guardando ? "Guardando..." : "Guardar consulta"}
           </button>
         </div>

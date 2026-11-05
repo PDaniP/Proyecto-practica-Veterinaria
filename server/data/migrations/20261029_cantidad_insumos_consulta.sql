@@ -1,0 +1,3 @@
+ALTER TABLE detalle_consulta
+ADD COLUMN IF NOT EXISTS cantidad INTEGER NOT NULL DEFAULT 1
+CHECK (cantidad > 0);

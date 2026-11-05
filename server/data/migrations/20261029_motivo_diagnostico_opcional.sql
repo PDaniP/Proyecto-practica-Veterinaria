@@ -1,0 +1,2 @@
+ALTER TABLE motivos
+ALTER COLUMN id_diagnostico DROP NOT NULL;

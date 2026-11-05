@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { obtenerTurnosPorFecha } from "../../service/turnosService.js";
 import "./VistaMes.css";
+import "./TurnosTema.css";
 
 const formatearFecha = (fecha) => {
   const anio = fecha.getFullYear();
@@ -237,15 +238,7 @@ export default function VistaMes({
 
           <section className="vista-mes__detalle">
             <h3>
-              Turnos del{" "}
-              {new Date(`${fechaSeleccionada}T12:00:00`).toLocaleDateString(
-                "es-AR",
-                {
-                  day: "numeric",
-                  month: "long",
-                  year: "numeric",
-                },
-              )}
+              Turnos de {nombreMes}
             </h3>
 
             {turnosSeleccionados.length === 0 ? (
