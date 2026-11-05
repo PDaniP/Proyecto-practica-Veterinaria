@@ -1,4 +1,5 @@
 import "./AgendaTurnos.css";
+import "./TurnosTema.css";
 
 const diasSemana = [
   { valor: 1, nombre: "Lunes" },

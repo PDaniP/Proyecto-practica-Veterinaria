@@ -4,7 +4,7 @@
     flex-direction: column;
     gap: 18px;
     min-width: 0;
-    color: #252525;
+    color: var(--turnos-text);
 }
 
 .vista-semana__encabezado {
@@ -20,17 +20,24 @@
 
 .vista-semana__encabezado p {
     margin: 0;
-    color: #666;
+    color: var(--turnos-muted);
 }
 
 .vista-semana__encabezado button,
 .vista-semana__navegacion button {
     padding: 9px 12px;
-    border: 1px solid #ccc;
-    border-radius: 7px;
-    background: #fff;
-    color: #252525;
+    border: 1px solid var(--turnos-primary-border);
+    border-radius: 8px;
+    background: var(--turnos-primary-soft);
+    color: var(--turnos-primary-hover);
     cursor: pointer;
+    transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.vista-semana__encabezado button:hover,
+.vista-semana__navegacion button:hover {
+    border-color: var(--turnos-focus);
+    background: var(--turnos-primary-soft);
 }
 
 .vista-semana__navegacion {
@@ -53,14 +60,15 @@
     min-width: 0;
     min-height: 180px;
     padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 9px;
-    background: #fff;
+    border: 1px solid var(--turnos-border);
+    border-radius: 10px;
+    background: var(--turnos-surface);
+    box-shadow: 0 2px 8px rgba(37, 37, 37, 0.04);
 }
 
 .vista-semana__dia--hoy {
-    border: 2px solid #7560a8;
-    background: #faf8ff;
+    border: 2px solid var(--turnos-primary);
+    background: var(--turnos-primary-soft);
 }
 
 .vista-semana__dia-titulo {
@@ -70,11 +78,11 @@
     gap: 6px;
     padding-bottom: 10px;
     margin-bottom: 10px;
-    border-bottom: 1px solid #e5e5e5;
+    border-bottom: 1px solid var(--turnos-border);
 }
 
 .vista-semana__dia-titulo span {
-    color: #666;
+    color: var(--turnos-muted);
     font-size: 0.9rem;
     white-space: nowrap;
 }
@@ -90,46 +98,46 @@
     flex-direction: column;
     gap: 5px;
     padding: 9px;
-    border: 1px solid #e3e0eb;
-    border-radius: 7px;
-    background: #f8f6fc;
+    border: 1px solid var(--turnos-border);
+    border-radius: 8px;
+    background: var(--turnos-surface-soft);
     overflow-wrap: anywhere;
 }
 
 .vista-semana__turno > strong {
-    color: #4b367c;
+    color: var(--turnos-primary-hover);
 }
 
 .vista-semana__turno small {
-    color: #666;
+    color: var(--turnos-muted);
 }
 
 .vista-semana__estado {
     align-self: flex-start;
     padding: 3px 7px;
     border-radius: 12px;
-    background: #eee;
+    background: var(--turnos-neutral-soft);
     font-size: 0.75rem;
 }
 
 .vista-semana__estado--pendiente {
-    background: #fff0cc;
-    color: #805800;
+    background: var(--turnos-warning-soft);
+    color: var(--turnos-warning);
 }
 
 .vista-semana__estado--completado {
-    background: #dff5e5;
-    color: #176b32;
+    background: var(--turnos-success-soft);
+    color: var(--turnos-success-hover);
 }
 
 .vista-semana__estado--cancelado {
-    background: #ffe2e2;
-    color: #a00000;
+    background: var(--turnos-danger-soft);
+    color: var(--turnos-danger);
 }
 
 .vista-semana__vacio,
 .vista-semana__mensaje {
-    color: #777;
+    color: var(--turnos-muted);
     font-size: 0.9rem;
 }
 
@@ -142,12 +150,12 @@
     padding: 12px;
     border-radius: 7px;
     background: #fff0f0;
-    color: #a00000;
+    color: var(--turnos-danger);
 }
 
 .vista-semana__nota {
     margin: 0;
-    color: #777;
+    color: var(--turnos-muted);
     font-size: 0.85rem;
 }
 
@@ -169,9 +177,9 @@
   align-self: flex-start;
   margin-top: 6px;
   padding: 6px 12px;
-  border: 1px solid #3478c8;
-  border-radius: 7px;
-  background: #3478c8;
+  border: 1px solid var(--turnos-primary);
+  border-radius: 8px;
+  background: var(--turnos-primary);
   color: #ffffff;
   font-size: 0.85rem;
   font-weight: 600;
@@ -182,10 +190,10 @@
 }
 
 .vista-semana__boton-editar:hover {
-  background: #2862a7;
+  background: var(--turnos-primary-hover);
 }
 
 .vista-semana__boton-editar:focus-visible {
-  outline: 3px solid #b8a5ed;
+  outline: 3px solid var(--turnos-focus);
   outline-offset: 2px;
 }

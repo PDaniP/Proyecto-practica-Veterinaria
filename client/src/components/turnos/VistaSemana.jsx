@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { obtenerTurnosPorFecha } from "../../service/turnosService.js";
 import "./VistaSemana.css";
+import "./TurnosTema.css";
 
 const formatearFecha = (fecha) => {
   const anio = fecha.getFullYear();

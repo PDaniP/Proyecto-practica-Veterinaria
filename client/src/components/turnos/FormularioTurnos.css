@@ -3,7 +3,7 @@
     display: flex;
     flex-direction: column;
     gap: 16px;
-    color: #252525;
+    color: var(--turnos-text);
 }
 
 .formulario-turno h2 {
@@ -16,8 +16,9 @@
     gap: 14px;
     min-width: 0;
     padding: 16px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
+    border: 1px solid var(--turnos-border);
+    border-radius: 10px;
+    background: var(--turnos-surface-soft);
 }
 
 .formulario-turno__grupo legend {
@@ -32,9 +33,11 @@
 }
 
 .formulario-turno__campo {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
+    display: grid;
+    grid-template-columns: minmax(150px, 0.4fr) minmax(0, 1fr);
+    align-items: center;
+    column-gap: 12px;
+    row-gap: 8px;
 }
 
 .formulario-turno__campo label {
@@ -47,9 +50,16 @@
     box-sizing: border-box;
     width: 100%;
     padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 7px;
+    border: 1px solid var(--turnos-border);
+    border-radius: 8px;
     font: inherit;
+    grid-column: 2;
+}
+
+.formulario-turno__resultados,
+.formulario-turno__campo > p,
+.formulario-turno__campo > .formulario-turno__error {
+    grid-column: 2;
 }
 
 .formulario-turno__resultados {
@@ -62,18 +72,18 @@
 
 .formulario-turno__cliente {
     padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 6px;
-    background: #fff;
-    color: #252525;
+    border: 1px solid var(--turnos-border);
+    border-radius: 8px;
+    background: var(--turnos-surface);
+    color: var(--turnos-text);
     text-align: left;
     cursor: pointer;
 }
 
 .formulario-turno__cliente:hover,
 .formulario-turno__cliente.seleccionado {
-    background: #f0edf8;
-    border-color: #7560a8;
+    background: var(--turnos-primary-soft);
+    border-color: var(--turnos-primary);
 }
 
 .formulario-turno__cliente-seleccionado {
@@ -82,24 +92,24 @@
     justify-content: space-between;
     gap: 12px;
     padding: 10px;
-    border: 1px solid #7560a8;
-    border-radius: 6px;
-    background: #f0edf8;
+    border: 1px solid var(--turnos-primary);
+    border-radius: 8px;
+    background: var(--turnos-primary-soft);
 }
 
 .formulario-turno__cliente-seleccionado button {
     flex-shrink: 0;
     padding: 6px 10px;
-    border: 1px solid #7560a8;
-    border-radius: 6px;
-    background: #fff;
-    color: #4b367c;
+    border: 1px solid var(--turnos-primary);
+    border-radius: 8px;
+    background: var(--turnos-surface);
+    color: var(--turnos-primary-hover);
     font: inherit;
     cursor: pointer;
 }
 
 .formulario-turno__cliente-seleccionado button:hover {
-    background: #4b367c;
+    background: var(--turnos-primary-hover);
     color: #fff;
 }
 
@@ -114,7 +124,7 @@
     padding: 10px;
     border-radius: 6px;
     background: #fff0f0;
-    color: #a00000;
+    color: var(--turnos-danger);
 }
 
 .formulario-turno__acciones {
@@ -126,17 +136,17 @@
 
 .formulario-turno__acciones button {
     padding: 10px 16px;
-    border: 1px solid #ccc;
-    border-radius: 7px;
-    background: #fff;
-    color: #252525;
+    border: 1px solid var(--turnos-border);
+    border-radius: 8px;
+    background: var(--turnos-surface);
+    color: var(--turnos-text);
     cursor: pointer;
 }
 
 .formulario-turno__acciones button[type="submit"] {
-    background: #4b367c;
+    background: var(--turnos-primary);
     color: #fff;
-    border-color: #4b367c;
+    border-color: var(--turnos-primary);
 }
 
 .formulario-turno__acciones button:disabled {
@@ -145,6 +155,11 @@
 }
 
 @media (max-width: 600px) {
+    .formulario-turno__campo {
+        grid-template-columns: minmax(105px, 0.45fr) minmax(0, 1fr);
+        column-gap: 8px;
+    }
+
     .formulario-turno__grupo {
         padding: 12px;
     }

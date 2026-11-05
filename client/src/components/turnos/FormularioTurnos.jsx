@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import api from "../../../config/api.js";
 import { asignarTurno, modificarTurno } from "../../service/turnosService";
 import "./FormularioTurnos.css";
+import "./TurnosTema.css";
 
 export default function FormularioTurno({
   profesionales = [],

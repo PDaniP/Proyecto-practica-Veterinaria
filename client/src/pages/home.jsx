@@ -303,6 +303,7 @@ export default function Home() {
 
       <Modal
         isOpen={modalNuevoTurnoAbierto}
+        className="modal--agenda"
         onClose={() => {
           setModalNuevoTurnoAbierto(false);
           setTurnoEditar(null);
@@ -325,7 +326,7 @@ export default function Home() {
       <Modal
         isOpen={modalSemanaAbierto}
         onClose={() => setModalSemanaAbierto(false)}
-        className="modal--wide"
+        className="modal--wide modal--agenda"
       >
         <VistaSemana
           profesionales={profesionales}
@@ -342,7 +343,11 @@ export default function Home() {
         />
       </Modal>
 
-      <Modal isOpen={modalMesAbierto} onClose={() => setModalMesAbierto(false)}>
+      <Modal
+        isOpen={modalMesAbierto}
+        onClose={() => setModalMesAbierto(false)}
+        className="modal--agenda"
+      >
         <VistaMes
           profesionalSeleccionado={profesionalSeleccionado}
           estadoSeleccionado={estadoSeleccionado}

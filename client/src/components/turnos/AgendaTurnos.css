@@ -2,10 +2,11 @@
 .agenda-turnos {
     margin: 24px 0;
     padding: 24px;
-    background: #ffffff;
-    border: 1px solid #e2e2e2;
+    background: var(--turnos-surface);
+    border: 1px solid var(--turnos-border);
     border-radius: 12px;
-    color: #252525;
+    color: var(--turnos-text);
+    box-shadow: 0 3px 14px rgba(37, 37, 37, 0.06);
 }
 
 .agenda-turnos__encabezados {
@@ -23,7 +24,7 @@
 
 .agenda-turnos__encabezados p {
     margin: 0;
-    color: #666666;
+    color: var(--turnos-muted);
 }
 
 .agenda-turnos__encabezados-izquierda {
@@ -44,9 +45,9 @@
 .agenda-turnos__configuracion-horario {
     width: 100%;
     padding: 14px;
-    border: 1px solid #e2e2e2;
+    border: 1px solid var(--turnos-border);
     border-radius: 8px;
-    background: #faf9fc;
+    background: var(--turnos-surface-soft);
     box-sizing: border-box;
 }
 
@@ -75,18 +76,18 @@
     width: 100%;
     min-width: 0;
     padding: 8px;
-    border: 1px solid #cccccc;
-    border-radius: 6px;
-    background: #ffffff;
-    color: #252525;
+    border: 1px solid var(--turnos-border);
+    border-radius: 8px;
+    background: var(--turnos-surface);
+    color: var(--turnos-text);
     box-sizing: border-box;
 }
 
 .agenda-turnos__guardar-horario {
     padding: 8px 12px;
-    border: 1px solid #6650a4;
-    border-radius: 6px;
-    background: #6650a4;
+    border: 1px solid var(--turnos-primary);
+    border-radius: 8px;
+    background: var(--turnos-primary);
     color: #ffffff;
     cursor: pointer;
 }
@@ -110,11 +111,11 @@
 }
 
 .agenda-turnos__estado-horario {
-    color: #176b32 !important;
+    color: var(--turnos-success) !important;
 }
 
 .agenda-turnos__error-horario {
-    color: #a00000 !important;
+    color: var(--turnos-danger) !important;
     margin-top: 8px !important;
 }
 
@@ -126,26 +127,26 @@
 
 .agenda-turnos__acciones button {
     padding: 10px 14px;
-    border: 1px solid #d0d0d0;
-    border-radius: 7px;
-    background: #ffffff;
-    color: #252525;
+    border: 1px solid var(--turnos-border);
+    border-radius: 8px;
+    background: var(--turnos-surface);
+    color: var(--turnos-text);
     cursor: pointer;
 }
 
 .agenda-turnos__acciones button:hover {
-    background: #f2f2f2;
+    background: var(--turnos-primary-soft);
 }
 
 .agenda-turnos__acciones .button-añadir {
-    border-color: #198754;
-    background: #198754;
+    border-color: var(--turnos-success);
+    background: var(--turnos-success);
     color: #ffffff;
 }
 
 .agenda-turnos__acciones .button-añadir:hover {
-    border-color: #157347;
-    background: #157347;
+    border-color: var(--turnos-success-hover);
+    background: var(--turnos-success-hover);
 }
 
 
@@ -161,10 +162,10 @@
 
 .agenda-turnos__navegacion button {
     padding: 9px 14px;
-    border: 1px solid #d5d2e4;
+    border: 1px solid var(--turnos-primary-border);
     border-radius: 8px;
-    background: #f5f3fa;
-    color: #40365f;
+    background: var(--turnos-primary-soft);
+    color: var(--turnos-primary-hover);
     font-weight: 500;
     cursor: pointer;
     transition:
@@ -176,7 +177,7 @@
 
 .agenda-turnos__navegacion button:hover {
     background: #e9e4f5;
-    border-color: #b8acd9;
+    border-color: var(--turnos-focus);
 }
 
 .agenda-turnos__navegacion button:active {
@@ -184,20 +185,20 @@
 }
 
 .agenda-turnos__navegacion button:focus-visible {
-    outline: 3px solid #b8a5ed;
+    outline: 3px solid var(--turnos-focus);
     outline-offset: 2px;
 }
 
 .agenda-turnos__navegacion button:nth-child(2) {
-    background: #6650a4;
-    border-color: #6650a4;
+    background: var(--turnos-primary);
+    border-color: var(--turnos-primary);
     color: #ffffff;
     font-weight: 600;
 }
 
 .agenda-turnos__navegacion button:nth-child(2):hover {
-    background: #514080;
-    border-color: #514080;
+    background: var(--turnos-primary-hover);
+    border-color: var(--turnos-primary-hover);
 }
 
 
@@ -219,23 +220,23 @@
 
 .agenda-turnos__filtros select {
     padding: 10px;
-    border: 1px solid #cccccc;
-    border-radius: 7px;
-    background: #ffffff;
-    color: #252525;
+    border: 1px solid var(--turnos-border);
+    border-radius: 8px;
+    background: var(--turnos-surface);
+    color: var(--turnos-text);
 }
 
 .agenda-turnos__mensaje {
     padding: 20px 12px;
     text-align: center;
-    color: #666666;
+    color: var(--turnos-muted);
 }
 
 .agenda-turnos__error {
     padding: 12px;
     border-radius: 7px;
     background: #fff0f0;
-    color: #a00000;
+    color: var(--turnos-danger);
 }
 
 .agenda-turnos__lista {
@@ -249,8 +250,10 @@
     align-items: center;
     gap: 18px;
     padding: 16px;
-    border: 1px solid #e2e2e2;
-    border-radius: 8px;
+    border: 1px solid var(--turnos-border);
+    border-radius: 10px;
+    background: var(--turnos-surface);
+    box-shadow: 0 2px 8px rgba(37, 37, 37, 0.04);
 }
 
 
@@ -288,35 +291,35 @@
 
 /* Editar: azul */
 .agenda-turnos__botones button:nth-child(1) {
-    background: #3478c8;
-    border-color: #3478c8;
+    background: var(--turnos-primary);
+    border-color: var(--turnos-primary);
 }
 
 .agenda-turnos__botones button:nth-child(1):hover {
-    background: #2862a7;
-    box-shadow: 0 2px 6px #3478c833;
+    background: var(--turnos-primary-hover);
+    box-shadow: 0 2px 6px rgba(102, 80, 164, 0.2);
 }
 
 /* Completar: verde */
 .agenda-turnos__botones button:nth-child(2) {
-    background: #198754;
-    border-color: #198754;
+    background: var(--turnos-success);
+    border-color: var(--turnos-success);
 }
 
 .agenda-turnos__botones button:nth-child(2):hover {
-    background: #146c43;
-    box-shadow: 0 2px 6px #19875433;
+    background: var(--turnos-success-hover);
+    box-shadow: 0 2px 6px rgba(25, 135, 84, 0.2);
 }
 
 /* Cancelar: rojo */
 .agenda-turnos__botones button:nth-child(3) {
-    background: #c83d45;
-    border-color: #c83d45;
+    background: var(--turnos-danger-action);
+    border-color: var(--turnos-danger-action);
 }
 
 .agenda-turnos__botones button:nth-child(3):hover {
-    background: #a92e35;
-    box-shadow: 0 2px 6px #c83d4533;
+    background: var(--turnos-danger-action-hover);
+    box-shadow: 0 2px 6px rgba(200, 61, 69, 0.2);
 }
 
 
@@ -338,31 +341,31 @@
 
 .agenda-turnos__datos p {
     margin: 4px 0;
-    color: #666666;
+    color: var(--turnos-muted);
     overflow-wrap: anywhere;
 }
 
 .agenda-turnos__estado {
     padding: 5px 9px;
     border-radius: 20px;
-    background: #eeeeee;
+    background: var(--turnos-neutral-soft);
     font-size: 0.85rem;
     white-space: nowrap;
 }
 
 .agenda-turnos__estado--pendiente {
-    background: #fff0cc;
-    color: #805800;
+    background: var(--turnos-warning-soft);
+    color: var(--turnos-warning);
 }
 
 .agenda-turnos__estado--completado {
-    background: #dff5e5;
-    color: #176b32;
+    background: var(--turnos-success-soft);
+    color: var(--turnos-success-hover);
 }
 
 .agenda-turnos__estado--cancelado {
-    background: #ffe2e2;
-    color: #a00000;
+    background: var(--turnos-danger-soft);
+    color: var(--turnos-danger);
 }
 
 @media (max-width: 600px) {
