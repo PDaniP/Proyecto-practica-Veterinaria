@@ -63,7 +63,7 @@ export default function Navbar() {
         <span>Veterinaria</span>
       </div>
 
-      <NavLink to="/" className={({ isActive }) => `nav-link nav-link-home${isActive ? ' active' : ''}`}>
+      <NavLink to="/inicio" className={({ isActive }) => `nav-link nav-link-home${isActive ? ' active' : ''}`}>
         Home
       </NavLink>
 
