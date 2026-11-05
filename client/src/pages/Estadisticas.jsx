@@ -1,7 +1,7 @@
 import GraficoEspecies from '../components/graficos/GraficoEspecies.jsx'
 import GraficoStock from '../components/graficos/GraficoStock.jsx'
 import GraficosVentas from '../components/graficos/GraficosVentas.jsx'
-
+import ReporteTurnos from '../components/graficos/GraficoTurnos.jsx'
 const Estadisticas = () => (
   <div>
     <h1>Estadísticas</h1>
@@ -16,6 +16,10 @@ const Estadisticas = () => (
     <div>
     <h1>Ventas</h1>
     <GraficosVentas />
+    </div>
+    <div>
+    <h1>Turnos</h1>
+    <ReporteTurnos />
     </div>
   </div>
 )
