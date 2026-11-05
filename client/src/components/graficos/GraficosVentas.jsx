@@ -177,14 +177,14 @@ const GraficosVentas = () => {
   useEffect(() => {
     const fetchProductoMasVendido = async () => {
       try {
-        const response = await api.get(`/ventas/reporte/producto-mas-vendido`);
+        const response = await api.get(`/ventas/reporte/producto-mas-vendido?fecha_inicio=${fechaInicio}&fecha_fin=${fechaFin}`);
         setProductoMasVendido(response.data);
       } catch (error) {
         console.error(error);
       }
     };
     fetchProductoMasVendido();
-  }, []);
+  }, [fechaInicio, fechaFin]);
 
   return (
     <div>

@@ -192,7 +192,8 @@ const reporteVentasPorMes = async (req, res) => {
 
 const reporteProductoMasVendido = async (req, res) => {
     try {
-        const reporte = await productoMasVendido();
+        const { fecha_inicio, fecha_fin } = req.query;
+        const reporte = await productoMasVendido(fecha_inicio, fecha_fin);
         console.log(reporte)
         res.status(200).json({ message: 'Producto más vendido obtenido correctamente', reporte });
     } catch (error) {
