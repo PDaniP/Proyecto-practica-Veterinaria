@@ -1,4 +1,5 @@
 import clientModel from '../models/client.model.js';
+import { enviarNotificacion } from '../config/whatsapp.js';
 const { obtenerListaClientes, añadirClienteADB, editarClienteADB, eliminarClienteADB } = clientModel;
 
 const listaClientes = async (req, res) => {
@@ -21,6 +22,10 @@ const añadirCliente = async (req, res) => {
             return res.status(400).json({ message: 'Faltan datos obligatorios del cliente' });
         }
         const nuevoCliente = await añadirClienteADB(cliente);
+        // PRUEBA: enviar notificación por WhatsApp si el cliente acepta recibir notificaciones.(PASÓ)
+        // if (cliente.recibe_notificaciones) {
+        //     enviarNotificacion(cliente.telefono, `¡Hola ${cliente.nombre}! Gracias por registrarte en nuestra Veterinaria. Por este medio te enviaremos recordatorios de turnos y novedades de tus mascotas.`); 
+        // }
         res.status(201).json({ message: 'Cliente añadido correctamente', cliente: nuevoCliente });
     }catch (error) {
         res.status(500).json({ message: 'Error al añadir el cliente', error });

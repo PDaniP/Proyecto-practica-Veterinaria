@@ -120,7 +120,21 @@ const productoPorId = async (req, res) => {
     res.status(200).json(datos,{message: 'Producto obtenido exitosamente'})
 } 
 
+const reporteCantidadProductos = async (req, res) => {
+    const datos = await productModel.reporteCantidadProductos()
+    
 
+    const reporte = [
+        {name:'sin stock',value: Number(datos.sin_stock)},
+        {name:'Stock bajo', value: Number(datos.bajo_stock) },
+        {name:'Stock suficiente', value: Number(datos.stock_suficiente) }
+    ]
+
+    if(!datos || datos.length < 1){
+        return res.status(401).json({message:"No existen datos"})
+    }
+    res.status(200).json({reporte, message:"Datos obtenidos con exito"})
+}
 
 export default {listaProducto,
                 productoPorId,
@@ -131,4 +145,5 @@ export default {listaProducto,
                 añadirCategoria,
                 listaCategorias,
                 listaLotes,
+                reporteCantidadProductos
 }

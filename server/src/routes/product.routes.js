@@ -8,7 +8,7 @@ router.get('/', validarUsuario, productController.listaProducto )
 router.get('/product/categorias', validarUsuario, productController.listaCategorias)
 router.get('/product/lotes', validarUsuario, productController.listaLotes)
 router.get('/product/:id', validarUsuario, productController.productoPorId)
-
+router.get('/reporte', validarUsuario, productController.reporteCantidadProductos)
 
 
 

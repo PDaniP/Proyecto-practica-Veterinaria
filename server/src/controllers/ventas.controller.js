@@ -10,7 +10,8 @@ import {obtenerLotesVentas,
       generarReporteVentas,
       generarReporteVentasPorDia,
       generarReporteVentasPorSemana,
-      generarReporteVentasPorMes} from '../models/ventas.model.js'
+      generarReporteVentasPorMes,
+    productoMasVendido} from '../models/ventas.model.js'
 import productModel from '../models/product.model.js'
 
 const descontarStock = async (req, res) => {
@@ -189,4 +190,16 @@ const reporteVentasPorMes = async (req, res) => {
     }
 };
 
-export { descontarStock, eliminarLoteVacio, registrarVenta, registrarDetallesVenta, listaVentas, obtenerDetallesVentaController, obtenerVentaPorFecha, obtenerRegistroVentaPorCliente, reporteVentas, reporteVentasPorDia, reporteVentasPorSemana, reporteVentasPorMes };
+const reporteProductoMasVendido = async (req, res) => {
+    try {
+        const { fecha_inicio, fecha_fin } = req.query;
+        const reporte = await productoMasVendido(fecha_inicio, fecha_fin);
+
+        res.status(200).json({ message: 'Producto más vendido obtenido correctamente', reporte });
+    } catch (error) {
+        res.status(500).json({ message: 'Error al obtener el producto más vendido', error });
+        console.error('Error al obtener el producto más vendido:', error);
+    }
+};
+
+export { descontarStock, eliminarLoteVacio, registrarVenta, registrarDetallesVenta, listaVentas, obtenerDetallesVentaController, obtenerVentaPorFecha, obtenerRegistroVentaPorCliente, reporteVentas, reporteVentasPorDia, reporteVentasPorSemana, reporteVentasPorMes, reporteProductoMasVendido };

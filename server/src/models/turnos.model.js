@@ -1,19 +1,21 @@
 import db from '../config/db.js';
 
 const guardarTurno = async (turno) => {
-    const {nombre_contacto, telefono_contacto, profesional_id, fecha_hora,motivo, observaciones} = turno;
+    // AGREGADO: cliente_id y recibe_notificaciones
+    const {cliente_id, nombre_contacto, telefono_contacto, profesional_id, fecha_hora, motivo, observaciones, recibe_notificaciones} = turno;
     const {rows} = await db.query(
-        'INSERT INTO turnos (nombre_contacto, telefono_contacto, profesional_id, fecha_hora, motivo, observaciones) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
-        [nombre_contacto, telefono_contacto, profesional_id, fecha_hora, motivo, observaciones || null]
+        'INSERT INTO turnos (cliente_id, nombre_contacto, telefono_contacto, profesional_id, fecha_hora, motivo, observaciones, recibe_notificaciones) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *',
+        [cliente_id || null, nombre_contacto, telefono_contacto, profesional_id, fecha_hora, motivo, observaciones || null, recibe_notificaciones || false]
     );
     return rows[0];
 }
 
 const editarTurno = async (id, turno) => {
-    const {profesional_id, fecha_hora,motivo, estado, observaciones} = turno;
+    // AGREGADO: recibe_notificaciones
+    const {profesional_id, fecha_hora, motivo, estado, observaciones, recibe_notificaciones} = turno;
     const {rows} = await db.query(
-        'UPDATE turnos SET (profesional_id, fecha_hora, motivo, estado, observaciones) = ($1, $2, $3, $4, $5) WHERE id = $6 RETURNING *',
-        [profesional_id, fecha_hora, motivo, estado, observaciones || null, id]
+        'UPDATE turnos SET (profesional_id, fecha_hora, motivo, estado, observaciones, recibe_notificaciones) = ($1, $2, $3, $4, $5, $6) WHERE id = $7 RETURNING *',
+        [profesional_id, fecha_hora, motivo, estado, observaciones || null, recibe_notificaciones || false, id]
     );
     return rows[0];
 }
@@ -50,6 +52,33 @@ const obtenerTurnosPorFecha = async (fecha) => {
     return rows;
 };
 
+const reporteTurnos = async (fecha_inicio, fecha_fin) => {
+    const query = `
+        SELECT 
+            COALESCE(estado,'Sin estado') AS estado,
+            COUNT(*)::int AS cantidad
+        FROM turnos
+        WHERE fecha_hora >= $1::date
+          AND fecha_hora < ($2::date + INTERVAL '1 day')
+        GROUP BY estado
+        ORDER BY cantidad ASC
+    `;
+    const { rows } = await db.query(query, [fecha_inicio, fecha_fin]);
+    const query2 = `
+        SELECT
+            u.nombre as profesional,
+            COUNT(*)::int AS turnos_asignados
+        FROM turnos
+        LEFT JOIN usuarios u ON u.id = turnos.profesional_id
+        WHERE fecha_hora >= $1::date
+          AND fecha_hora < ($2::date + INTERVAL '1 day')
+        GROUP BY u.nombre
+        ORDER BY turnos_asignados ASC
+    `;
+    const {rows:rows2 } = await db.query(query2, [fecha_inicio, fecha_fin]);
+    return { rows, rows2 };
+
+}
 
 export default {
     guardarTurno,
@@ -57,5 +86,6 @@ export default {
     eliminarTurno,
     completarTurno,
     datosTurno,
-    obtenerTurnosPorFecha
+    obtenerTurnosPorFecha,
+    reporteTurnos
 };

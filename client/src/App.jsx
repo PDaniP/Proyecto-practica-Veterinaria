@@ -15,7 +15,7 @@ import { VerificacionToken } from './pages/auth/Login.jsx'
 import Perfil from './pages/auth/Perfil.jsx'
 import PanelControl from './pages/auth/PanelControl.jsx'
 import FormularioProductos from './components/FormularioProductos.jsx'
-
+import Estadisticas from './pages/Estadisticas.jsx'
 
 function App() {
 
@@ -40,6 +40,7 @@ function App() {
               <Route path="/perfil" element={<Perfil />} />
               <Route path="/panel-control" element={<PanelControl />} />
               <Route path="/historias-clinicas/:id" element={<HistoriasClinicas />} />
+              <Route path="/estadisticas" element={<Estadisticas />} />
             </Route>
           </Routes>
         </main>

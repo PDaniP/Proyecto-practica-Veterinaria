@@ -1,4 +1,4 @@
-import {descontarStock, registrarVenta, obtenerVentaPorFecha, registrarDetallesVenta, listaVentas, obtenerDetallesVentaController, reporteVentas, reporteVentasPorDia, reporteVentasPorSemana, reporteVentasPorMes} from '../controllers/ventas.controller.js'
+import {descontarStock, registrarVenta, obtenerVentaPorFecha, registrarDetallesVenta, listaVentas, obtenerDetallesVentaController, reporteVentas, reporteVentasPorDia, reporteVentasPorSemana, reporteVentasPorMes, reporteProductoMasVendido} from '../controllers/ventas.controller.js'
 import express from 'express'
 import { validarUsuario } from '../middlewares/validator.middlewares.js'
 const router = express.Router()
@@ -12,6 +12,7 @@ router.get('/reporte', validarUsuario, reporteVentas)
 router.get('/reporte/dia', validarUsuario, reporteVentasPorDia)//requiere dia por query
 router.get('/reporte/semana', validarUsuario, reporteVentasPorSemana)//requiere dia inicio y dia fin por query
 router.get('/reporte/mes', validarUsuario, reporteVentasPorMes)//requiere dia inicio y dia fin por query
+router.get('/reporte/producto-mas-vendido', reporteProductoMasVendido)
 
 
 //metodos POST

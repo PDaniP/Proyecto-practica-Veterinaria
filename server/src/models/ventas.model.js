@@ -171,4 +171,24 @@ const generarReporteVentasPorMes = async (fecha_inicio, fecha_fin) => {
     return rows
 }
 
-export { obtenerLotesVentas, actualizarStockLote, eliminarLoteVacio, añadirVenta, detallesVenta, filtrarProductoPorID, obtenerListaVentas, obtenerDetallesVenta, filtrarServiciosPorId, obtenerVentaPorFechaActual, obtenerRegistroVentaPorCliente, generarReporteVentas, generarReporteVentasPorDia, generarReporteVentasPorSemana, generarReporteVentasPorMes }
+const productoMasVendido = async (fecha_inicio, fecha_fin) => {
+    const query = `
+        SELECT
+            p.nombre AS producto_nombre,
+            v.fecha_venta,
+            SUM(dv.cantidad) AS total_vendido
+        FROM detalle_ventas AS dv
+        JOIN productos p ON dv.id_producto = p.id
+        JOIN ventas v ON dv.id_venta = v.id
+        WHERE v.fecha_venta >= $1::date
+        AND v.fecha_venta <= $2::date
+        GROUP BY p.nombre, v.fecha_venta
+        ORDER BY total_vendido DESC
+        
+        LIMIT 10
+    `;
+    const {rows} = await db.query(query, [fecha_inicio, fecha_fin]);
+    return rows;
+}
+
+export { obtenerLotesVentas, actualizarStockLote, eliminarLoteVacio, añadirVenta, detallesVenta, filtrarProductoPorID, obtenerListaVentas, obtenerDetallesVenta, filtrarServiciosPorId, obtenerVentaPorFechaActual, obtenerRegistroVentaPorCliente, generarReporteVentas, generarReporteVentasPorDia, generarReporteVentasPorSemana, generarReporteVentasPorMes, productoMasVendido }

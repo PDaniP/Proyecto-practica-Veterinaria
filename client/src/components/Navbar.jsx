@@ -9,6 +9,7 @@ const navItems = [
   { label: 'Ventas', path: '/ventas' },
   { label: 'Clientes', path: '/clientes' },
   { label: 'Mascotas', path: '/mascotas' },
+  { label: 'Estadísticas', path: '/estadisticas' },
   //{ label: 'Historias Clínicas', path: '/historias-clinicas' },
 ]
 
