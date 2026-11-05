@@ -194,7 +194,7 @@ const reporteProductoMasVendido = async (req, res) => {
     try {
         const { fecha_inicio, fecha_fin } = req.query;
         const reporte = await productoMasVendido(fecha_inicio, fecha_fin);
-        console.log(reporte)
+
         res.status(200).json({ message: 'Producto más vendido obtenido correctamente', reporte });
     } catch (error) {
         res.status(500).json({ message: 'Error al obtener el producto más vendido', error });

@@ -63,8 +63,12 @@ function generarGraficoLinea(data, periodo) {
       >
         <CartesianGrid strokeDasharray="3 3" />
         <XAxis dataKey="fecha" />
-        <YAxis />
-        <Tooltip />
+        <YAxis
+          tickFormatter={(valor) =>
+            `$${valor.toLocaleString('es-AR')}`
+            }
+          />
+        <Tooltip formatter={(valor) => [`$${Number(valor).toLocaleString('es-AR')}`, 'Ingresos']} />
         <Legend />
         <Line type="monotone" dataKey="total" stroke="#ff7300" />
       </LineChart>
@@ -106,6 +110,7 @@ const generarGraficoTorta = (data, periodo) => {
             nameKey="name"
             innerRadius={40} 
             outerRadius={80} 
+            label={({percent}) => `${(percent * 100).toFixed(1)}%`}
         >
           {datosGraficos.map((entry, index) => (
             <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
@@ -131,10 +136,12 @@ const graficoProductoMasVendido = (data,periodo) => {
         width={600}
         height={300}
         data={datos}
+        layout="vertical"
+
       >
         <CartesianGrid strokeDasharray="3 3" />
-        <XAxis dataKey="producto_nombre" />
-        <YAxis />
+        <XAxis type="number" dataKey="total_vendido" />
+        <YAxis type="category" dataKey="producto_nombre" width={200} />
         <Tooltip />
         <Legend />
         <Bar dataKey="total_vendido" fill="#8884d8" />
