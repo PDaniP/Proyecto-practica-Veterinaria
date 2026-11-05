@@ -222,6 +222,6 @@ export default {
     obtenerDatosTurno,
     obtenerTurnosPorFecha,
     obtenerHorarioAtencion,
-    actualizarHorarioAtencion
+    actualizarHorarioAtencion,
     reportesTurnos
 };
