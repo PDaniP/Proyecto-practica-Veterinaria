@@ -50,47 +50,7 @@ const desplazarFecha = (fecha, cantidadDias) => {
   return formatearFecha(nuevaFecha);
 };
 
-/*
-function generarGrafico(data, periodo) {
-  console.log(data, periodo);
-  if (!Array.isArray(data?.reporte)) {
-    return <p>Cargando datos...</p>;
-  }
-  const datosGraficos = data.reporte.map((item) => ({
-    hora: new Date(item.fecha).toLocaleTimeString("es-AR", {
-      hour: "2-digit",
-      minute: "2-digit",
-      hour12: false,
-    }),
-    efectivo: Number(item.efectivo),
-    tarjeta: Number(item.tarjeta),
-    transferencia: Number(item.transferencia),
-    total:
-      Number(item.efectivo) + Number(item.tarjeta) + Number(item.transferencia),
-  }));
 
-  return (
-    <>
-      <h2>Ventas del {periodo}</h2>
-      <LineChart
-        width={600}
-        height={300}
-        responsive={true}
-        data={datosGraficos}
-      >
-        <CartesianGrid strokeDasharray="3 3" />
-        <XAxis dataKey="hora" />
-        <YAxis />
-        <Tooltip />
-        <Legend />
-        <Line type="monotone" dataKey="efectivo" stroke="#82ca9d" />
-        <Line type="monotone" dataKey="tarjeta" stroke="#8884d8" />
-        <Line type="monotone" dataKey="transferencia" stroke="#ffc658" />
-        <Line type="monotone" dataKey="total" stroke="#ff7300" />
-      </LineChart>
-    </>
-  );
-}*/
 
 export default function Home() {
   const [stock, setStock] = useState([]);
@@ -266,35 +226,6 @@ export default function Home() {
           </ul>
         </div>
       )}
-      {/*<div>
-        <button onClick={() => cambiarEstadoFecha('dia')}>Día</button>
-        <button onClick={() => cambiarEstadoFecha('semana')}>Semana</button>
-        <button onClick={() => cambiarEstadoFecha('mes')}>Mes</button>
-        <label>
-          Fecha Inicio
-          <input
-            type="date"
-            value={fechaInicio}
-            onChange={(e) => setFechaInicio(e.target.value)}
-          />
-        </label>
-        {/*{fechaElegida !== "dia" && <label> Fecha fin<input type="date" value={fechaFin} onChange={(e) => setFechaFin(e.target.value)} /></label>}*/}
-      {/*fechaElegida === 'dia' && (
-        <div>
-          {generarGrafico(ventasDiarias, "dia")}
-        </div>
-     )}
-     {fechaElegida === 'semana' && (
-        <div>
-          {generarGrafico(ventasSemanales, "semana")}
-        </div>
-     )}
-     {fechaElegida === 'mes' && (
-        <div>
-          {generarGrafico(ventasMensuales, "mes")}
-        </div>
-     )}
-     </div>*/}
 
       <AlertaStockFlotante />
 
