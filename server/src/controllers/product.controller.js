@@ -129,7 +129,7 @@ const reporteCantidadProductos = async (req, res) => {
         {name:'Stock bajo', value: Number(datos.bajo_stock) },
         {name:'Stock suficiente', value: Number(datos.stock_suficiente) }
     ]
-    console.log(reporte)
+
     if(!datos || datos.length < 1){
         return res.status(401).json({message:"No existen datos"})
     }
