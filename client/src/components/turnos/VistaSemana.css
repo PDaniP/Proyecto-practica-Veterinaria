@@ -42,7 +42,7 @@
 
 .vista-semana__dias {
     display: grid;
-    grid-template-columns: repeat(7, minmax(150px, 1fr));
+    grid-template-columns: repeat(var(--week-day-count), minmax(150px, 1fr));
     gap: 10px;
     overflow-x: auto;
     padding-bottom: 8px;
@@ -65,8 +65,9 @@
 
 .vista-semana__dia-titulo {
     display: flex;
-    flex-direction: column;
-    gap: 4px;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 6px;
     padding-bottom: 10px;
     margin-bottom: 10px;
     border-bottom: 1px solid #e5e5e5;
@@ -75,6 +76,7 @@
 .vista-semana__dia-titulo span {
     color: #666;
     font-size: 0.9rem;
+    white-space: nowrap;
 }
 
 .vista-semana__lista {
@@ -159,7 +161,7 @@
     }
 
     .vista-semana__dias {
-        grid-template-columns: repeat(7, minmax(145px, 1fr));
+        grid-template-columns: repeat(var(--week-day-count), minmax(145px, 1fr));
     }
 }
 

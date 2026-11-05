@@ -8,6 +8,7 @@ export default function FormularioTurno({
   onClose,
   onGuardado,
   turnoEditar = null,
+  horarioAtencion = null,
 }) {
   const [clientes, setClientes] = useState([]);
   const [motivos, setMotivos] = useState([]);
@@ -159,6 +160,28 @@ export default function FormularioTurno({
     if (!fecha || !hora || !motivo.trim()) {
       setError("Completá la fecha, la hora y el motivo del turno.");
       return;
+    }
+
+    if (horarioAtencion) {
+      const fechaSeleccionada = new Date(`${fecha}T12:00:00`);
+      const diaSemana = fechaSeleccionada.getDay() || 7;
+      const dentroDelRangoDias = horarioAtencion.dia_inicio <= horarioAtencion.dia_fin
+        ? diaSemana >= horarioAtencion.dia_inicio &&
+          diaSemana <= horarioAtencion.dia_fin
+        : diaSemana >= horarioAtencion.dia_inicio ||
+          diaSemana <= horarioAtencion.dia_fin;
+
+      if (!dentroDelRangoDias) {
+        setError("La fecha elegida está fuera de los días habilitados para turnos.");
+        return;
+      }
+
+      if (hora < horarioAtencion.hora_inicio || hora >= horarioAtencion.hora_fin) {
+        setError(
+          `El horario habilitado es de ${horarioAtencion.hora_inicio} a ${horarioAtencion.hora_fin}.`,
+        );
+        return;
+      }
     }
 
     if (!turnoEditar && usarClienteRegistrado && !clienteSeleccionado) {
@@ -346,6 +369,8 @@ export default function FormularioTurno({
           id="hora-turno"
           type="time"
           value={hora}
+          min={horarioAtencion?.hora_inicio}
+          max={horarioAtencion?.hora_fin}
           onChange={(e) => setHora(e.target.value)}
           required
         />

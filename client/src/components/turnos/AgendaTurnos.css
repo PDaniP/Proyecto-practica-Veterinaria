@@ -8,7 +8,7 @@
     color: #252525;
 }
 
-.agenda-turnos__encabezado {
+.agenda-turnos__encabezados {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
@@ -17,13 +17,105 @@
     margin-bottom: 24px;
 }
 
-.agenda-turnos__encabezado h2 {
+.agenda-turnos__encabezados h2 {
     margin: 0 0 6px;
 }
 
-.agenda-turnos__encabezado p {
+.agenda-turnos__encabezados p {
     margin: 0;
     color: #666666;
+}
+
+.agenda-turnos__encabezados-izquierda {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+}
+
+.agenda-turnos__encabezados-derecha {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 12px;
+    width: min(100%, 440px);
+}
+
+.agenda-turnos__configuracion-horario {
+    width: 100%;
+    padding: 14px;
+    border: 1px solid #e2e2e2;
+    border-radius: 8px;
+    background: #faf9fc;
+    box-sizing: border-box;
+}
+
+.agenda-turnos__configuracion-horario h3 {
+    margin: 0 0 10px;
+    font-size: 0.95rem;
+}
+
+.agenda-turnos__controles-horario {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+}
+
+.agenda-turnos__controles-horario label {
+    display: grid;
+    grid-template-columns: minmax(76px, auto) minmax(0, 1fr);
+    align-items: center;
+    gap: 8px;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.agenda-turnos__controles-horario input,
+.agenda-turnos__controles-horario select {
+    width: 100%;
+    min-width: 0;
+    padding: 8px;
+    border: 1px solid #cccccc;
+    border-radius: 6px;
+    background: #ffffff;
+    color: #252525;
+    box-sizing: border-box;
+}
+
+.agenda-turnos__guardar-horario {
+    padding: 8px 12px;
+    border: 1px solid #6650a4;
+    border-radius: 6px;
+    background: #6650a4;
+    color: #ffffff;
+    cursor: pointer;
+}
+
+.agenda-turnos__guardar-horario-fila {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.agenda-turnos__guardar-horario:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+}
+
+.agenda-turnos__estado-horario,
+.agenda-turnos__error-horario {
+    margin: 0 !important;
+    font-size: 0.8rem;
+}
+
+.agenda-turnos__estado-horario {
+    color: #176b32 !important;
+}
+
+.agenda-turnos__error-horario {
+    color: #a00000 !important;
+    margin-top: 8px !important;
 }
 
 .agenda-turnos__acciones {
@@ -296,7 +388,20 @@
         width: 100%;
     }
 
-    
+    .agenda-turnos__encabezados-derecha {
+        width: 100%;
+        min-width: 0;
+        align-items: stretch;
+    }
+
+    .agenda-turnos__encabezados-izquierda {
+        width: 100%;
+    }
+
+    .agenda-turnos__controles-horario {
+        grid-template-columns: 1fr;
+    }
+
     .agenda-turnos__navegacion {
         gap: 6px;
     }

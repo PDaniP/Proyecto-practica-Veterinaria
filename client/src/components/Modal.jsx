@@ -1,7 +1,7 @@
 
 import { useEffect } from "react";
 
-export default function Modal({ isOpen, onClose, children }) {
+export default function Modal({ isOpen, onClose, children, className = "" }) {
   
   useEffect(() => {
     const styleId = "modal-styles";
@@ -20,7 +20,7 @@ export default function Modal({ isOpen, onClose, children }) {
   return (
     <div className="overlay" onClick={onClose}>
       <div
-        className="modal"
+        className={`modal ${className}`.trim()}
         onClick={(e) => e.stopPropagation()} // evita cerrar al hacer click dentro
       >
         {children}
@@ -55,5 +55,10 @@ const modalStyles = `
   overflow-y: auto;
 
   
+}
+
+.modal--wide {
+  width: min(96vw, 1400px);
+  max-width: 1400px;
 }
 `;

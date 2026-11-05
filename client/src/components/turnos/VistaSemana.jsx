@@ -26,13 +26,13 @@ const obtenerLunes = (fecha) => {
 };
 
 const nombresDias = [
+  "Domingo",
   "Lunes",
   "Martes",
   "Miércoles",
   "Jueves",
   "Viernes",
   "Sábado",
-  "Domingo",
 ];
 
 const formatearHora = (fechaHora) => {
@@ -52,6 +52,7 @@ export default function VistaSemana({
   actualizarTurnos = 0,
   onEditarTurno,
   onCerrar,
+  horarioAtencion = null,
 }) {
   const [fechaInicio, setFechaInicio] = useState(() =>
     obtenerLunes(new Date()),
@@ -69,9 +70,14 @@ export default function VistaSemana({
       setError("");
 
       try {
-        const fechas = Array.from({ length: 7 }, (_, indice) => {
-          const fecha = new Date(fechaInicio);
-          fecha.setDate(fechaInicio.getDate() + indice);
+        const diaInicio = Number(horarioAtencion?.dia_inicio ?? 1);
+        const diaFin = Number(horarioAtencion?.dia_fin ?? 7);
+        const cantidadDias = ((diaFin - diaInicio + 7) % 7) + 1;
+        const primerDia = new Date(fechaInicio);
+        primerDia.setDate(fechaInicio.getDate() + diaInicio - 1);
+        const fechas = Array.from({ length: cantidadDias }, (_, indice) => {
+          const fecha = new Date(primerDia);
+          fecha.setDate(primerDia.getDate() + indice);
           return fecha;
         });
 
@@ -105,7 +111,12 @@ export default function VistaSemana({
     return () => {
       cancelado = true;
     };
-  }, [fechaInicio, actualizarTurnos]);
+  }, [
+    fechaInicio,
+    actualizarTurnos,
+    horarioAtencion?.dia_inicio,
+    horarioAtencion?.dia_fin,
+  ]);
 
   const cambiarSemana = (cantidad) => {
     setFechaInicio((fechaActual) => {
@@ -119,10 +130,9 @@ export default function VistaSemana({
     setFechaInicio(obtenerLunes(new Date()));
   };
 
-  const fechaFinal = new Date(fechaInicio);
-  fechaFinal.setDate(fechaFinal.getDate() + 6);
-
-  const periodo = `${fechaInicio.toLocaleDateString("es-AR")} - ${fechaFinal.toLocaleDateString("es-AR")}`;
+  const periodo = turnosPorDia.length > 0
+    ? `${turnosPorDia[0].fecha.toLocaleDateString("es-AR")} - ${turnosPorDia[turnosPorDia.length - 1].fecha.toLocaleDateString("es-AR")}`
+    : "";
 
   return (
     <section className="vista-semana">
@@ -154,8 +164,11 @@ export default function VistaSemana({
       {!cargando && error && <p className="vista-semana__error">{error}</p>}
 
       {!cargando && !error && (
-        <div className="vista-semana__dias">
-          {turnosPorDia.map(({ fecha, turnos }, indice) => {
+        <div
+          className="vista-semana__dias"
+          style={{ "--week-day-count": turnosPorDia.length }}
+        >
+          {turnosPorDia.map(({ fecha, turnos }) => {
             const turnosFiltrados = turnos
               .filter((turno) => {
                 const coincideProfesional =
@@ -180,7 +193,7 @@ export default function VistaSemana({
                 key={formatearFecha(fecha)}
               >
                 <header className="vista-semana__dia-titulo">
-                  <strong>{nombresDias[indice]}</strong>
+                  <strong>{nombresDias[fecha.getDay()]}</strong>
                   <span>
                     {fecha.toLocaleDateString("es-AR", {
                       day: "2-digit",
