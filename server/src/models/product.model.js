@@ -178,7 +178,7 @@ const reporteCantidadProductos = async () => {
     ) AS inventario
     `;
     const {rows} = await db.query(query);
-    return rows;
+    return rows[0];
 }
 
 export default {obtenerProductoPorId,

@@ -2,18 +2,14 @@ import { PieChart, Pie, Cell, Tooltip, Legend } from 'recharts'
 
 import api from '../../../config/api.js'
 
-const data = await api.get('/products/reporte').then(res => res.data.datos.map(item => ({
-  name: item.nombre,
-  value: Number(item.cantidad)
-})));
-console.log(data)
 
+const data = await api.get('/products/reporte').then(res => res.data.reporte.filter(item => item.value > 0))
 const GraficoStock = () => (
-  <PieChart width={400} height={400}>
+  <PieChart width={600} height={600}>
     <Pie
       data={data}
-      cx={200}
-      cy={200}
+      cx={300}
+      cy={300}
       labelLine={false}
       label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
       outerRadius={80}
