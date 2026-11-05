@@ -189,4 +189,15 @@ const reporteVentasPorMes = async (req, res) => {
     }
 };
 
-export { descontarStock, eliminarLoteVacio, registrarVenta, registrarDetallesVenta, listaVentas, obtenerDetallesVentaController, obtenerVentaPorFecha, obtenerRegistroVentaPorCliente, reporteVentas, reporteVentasPorDia, reporteVentasPorSemana, reporteVentasPorMes };
+const reporteProductoMasVendido = async (req, res) => {
+    try {
+        const reporte = await productoMasVendido();
+        console.log(reporte)
+        res.status(200).json({ message: 'Producto más vendido obtenido correctamente', reporte });
+    } catch (error) {
+        res.status(500).json({ message: 'Error al obtener el producto más vendido', error });
+        console.error('Error al obtener el producto más vendido:', error);
+    }
+};
+
+export { descontarStock, eliminarLoteVacio, registrarVenta, registrarDetallesVenta, listaVentas, obtenerDetallesVentaController, obtenerVentaPorFecha, obtenerRegistroVentaPorCliente, reporteVentas, reporteVentasPorDia, reporteVentasPorSemana, reporteVentasPorMes, reporteProductoMasVendido };

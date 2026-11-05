@@ -9,7 +9,8 @@ let whatsappListo = false;
 const client = new Client({
     authStrategy: new LocalAuth({
         dataPath: process.env.WWEBJS_AUTH_PATH || path.join(os.homedir(), '.veterinaria-whatsapp-auth')
-    })
+    }),
+  
 });
 
 client.on('qr', (qr) => {

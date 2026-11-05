@@ -163,6 +163,24 @@ const obtenerLotePorIdDeProducto = async (id_producto) => {
     return rows;
 }
 
+const reporteCantidadProductos = async () => {
+    //agrupar en productos sin stock, bajo stock y con stock suficiente
+    const query = `
+    SELECT 
+        COUNT(*) FILTER (WHERE inventario.stock_actual = 0) AS sin_stock,
+        COUNT(*) FILTER (WHERE inventario.stock_actual > 0 AND inventario.stock_actual < inventario.stock_minimo) AS bajo_stock,
+        COUNT(*) FILTER (WHERE inventario.stock_actual >= inventario.stock_minimo) AS stock_suficiente
+    FROM (
+        SELECT productos.id, productos.stock_minimo, COALESCE(SUM(lotes.stock_actual), 0) AS stock_actual
+        FROM productos
+        LEFT JOIN lotes ON productos.id = lotes.id_producto
+        GROUP BY productos.id
+    ) AS inventario
+    `;
+    const {rows} = await db.query(query);
+    return rows[0];
+}
+
 export default {obtenerProductoPorId,
     obtenerCategorias,
     obtenerProductos, 
@@ -174,5 +192,7 @@ export default {obtenerProductoPorId,
     editarProductoEnDB, 
     obtenerLoteConProducto,
     productosConStockSumado,
-    obtenerLotePorIdDeProducto}
+    obtenerLotePorIdDeProducto,
+    reporteCantidadProductos
+}
 
