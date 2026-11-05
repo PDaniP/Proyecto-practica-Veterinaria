@@ -174,12 +174,14 @@ const generarReporteVentasPorMes = async (fecha_inicio, fecha_fin) => {
 const productoMasVendido = async () => {
     const query = `
         SELECT
-            p.id AS producto_id,
             p.nombre AS producto_nombre,
-            SUM(vp.cantidad) AS total_vendido
-        FROM ventas_productos vp
-        JOIN productos p ON vp.producto_id = p.id
-        GROUP BY p.id, p.nombre
+            v.fecha_venta,
+            SUM(dv.cantidad) AS total_vendido
+        FROM detalle_ventas AS dv
+        JOIN productos p ON dv.id_producto = p.id
+        JOIN ventas v ON dv.id_venta = v.id
+
+        GROUP BY p.nombre, v.fecha_venta
         ORDER BY total_vendido DESC
         LIMIT 10
     `;

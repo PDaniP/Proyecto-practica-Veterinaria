@@ -10,7 +10,8 @@ import {obtenerLotesVentas,
       generarReporteVentas,
       generarReporteVentasPorDia,
       generarReporteVentasPorSemana,
-      generarReporteVentasPorMes} from '../models/ventas.model.js'
+      generarReporteVentasPorMes,
+    productoMasVendido} from '../models/ventas.model.js'
 import productModel from '../models/product.model.js'
 
 const descontarStock = async (req, res) => {
