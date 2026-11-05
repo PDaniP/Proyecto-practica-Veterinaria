@@ -10,6 +10,7 @@ router.get('/', turnosController.obtenerDatosTurno);
 router.get('/fecha', turnosController.obtenerTurnosPorFecha);//agregue esta ruta para obtener turnos por fecha
 router.get('/horario', validarUsuario, turnosController.obtenerHorarioAtencion);
 router.put('/horario', validarUsuario, turnosController.actualizarHorarioAtencion);
+router.get('/reportes', turnosController.reportesTurnos); //agregue esta ruta para obtener reportes de turnos
 
 router.post('/asignar', turnosController.asignarTurno);
 

@@ -86,6 +86,33 @@ const guardarHorarioAtencion = async (horario) => {
 
     return rows[0];
 };
+const reporteTurnos = async (fecha_inicio, fecha_fin) => {
+    const query = `
+        SELECT 
+            COALESCE(estado,'Sin estado') AS estado,
+            COUNT(*)::int AS cantidad
+        FROM turnos
+        WHERE fecha_hora >= $1::date
+          AND fecha_hora < ($2::date + INTERVAL '1 day')
+        GROUP BY estado
+        ORDER BY cantidad ASC
+    `;
+    const { rows } = await db.query(query, [fecha_inicio, fecha_fin]);
+    const query2 = `
+        SELECT
+            u.nombre as profesional,
+            COUNT(*)::int AS turnos_asignados
+        FROM turnos
+        LEFT JOIN usuarios u ON u.id = turnos.profesional_id
+        WHERE fecha_hora >= $1::date
+          AND fecha_hora < ($2::date + INTERVAL '1 day')
+        GROUP BY u.nombre
+        ORDER BY turnos_asignados ASC
+    `;
+    const {rows:rows2 } = await db.query(query2, [fecha_inicio, fecha_fin]);
+    return { rows, rows2 };
+
+}
 
 export default {
     guardarTurno,
@@ -96,4 +123,5 @@ export default {
     obtenerTurnosPorFecha,
     obtenerHorarioAtencion,
     guardarHorarioAtencion
+    reporteTurnos
 };

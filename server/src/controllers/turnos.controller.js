@@ -196,6 +196,23 @@ const obtenerTurnosPorFecha = async (req, res) => {
     }
 };
 
+const reportesTurnos = async (req, res) => {
+    try {
+        const { fecha_inicio, fecha_fin } = req.query;
+
+        if (!fecha_inicio || !fecha_fin) {
+            return res.status(400).json({
+                message: "Debes proporcionar fecha_inicio y fecha_fin"
+            });
+        }
+
+        const reportes = await turnosModel.reporteTurnos(fecha_inicio, fecha_fin);
+        console.log("Reportes obtenidos:", reportes);
+        return res.status(200).json(reportes);
+    } catch (error) {
+        return res.status(500).json({ error: error.message });
+    }
+};
 
 export default {
     asignarTurno,
@@ -206,4 +223,5 @@ export default {
     obtenerTurnosPorFecha,
     obtenerHorarioAtencion,
     actualizarHorarioAtencion
+    reportesTurnos
 };

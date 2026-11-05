@@ -10,7 +10,8 @@ import {obtenerLotesVentas,
       generarReporteVentas,
       generarReporteVentasPorDia,
       generarReporteVentasPorSemana,
-      generarReporteVentasPorMes} from '../models/ventas.model.js'
+      generarReporteVentasPorMes,
+    productoMasVendido} from '../models/ventas.model.js'
 import productModel from '../models/product.model.js'
 
 const descontarStock = async (req, res) => {
@@ -191,8 +192,9 @@ const reporteVentasPorMes = async (req, res) => {
 
 const reporteProductoMasVendido = async (req, res) => {
     try {
-        const reporte = await productoMasVendido();
-        console.log(reporte)
+        const { fecha_inicio, fecha_fin } = req.query;
+        const reporte = await productoMasVendido(fecha_inicio, fecha_fin);
+
         res.status(200).json({ message: 'Producto más vendido obtenido correctamente', reporte });
     } catch (error) {
         res.status(500).json({ message: 'Error al obtener el producto más vendido', error });
