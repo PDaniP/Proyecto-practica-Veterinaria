@@ -24,6 +24,7 @@ router.post('/historia/consulta', validarUsuario, mascotasController.registrarCo
 
 router.get('/historia/consulta/:id_consulta', validarUsuario, mascotasController.consultaPorId);
 router.put('/historia/consulta/editar/:id', validarUsuario, mascotasController.editarConsultaPorId);
+router.get('/reporte/consultas-por-motivos', mascotasController.reporteConsultasPorMotivosController);
 
 
 

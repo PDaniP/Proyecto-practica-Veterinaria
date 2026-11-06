@@ -365,6 +365,27 @@ const editarConsulta = async (id, consulta) => {
     }
 };
 
+const reporteConsultasPorMotivos = async (fechaInicio, fechaFin) => {
+    const query = 
+    {
+    text: `
+        SELECT
+            m.motivo,
+            consultas.motivo_id,
+            COUNT(*) AS total
+        FROM consultas
+        LEFT JOIN motivos m
+            ON consultas.motivo_id = m.id
+        WHERE fecha_consulta >= $1::date
+          AND fecha_consulta < ($2::date + INTERVAL '1 day')
+        GROUP BY consultas.motivo_id, m.motivo
+    `,
+    values: [fechaInicio, fechaFin]
+};
+    const { rows } = await db.query(query);
+    return rows;
+};
+
 export default {
     añadirMascotaADB,
     obtenerListaMascotas,
@@ -380,5 +401,6 @@ export default {
     añadirConsulta,
     añadirDetalleConsulta,
     obtenerDiagnosticosPorMotivo,
-    editarConsulta
+    editarConsulta,
+    reporteConsultasPorMotivos
 };

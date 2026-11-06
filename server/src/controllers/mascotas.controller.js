@@ -1,7 +1,7 @@
 import mascotasModel from '../models/mascotas.model.js';
 import { actualizarStockLote } from '../models/ventas.model.js';
 
-const { añadirMascotaADB, obtenerListaMascotas, editarMascotaADB, eliminarMascotaADB, obtenerDetalleConsulta, datosMascota, añadirConsulta, obtenerConsultaPorID, obtenerConsultasConInsumosPorCliente, obtenerMotivos, editarConsulta, obtenerAntecedentes, obtenerVacunasAplicadas, obtenerDiagnosticosPorMotivo } = mascotasModel;
+const { añadirMascotaADB, obtenerListaMascotas, editarMascotaADB, eliminarMascotaADB, obtenerDetalleConsulta,reporteConsultasPorMotivos, datosMascota, añadirConsulta, obtenerConsultaPorID, obtenerConsultasConInsumosPorCliente, obtenerMotivos, editarConsulta, obtenerAntecedentes, obtenerVacunasAplicadas, obtenerDiagnosticosPorMotivo } = mascotasModel;
 
 const listaMascotas = async (req, res) => {
     try {
@@ -265,6 +265,16 @@ const editarConsultaPorId = async (req, res) => {
     }
 };
 
+const reporteConsultasPorMotivosController = async (req, res) => {
+    try {
+        const { fecha_inicio, fecha_fin } = req.query;
+        const consultas = await reporteConsultasPorMotivos(fecha_inicio, fecha_fin);
+        res.status(200).json(consultas);
+    } catch (error) {
+        res.status(500).json({ message: 'Error al generar el reporte', error: error.message });
+        console.error(error);
+    }
+};
 
 export default {
     listaMascotas,
@@ -277,5 +287,6 @@ export default {
     consultasConInsumosPorCliente,
     motivosConsultas,
     editarConsultaPorId,
-    diagnosticosPorMotivo
+    diagnosticosPorMotivo,
+    reporteConsultasPorMotivosController
 };
