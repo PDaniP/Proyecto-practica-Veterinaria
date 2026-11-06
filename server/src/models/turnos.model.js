@@ -1,23 +1,79 @@
 import db from '../config/db.js';
 
-const guardarTurno = async (turno) => {
-    // AGREGADO: cliente_id y recibe_notificaciones
-    const {cliente_id, nombre_contacto, telefono_contacto, profesional_id, fecha_hora, motivo, observaciones, recibe_notificaciones} = turno;
-    const {rows} = await db.query(
-        'INSERT INTO turnos (cliente_id, nombre_contacto, telefono_contacto, profesional_id, fecha_hora, motivo, observaciones, recibe_notificaciones) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *',
-        [cliente_id || null, nombre_contacto, telefono_contacto, profesional_id, fecha_hora, motivo, observaciones || null, recibe_notificaciones || false]
+const bloquearHorarioProfesional = async (client, profesionalId, fechaHora) => {
+    if (profesionalId == null) return;
+
+    await client.query(
+        `SELECT pg_advisory_xact_lock($1::integer, hashtext(($2::timestamp)::date::text))`,
+        [profesionalId, fechaHora]
     );
-    return rows[0];
+};
+
+const verificarHorarioDisponible = async (client, profesionalId, fechaHora, idExcluir = null) => {
+    if (profesionalId == null) return;
+
+    const { rows } = await client.query(
+        `SELECT id
+         FROM turnos
+         WHERE profesional_id = $1
+           AND fecha_hora = $2::timestamp
+           AND LOWER(COALESCE(estado, 'pendiente')) <> 'cancelado'
+           AND ($3::integer IS NULL OR id <> $3)
+         LIMIT 1`,
+        [profesionalId, fechaHora, idExcluir]
+    );
+
+    if (rows.length > 0) {
+        const error = new Error('El profesional ya tiene un turno asignado en esa fecha y hora.');
+        error.statusCode = 409;
+        throw error;
+    }
+};
+
+const guardarTurno = async (turno) => {
+    const {cliente_id, nombre_contacto, telefono_contacto, profesional_id, fecha_hora, motivo, observaciones, recibe_notificaciones} = turno;
+    const client = await db.pool.connect();
+
+    try {
+        await client.query('BEGIN');
+        await bloquearHorarioProfesional(client, profesional_id, fecha_hora);
+        await verificarHorarioDisponible(client, profesional_id, fecha_hora);
+        const {rows} = await client.query(
+            'INSERT INTO turnos (cliente_id, nombre_contacto, telefono_contacto, profesional_id, fecha_hora, motivo, observaciones, recibe_notificaciones) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *',
+            [cliente_id || null, nombre_contacto, telefono_contacto, profesional_id, fecha_hora, motivo, observaciones || null, recibe_notificaciones || false]
+        );
+        await client.query('COMMIT');
+        return rows[0];
+    } catch (error) {
+        await client.query('ROLLBACK');
+        throw error;
+    } finally {
+        client.release();
+    }
 }
 
 const editarTurno = async (id, turno) => {
-    // AGREGADO: recibe_notificaciones
     const {profesional_id, fecha_hora, motivo, estado, observaciones, recibe_notificaciones} = turno;
-    const {rows} = await db.query(
-        'UPDATE turnos SET (profesional_id, fecha_hora, motivo, estado, observaciones, recibe_notificaciones) = ($1, $2, $3, $4, $5, $6) WHERE id = $7 RETURNING *',
-        [profesional_id, fecha_hora, motivo, estado, observaciones || null, recibe_notificaciones || false, id]
-    );
-    return rows[0];
+    const client = await db.pool.connect();
+
+    try {
+        await client.query('BEGIN');
+        if (String(estado).toLowerCase() !== 'cancelado') {
+            await bloquearHorarioProfesional(client, profesional_id, fecha_hora);
+            await verificarHorarioDisponible(client, profesional_id, fecha_hora, id);
+        }
+        const {rows} = await client.query(
+            'UPDATE turnos SET (profesional_id, fecha_hora, motivo, estado, observaciones, recibe_notificaciones) = ($1, $2, $3, $4, $5, $6) WHERE id = $7 RETURNING *',
+            [profesional_id, fecha_hora, motivo, estado, observaciones || null, recibe_notificaciones || false, id]
+        );
+        await client.query('COMMIT');
+        return rows[0];
+    } catch (error) {
+        await client.query('ROLLBACK');
+        throw error;
+    } finally {
+        client.release();
+    }
 }
 
 const eliminarTurno = async (id) => {
