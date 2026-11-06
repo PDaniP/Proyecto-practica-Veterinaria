@@ -91,6 +91,45 @@ const obtenerConsultaPorID = async (idConsulta) => {
     return rows[0];
 };
 
+const obtenerConsultasConInsumosPorCliente = async (idCliente) => {
+    const { rows } = await db.query(
+        `SELECT
+            c.id,
+            c.fecha_consulta,
+            m.motivo,
+            masc.id AS id_mascota,
+            masc.nombre AS nombre_mascota,
+            json_agg(
+                json_build_object(
+                    'id_detalle_consulta', dc.id,
+                    'id_producto', p.id,
+                    'nombre', p.nombre,
+                    'marca', p.marca,
+                    'cantidad', dc.cantidad,
+                    'precio_venta', p.precio_venta
+                )
+                ORDER BY dc.id
+            ) AS insumos
+         FROM consultas c
+         JOIN mascotas masc ON masc.id = c.id_mascota
+         LEFT JOIN motivos m ON m.id = c.motivo_id
+         JOIN detalle_consulta dc ON dc.id_consulta = c.id
+         JOIN lotes l ON l.id = dc.id_lote
+         JOIN productos p ON p.id = l.id_producto
+         WHERE masc.id_cliente = $1
+           AND NOT EXISTS (
+               SELECT 1
+               FROM detalle_ventas dv
+               WHERE dv.id_detalle_consulta = dc.id
+           )
+         GROUP BY c.id, c.fecha_consulta, m.motivo, masc.id, masc.nombre
+         ORDER BY c.fecha_consulta DESC, c.id DESC`,
+        [idCliente]
+    );
+
+    return rows;
+};
+
 const obtenerMotivos = async () => {
     const {rows} = await db.query('SELECT * FROM motivos');
     console.log(rows); 
@@ -255,6 +294,22 @@ const editarConsulta = async (id, consulta) => {
         }
 
         if (Array.isArray(consulta.insumos)) {
+            const { rows: insumosFacturados } = await client.query(
+                `SELECT dc.id
+                 FROM detalle_consulta dc
+                 JOIN detalle_ventas dv ON dv.id_detalle_consulta = dc.id
+                 WHERE dc.id_consulta = $1
+                 FOR UPDATE OF dc`,
+                [id]
+            );
+            if (insumosFacturados.length > 0) {
+                const error = new Error(
+                    'No se pueden modificar los insumos de una consulta que ya tiene una venta registrada.'
+                );
+                error.statusCode = 409;
+                throw error;
+            }
+
             const { rows: insumosAnteriores } = await client.query(
                 `SELECT id_lote, cantidad
                  FROM detalle_consulta
@@ -317,6 +372,7 @@ export default {
     eliminarMascotaADB,
     obtenerDetalleConsulta,
     obtenerConsultaPorID,
+    obtenerConsultasConInsumosPorCliente,
     obtenerMotivos,
     datosMascota,
     obtenerAntecedentes,

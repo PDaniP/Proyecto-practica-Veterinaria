@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
 import api from "../../config/api.js";
 
 export default function FormularioNuevaVenta({ onClose, onVentaRegistrada }) {
@@ -14,6 +13,12 @@ export default function FormularioNuevaVenta({ onClose, onVentaRegistrada }) {
   const [productos, setProductos] = useState([]);
   const [busquedaProducto, setBusquedaProducto] = useState("");
   const [productosVenta, setProductosVenta] = useState([]);
+  const [categoriaVenta, setCategoriaVenta] = useState("productos");
+  const [consultasCliente, setConsultasCliente] = useState([]);
+  const [consultaSeleccionada, setConsultaSeleccionada] = useState("");
+  const [cargandoConsultas, setCargandoConsultas] = useState(false);
+  const [errorConsultas, setErrorConsultas] = useState("");
+  const [guardandoVenta, setGuardandoVenta] = useState(false);
 
   //para traer clientes desde la base de datos
   useEffect(() => {
@@ -49,6 +54,32 @@ export default function FormularioNuevaVenta({ onClose, onVentaRegistrada }) {
   }, []);
 
   useEffect(() => {
+    if (tipoCliente !== "registrado" || !clienteSeleccionado?.id || categoriaVenta !== "consulta") {
+      return;
+    }
+
+    let activo = true;
+    api
+      .get(`mascotas/cliente/${clienteSeleccionado.id}/consultas-insumos`, {
+        withCredentials: true,
+      })
+      .then((response) => {
+        if (activo) setConsultasCliente(response.data.consultas ?? []);
+      })
+      .catch((error) => {
+        console.error("Error al cargar las consultas del cliente:", error);
+        if (activo) setErrorConsultas("No se pudieron cargar las consultas del cliente.");
+      })
+      .finally(() => {
+        if (activo) setCargandoConsultas(false);
+      });
+
+    return () => {
+      activo = false;
+    };
+  }, [tipoCliente, clienteSeleccionado, categoriaVenta]);
+
+  useEffect(() => {
     const styleId = "formulario-nueva-venta-styles";
     if (!document.getElementById(styleId)) {
       const styleTag = document.createElement("style");
@@ -71,31 +102,63 @@ export default function FormularioNuevaVenta({ onClose, onVentaRegistrada }) {
 
     if (existe) return;
 
-    setProductosVenta([...productosVenta, { ...producto, cantidad: 1 }]);
+    setProductosVenta((prev) => [
+      ...prev,
+      { ...producto, lineKey: `producto-${producto.id}`, cantidad: 1 },
+    ]);
     setBusquedaProducto("");
+  };
+
+  const agregarInsumosConsulta = () => {
+    const consulta = consultasCliente.find(
+      (item) => Number(item.id) === Number(consultaSeleccionada),
+    );
+    if (!consulta) return;
+
+    const idsAgregados = new Set(
+      productosVenta.map((item) => Number(item.id_detalle_consulta)).filter(Boolean),
+    );
+    const insumosNuevos = consulta.insumos.filter(
+      (insumo) => !idsAgregados.has(Number(insumo.id_detalle_consulta)),
+    );
+    if (insumosNuevos.length === 0) {
+      alert("Los insumos de esta consulta ya están agregados a la venta.");
+      return;
+    }
+
+    setProductosVenta((prev) => [
+      ...prev,
+      ...insumosNuevos.map((insumo) => ({
+        ...insumo,
+        id: insumo.id_producto,
+        lineKey: `consulta-${insumo.id_detalle_consulta}`,
+        id_detalle_consulta: insumo.id_detalle_consulta,
+        precio_venta: insumo.precio_venta ?? "",
+      })),
+    ]);
+    setConsultaSeleccionada("");
   };
 
   //cmabiaar cantidad
   const cambiarCantidad = (id, cantidad) => {
     setProductosVenta((prev) =>
-      prev.map((p) => (p.id === id ? { ...p, cantidad: Number(cantidad) } : p)),
+      prev.map((p) => (p.lineKey === id ? { ...p, cantidad: Number(cantidad) } : p)),
     );
   };
 
   //eliminar producto
   const eliminarProducto = (id) => {
-    setProductosVenta((prev) => prev.filter((p) => p.id !== id));
+    setProductosVenta((prev) => prev.filter((p) => p.lineKey !== id));
   };
 
   //para el totoal
   const total = productosVenta.reduce(
-    (acc, p) => acc + p.precio_venta * p.cantidad,
+    (acc, p) => acc + (Number(p.precio_venta) || 0) * p.cantidad,
     0,
   );
 
-  //para la venta
-  let venta = {};
   const registrarVenta = async () => {
+    if (guardandoVenta) return;
     if (!usuario?.id) {
       alert("Debe iniciar sesión para registrar una venta.");
       return;
@@ -116,66 +179,46 @@ export default function FormularioNuevaVenta({ onClose, onVentaRegistrada }) {
       return;
     }
 
-    venta = {
-      id_usuario: usuario.id,
-      id_cliente: clienteSeleccionado.id,
-      metodoPago: metodoPago,
-      total,
-    };
+    const insumosSinPrecio = productosVenta.filter(
+      (item) =>
+        item.id_detalle_consulta &&
+        (item.precio_venta == null ||
+          item.precio_venta === "" ||
+          !Number.isFinite(Number(item.precio_venta)) ||
+          Number(item.precio_venta) <= 0),
+    );
+    if (insumosSinPrecio.length > 0) {
+      alert("Defina el precio de venta de los insumos desde Productos antes de registrar la venta.");
+      return;
+    }
 
-    for (let i = 0; i < productosVenta.length; i++) {
-      const productoBase = productos.find((p) => p.id === productosVenta[i].id);
-      const stockDisponible = Number(
-        productoBase?.stock_actual ?? productosVenta[i].stock_actual ?? 0,
+    setGuardandoVenta(true);
+    try {
+      await api.post(
+        "ventas/registrar-completa",
+        {
+          id_cliente: clienteSeleccionado.id,
+          metodoPago,
+          items: productosVenta.map((item) => ({
+            id_producto: item.id,
+            cantidad: item.cantidad,
+            ...(item.id_detalle_consulta
+            ? { id_detalle_consulta: item.id_detalle_consulta }
+            : {}),
+          })),
+        },
+        { withCredentials: true },
       );
 
-      if (stockDisponible < productosVenta[i].cantidad) {
-        alert(
-          `No hay suficiente stock para el producto ${productosVenta[i].nombre}. Stock disponible: ${stockDisponible}`,
-        );
-        return;
-      }
+      window.alert("La venta se ha efectuado con éxito.");
+      if (onVentaRegistrada) await onVentaRegistrada();
+      onClose?.();
+    } catch (error) {
+      console.error("Error al registrar la venta:", error);
+      alert(error.response?.data?.message || "No se pudo registrar la venta.");
+    } finally {
+      setGuardandoVenta(false);
     }
-
-    const resVenta = await api.post(
-      "ventas/registrar-venta",
-      venta,
-      { withCredentials: true },
-    );
-    const idVenta = resVenta.data.id_venta;
-    const registrarDetallesVenta = async () => {
-      for (let i = 0; i < productosVenta.length; i++) {
-        const res = await api.post(
-          "ventas/registrar-detalles",
-          {
-            id_venta: idVenta,
-            id_producto: productosVenta[i].id,
-            cantidad: productosVenta[i].cantidad,
-          },
-          { withCredentials: true },
-        );
-      }
-    };
-    await registrarDetallesVenta();
-    const descontarStock = async () => {
-      for (let i = 0; i < productosVenta.length; i++) {
-        const res = await api.post(
-          "ventas/descontar-stock",
-          {
-            id_producto: productosVenta[i].id,
-            cantidad: productosVenta[i].cantidad,
-          },
-          { withCredentials: true },
-        );
-      }
-    };
-    await descontarStock();
-
-    window.alert("La venta se ha efectuado con éxito.");
-    if (onVentaRegistrada) {
-      await onVentaRegistrada();
-    }
-    onClose?.();
   };
 
   return (
@@ -194,8 +237,13 @@ export default function FormularioNuevaVenta({ onClose, onVentaRegistrada }) {
                 const tipo = e.target.value;
                 setTipoCliente(tipo);
                 setBusqueda("");
+                setCategoriaVenta("productos");
+                setProductosVenta([]);
+                setConsultasCliente([]);
+                setConsultaSeleccionada("");
+                setCargandoConsultas(false);
+                setErrorConsultas("");
 
-                
                 if (tipo === "generico") {
                   const clienteGeneral = clientes.find(
                     (cliente) => Number(cliente.id) === 1,
@@ -248,6 +296,9 @@ export default function FormularioNuevaVenta({ onClose, onVentaRegistrada }) {
                             onClick={() => {
                               setClienteSeleccionado(c);
                               setBusqueda(c.nombre);
+                              setConsultasCliente([]);
+                              setConsultaSeleccionada("");
+                              setErrorConsultas("");
                             }}
                           >
                             {c.nombre} {c.apellido}
@@ -267,10 +318,15 @@ export default function FormularioNuevaVenta({ onClose, onVentaRegistrada }) {
                 {clienteSeleccionado.apellido}
               </p>
               <button
+                type="button"
                 className="icon-btn"
                 onClick={() => {
                   setClienteSeleccionado(null);
                   setBusqueda("");
+                  setCategoriaVenta("productos");
+                  setConsultasCliente([]);
+                  setConsultaSeleccionada("");
+                  setProductosVenta([]);
                 }}
               >
                 ✕
@@ -278,6 +334,73 @@ export default function FormularioNuevaVenta({ onClose, onVentaRegistrada }) {
             </div>
           )}
 
+          {clienteSeleccionado && (
+            <div className="field">
+              <label htmlFor="categoriaVenta">Categoría:</label>
+              <select
+                id="categoriaVenta"
+                value={categoriaVenta}
+                onChange={(e) => {
+                  const categoria = e.target.value;
+                  setCategoriaVenta(categoria);
+                  setConsultaSeleccionada("");
+                  setErrorConsultas("");
+                  setCargandoConsultas(categoria === "consulta");
+                  if (categoria !== "consulta") setConsultasCliente([]);
+                }}
+              >
+                <option value="productos">Productos</option>
+                <option value="consulta" disabled={tipoCliente !== "registrado"}>
+                  Consulta
+                </option>
+              </select>
+            </div>
+          )}
+
+          {categoriaVenta === "consulta" && tipoCliente === "registrado" && (
+            <div className="field consulta-venta-field">
+              <label htmlFor="consultaVenta">Consulta:</label>
+              <div className="field-content">
+                <div className="consulta-selector-fila">
+                  <select
+                    id="consultaVenta"
+                    value={consultaSeleccionada}
+                    onChange={(e) => setConsultaSeleccionada(e.target.value)}
+                    disabled={cargandoConsultas || consultasCliente.length === 0}
+                  >
+                    <option value="">
+                      {cargandoConsultas
+                        ? "Cargando consultas..."
+                        : "Seleccione consulta"}
+                    </option>
+                    {consultasCliente.map((consulta) => (
+                      <option key={consulta.id} value={consulta.id}>
+                        {consulta.nombre_mascota} —{" "}
+                        {String(consulta.fecha_consulta).slice(0, 10)} —{" "}
+                        {consulta.motivo || "Consulta"}
+                      </option>
+                    ))}
+                  </select>
+                  <button
+                    type="button"
+                    className="btn"
+                    onClick={agregarInsumosConsulta}
+                    disabled={!consultaSeleccionada || cargandoConsultas}
+                  >
+                    Agregar insumos
+                  </button>
+                </div>
+                {errorConsultas && <p className="error">{errorConsultas}</p>}
+                {!cargandoConsultas && !errorConsultas && consultasCliente.length === 0 && (
+                  <p className="helper-text">
+                    Este cliente no tiene consultas con insumos registrados.
+                  </p>
+                )}
+              </div>
+            </div>
+          )}
+
+          {categoriaVenta === "productos" && (
           <div className="field">
             <label>Agregar producto</label>
             <div className="field-content">
@@ -291,9 +414,9 @@ export default function FormularioNuevaVenta({ onClose, onVentaRegistrada }) {
               {busquedaProducto && (
                 <ul className="suggestions">
                   {productos.filter((p) =>
-                    p.nombre
-                      .toLowerCase()
-                      .includes(busquedaProducto.toLowerCase()),
+                  p.venta_al_publico &&
+                  p.precio_venta != null &&
+                  p.nombre.toLowerCase().includes(busquedaProducto.toLowerCase()),
                   ).length === 0 ? (
                     <li className="suggestion-item">
                       No se encontro el producto
@@ -301,9 +424,9 @@ export default function FormularioNuevaVenta({ onClose, onVentaRegistrada }) {
                   ) : (
                     productos
                       .filter((p) =>
-                        p.nombre
-                          .toLowerCase()
-                          .includes(busquedaProducto.toLowerCase()),
+                      p.venta_al_publico &&
+                      p.precio_venta != null &&
+                      p.nombre.toLowerCase().includes(busquedaProducto.toLowerCase()),
                       )
                       .map((p) => (
                         <li
@@ -319,21 +442,34 @@ export default function FormularioNuevaVenta({ onClose, onVentaRegistrada }) {
               )}
             </div>
           </div>
+          )}
 
           {productosVenta.length > 0 && (
             <div className="productos-venta">
               <h4 className="section-title">Productos en la venta</h4>
 
               {productosVenta.map((p) => (
-                <div key={p.id} className="producto-item">
+                <div key={p.lineKey} className="producto-item">
                   <div className="producto-info">
                     <div className="producto-datos">
                       <div className="producto-nombre">{p.nombre}</div>
-                      <div className="producto-marca">{p.marca}</div>
+                      <div className="producto-marca">
+                        {p.id_detalle_consulta
+                          ? "Insumo cobrado desde consulta"
+                          : p.marca}
+                      </div>
                     </div>
                     <small className="producto-precio">
-                      ${parseFloat(p.precio_venta).toLocaleString()}
+                      {p.precio_venta == null || p.precio_venta === ""
+                        ? "Precio sin definir"
+                        : `$${Number(p.precio_venta).toLocaleString()}`}
                     </small>
+                    {p.id_detalle_consulta &&
+                      (p.precio_venta == null || p.precio_venta === "") && (
+                        <small className="helper-text">
+                          Definilo en Productos antes de guardar.
+                        </small>
+                      )}
                   </div>
 
                   <input
@@ -341,18 +477,19 @@ export default function FormularioNuevaVenta({ onClose, onVentaRegistrada }) {
                     min="1"
                     className="cantidad-input"
                     value={p.cantidad}
-                    onChange={(e) => cambiarCantidad(p.id, e.target.value)}
+                    disabled={Boolean(p.id_detalle_consulta)}
+                    onChange={(e) => cambiarCantidad(p.lineKey, e.target.value)}
                   />
 
                   <span className="producto-total">
                     $
-                    {(parseFloat(p.precio_venta) * p.cantidad).toLocaleString()}
+                    {((Number(p.precio_venta) || 0) * p.cantidad).toLocaleString()}
                   </span>
 
                   <button
                     type="button"
                     className="icon-btn"
-                    onClick={() => eliminarProducto(p.id)}
+                    onClick={() => eliminarProducto(p.lineKey)}
                   >
                     ✕
                   </button>
@@ -381,8 +518,8 @@ export default function FormularioNuevaVenta({ onClose, onVentaRegistrada }) {
           </div>
 
           <div className="actions">
-            <button className="btn" type="button" onClick={registrarVenta}>
-              Guardar
+            <button className="btn" type="button" onClick={registrarVenta} disabled={guardandoVenta}>
+              {guardandoVenta ? "Guardando..." : "Guardar"}
             </button>
             <button
               className="btn btn-secondary"
@@ -479,6 +616,22 @@ const formStyles = `
   display: flex;
   flex-direction: column;
   position: relative;
+}
+
+.consulta-selector-fila {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.consulta-selector-fila select {
+  min-width: 0;
+  flex: 1;
+}
+
+.consulta-selector-fila .btn {
+  flex-shrink: 0;
+  white-space: nowrap;
 }
 
 .selected-info {
@@ -586,6 +739,18 @@ const formStyles = `
   color: #111;
 }
 
+.helper-text {
+  margin: 4px 0 0;
+  color: #6b7280;
+  font-size: 12px;
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
 .cantidad-input {
   width: 40px;
   border-radius: 8px;
@@ -651,6 +816,7 @@ const formStyles = `
 
 .btn {
   background: #534ab7;
+  max-width: 150px;
   color: #fff;
   border: none;
   border-radius: 10px;

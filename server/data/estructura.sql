@@ -338,6 +338,12 @@ CREATE TABLE detalle_consulta (
     CONSTRAINT fk_detalle_lote FOREIGN KEY (id_lote) 
         REFERENCES lotes(id) ON DELETE SET NULL ON UPDATE CASCADE
 );
+ALTER TABLE detalle_ventas
+    ADD COLUMN id_detalle_consulta INTEGER
+    REFERENCES detalle_consulta(id) ON DELETE SET NULL ON UPDATE CASCADE;
+CREATE UNIQUE INDEX uq_detalle_ventas_consulta
+    ON detalle_ventas (id_detalle_consulta)
+    WHERE id_detalle_consulta IS NOT NULL;
 -- 21. Tabla de Estudios Adjuntos (imágenes, radiografías, análisis de laboratorio, etc.) - NO CONTEMPLADA EN EL SPRINT 5, PERO SE DEJA LA ESTRUCTURA PARA FUTURO DESARROLLO
 CREATE TABLE estudios_adjuntos (
     id SERIAL PRIMARY KEY,

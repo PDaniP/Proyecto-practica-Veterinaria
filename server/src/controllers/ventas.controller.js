@@ -1,6 +1,7 @@
 import {obtenerLotesVentas, 
     actualizarStockLote,
      añadirVenta, 
+     registrarVentaCompleta,
      obtenerVentaPorFechaActual, 
      filtrarProductoPorID, 
      detallesVenta, 
@@ -59,6 +60,32 @@ const registrarVenta = async (req, res) => {
         res.status(201).json({ message: 'Venta registrada correctamente', id_venta: venta.id });
     } catch (error) {
         res.status(500).json({ message: 'Error al registrar la venta', error });
+    }
+};
+
+const registrarVentaCompletaController = async (req, res) => {
+    const { id_cliente, metodoPago, items } = req.body;
+    const idCliente = Number(id_cliente);
+    if (!Number.isInteger(idCliente) || idCliente <= 0 || !metodoPago ||
+        !Array.isArray(items) || items.length === 0 ||
+        items.some((item) => !item || typeof item !== 'object' || Array.isArray(item))) {
+        return res.status(400).json({ message: 'Faltan datos válidos para registrar la venta.' });
+    }
+
+    try {
+        const venta = await registrarVentaCompleta({
+            id_usuario: req.user.id,
+            id_cliente: idCliente,
+            metodoPago,
+            items
+        });
+        res.status(201).json({ message: 'Venta registrada correctamente', ...venta });
+    } catch (error) {
+        if (error.statusCode) {
+            return res.status(error.statusCode).json({ message: error.message });
+        }
+        console.error('Error al registrar la venta completa:', error);
+        res.status(500).json({ message: 'Error al registrar la venta.' });
     }
 };
 
@@ -202,4 +229,4 @@ const reporteProductoMasVendido = async (req, res) => {
     }
 };
 
-export { descontarStock, eliminarLoteVacio, registrarVenta, registrarDetallesVenta, listaVentas, obtenerDetallesVentaController, obtenerVentaPorFecha, obtenerRegistroVentaPorCliente, reporteVentas, reporteVentasPorDia, reporteVentasPorSemana, reporteVentasPorMes, reporteProductoMasVendido };
+export { descontarStock, eliminarLoteVacio, registrarVenta, registrarVentaCompletaController, registrarDetallesVenta, listaVentas, obtenerDetallesVentaController, obtenerVentaPorFecha, obtenerRegistroVentaPorCliente, reporteVentas, reporteVentasPorDia, reporteVentasPorSemana, reporteVentasPorMes, reporteProductoMasVendido };

@@ -8,6 +8,8 @@ import './Productos.css'
 
 const API_URL = 'products'
 
+const cargarProductos = () => api.get(API_URL, { withCredentials: true })
+
 export default function Productos() {
   const [vistaLotes, setVistaLotes] = useState(false)
   const [productos, setProductos] = useState([])
@@ -19,14 +21,10 @@ export default function Productos() {
   const [tipoModal, setTipoModal] = useState(null)
   const [productoSeleccionado, setProductoSeleccionado] = useState(null)
 
-  useEffect(() => {
-    fetchProductos()
-  }, [])
-
   const fetchProductos = async () => {
     setLoading(true)
     try {
-      const response = await api.get(`${API_URL}`, { withCredentials: true })
+      const response = await cargarProductos()
       setProductos(response.data)
     } catch (err) {
       console.error('Error al cargar productos:', err)
@@ -34,6 +32,24 @@ export default function Productos() {
       setLoading(false)
     }
   }
+
+  useEffect(() => {
+    let activo = true
+    cargarProductos()
+      .then((response) => {
+        if (activo) setProductos(response.data)
+      })
+      .catch((err) => {
+        console.error('Error al cargar productos:', err)
+      })
+      .finally(() => {
+        if (activo) setLoading(false)
+      })
+
+    return () => {
+      activo = false
+    }
+  }, [])
   console.log(productos)
 
   const fetchLotes = async () => {
@@ -54,7 +70,7 @@ export default function Productos() {
     try {
       await api.delete(`${API_URL}/product/delete/${id}`, { withCredentials: true })
       setProductos((prev) => prev.filter((p) => p.id !== id))
-      setModalAbierto(false)
+      cerrarModal()
     } catch (err) {
       console.error('Error al eliminar producto:', err)
     }
@@ -80,6 +96,7 @@ export default function Productos() {
 
   const cerrarModal = () => {
     setModalAbierto(false)
+    setTipoModal(null)
     setProductoSeleccionado(null)
     fetchProductos()
   }
@@ -161,7 +178,7 @@ const lotesFiltrados = lotes.filter((l) =>
                     <td>{p.nombre}</td>
                     <td>{p.marca}</td>
                     <td>${parseFloat(p.precio_costo).toLocaleString()}</td>
-                    <td>${parseFloat(p.precio_venta).toLocaleString()}</td>
+                    <td>{p.precio_venta == null ? 'Sin definir' : `$${Number(p.precio_venta).toLocaleString()}`}</td>
                     <td>{badgeStock(p.stock_actual, p.stock_minimo)}</td>
                     <td>{p.venta_al_publico ? 'Sí' : 'No'}</td>
                     <td>
@@ -225,9 +242,10 @@ const lotesFiltrados = lotes.filter((l) =>
         {tipoModal === 'lote' && (
           <FormularioLote onClose={cerrarModal} productoId={productoSeleccionado} />
         )}
-        {tipoModal === 'editar' && (
+        {tipoModal === 'editar' && productoSeleccionado && (
           <>
             <FormularioEdicionProductos
+              key={productoSeleccionado.id}
               productoInicial={productoSeleccionado}
               onClose={cerrarModal}
             />

@@ -246,7 +246,7 @@ export default function Home() {
   };
 
   return (
-    <section className="page-shell">
+    <section className="page-shell home-page">
       <h1>Bienvenido a la Veterinaria</h1>
 
       <AgendaTurnos
