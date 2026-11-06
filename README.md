@@ -933,6 +933,16 @@ psql -d nombre_de_tu_base_de_datos -f server/data/migrations/20261105_horario_at
 
 La migración crea el horario inicial de lunes a sábado, de 09:00 a 17:00.
 
+Para habilitar la facturación de insumos ya utilizados en consultas, ejecutá
+esta migración en la base de datos existente:
+
+```bash
+psql -d nombre_de_tu_base_de_datos -f server/data/migrations/20261105_venta_insumos_consulta.sql
+```
+
+La migración vincula cada insumo facturado con su detalle de consulta para
+evitar cobrarlo dos veces. La venta no vuelve a descontar su stock.
+
 Variables usadas por la conexión:
 
 ```env

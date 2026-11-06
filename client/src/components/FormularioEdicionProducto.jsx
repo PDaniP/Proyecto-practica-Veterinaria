@@ -1,29 +1,13 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
 import api from "../../config/api.js";
 
-const API_URL = "http://localhost:3000/products";
-
 export default function FormularioEdicionProductos({ productoInicial, onClose }) {
-  const [producto, setProducto] = useState({
-    precio_costo: "",
-    precio_venta: "",
-    stock_minimo: "",
-  });
-
-  const [idProducto, setIdProducto] = useState(productoInicial ? productoInicial.id : null);
+  const [producto, setProducto] = useState(() => ({
+    precio_costo: productoInicial?.precio_costo ?? "",
+    precio_venta: productoInicial?.precio_venta ?? "",
+    stock_minimo: productoInicial?.stock_minimo ?? "",
+  }));
   const [errores, setErrores] = useState({});
-
-  // 🔥 Cargar datos del producto a editar
-  useEffect(() => {
-    if (productoInicial) {
-      setProducto({
-        precio_costo: productoInicial.precio_costo || "",
-        precio_venta: productoInicial.precio_venta || "",
-        stock_minimo: productoInicial.stock_minimo || "",
-      });
-    }
-  }, [productoInicial]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -37,20 +21,19 @@ export default function FormularioEdicionProductos({ productoInicial, onClose })
   const validar = () => {
     const nuevosErrores = {};
 
-    if (!producto.precio_costo || producto.precio_costo <= 0) {
+    const precioCosto = Number(producto.precio_costo);
+    const precioVenta = Number(producto.precio_venta);
+    const stockMinimo = Number(producto.stock_minimo);
+
+    if (producto.precio_costo === "" || !Number.isFinite(precioCosto) || precioCosto < 0) {
       nuevosErrores.precio_costo = "Ingrese un precio de costo válido.";
     }
 
-    if (!producto.precio_venta || producto.precio_venta <= 0) {
+    if (producto.precio_venta === "" || !Number.isFinite(precioVenta) || precioVenta <= 0) {
       nuevosErrores.precio_venta = "Ingrese un precio de venta válido.";
     }
 
-    if (producto.precio_venta < producto.precio_costo) {
-      nuevosErrores.precio_venta =
-        "El precio de venta no puede ser menor al de costo.";
-    }
-
-    if (producto.stock_minimo < 0) {
+    if (producto.stock_minimo === "" || !Number.isInteger(stockMinimo) || stockMinimo < 0) {
       nuevosErrores.stock_minimo = "El stock mínimo no puede ser negativo.";
     }
     
@@ -75,7 +58,7 @@ export default function FormularioEdicionProductos({ productoInicial, onClose })
 
     console.log("Datos a enviar:", productoFormateado);
     api
-      .patch(`products/update/${idProducto}`, productoFormateado)
+      .patch(`products/product/update/${productoInicial.id}`, productoFormateado)
       .then((response) => {
         console.log("Producto editado:", response.data);
         alert("Producto actualizado correctamente.");
@@ -83,7 +66,11 @@ export default function FormularioEdicionProductos({ productoInicial, onClose })
       })
       .catch((error) => {
         console.error("Error al actualizar el producto:", error);
-        alert("Error al actualizar el producto.");
+        alert(
+          error.response?.data?.message ||
+            error.message ||
+            "Error al actualizar el producto.",
+        );
       });
   };
 
@@ -114,6 +101,8 @@ export default function FormularioEdicionProductos({ productoInicial, onClose })
           <label>Precio compra</label>
           <input
             type="number"
+            min="0"
+            step="0.01"
             name="precio_costo"
             value={producto.precio_costo}
             onChange={handleChange}
@@ -125,17 +114,26 @@ export default function FormularioEdicionProductos({ productoInicial, onClose })
           <label>Precio venta</label>
           <input
             type="number"
+            min="0"
+            step="0.01"
             name="precio_venta"
             value={producto.precio_venta}
             onChange={handleChange}
           />
           {errores.precio_venta && <p className="error">{errores.precio_venta}</p>}
+          {(productoInicial?.precio_venta == null || productoInicial?.venta_al_publico === false) && (
+            <p className="helper-text">
+              Este producto no se vende al público o no tiene precio definido. Podés establecer aquí su precio para cobrarlo desde una consulta.
+            </p>
+          )}
         </div>
 
         <div className="field">
           <label>Stock mínimo</label>
           <input
             type="number"
+            min="0"
+            step="1"
             name="stock_minimo"
             value={producto.stock_minimo}
             onChange={handleChange}
