@@ -1,4 +1,4 @@
-import {descontarStock, registrarVenta, obtenerVentaPorFecha, registrarDetallesVenta, listaVentas, obtenerDetallesVentaController, reporteVentas, reporteVentasPorDia, reporteVentasPorSemana, reporteVentasPorMes, reporteProductoMasVendido} from '../controllers/ventas.controller.js'
+import {descontarStock, registrarVenta, registrarVentaCompletaController, obtenerVentaPorFecha, registrarDetallesVenta, listaVentas, obtenerDetallesVentaController, reporteVentas, reporteVentasPorDia, reporteVentasPorSemana, reporteVentasPorMes, reporteProductoMasVendido} from '../controllers/ventas.controller.js'
 import express from 'express'
 import { validarUsuario } from '../middlewares/validator.middlewares.js'
 const router = express.Router()
@@ -19,5 +19,6 @@ router.get('/reporte/producto-mas-vendido', reporteProductoMasVendido)
 router.post('/descontar-stock', validarUsuario, descontarStock)
 router.post('/registrar-venta', validarUsuario, registrarVenta)
 router.post('/registrar-detalles', validarUsuario, registrarDetallesVenta)
+router.post('/registrar-completa', validarUsuario, registrarVentaCompletaController)
 
 export default router

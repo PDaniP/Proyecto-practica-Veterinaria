@@ -9,6 +9,7 @@ router.get('/', validarUsuario, mascotasController.listaMascotas);
 router.post('/add', validarUsuario, mascotasController.añadirMascota);
 
 router.get('/historia/:id', validarUsuario, mascotasController.historiaClinica);
+router.get('/cliente/:id_cliente/consultas-insumos', validarUsuario, mascotasController.consultasConInsumosPorCliente);
 
 router.get('/motivos', validarUsuario, mascotasController.motivosConsultas);
 router.post('/motivos/anadir', validarUsuario, extrasController.añadirMotivo);

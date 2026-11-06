@@ -121,7 +121,7 @@ const obtenerLoteConProducto = async () => {
     return rows;
 }
 
-const editarProductoEnDB = async (precio_costo, precio_venta,stock_minimo, id,) =>{
+const editarProductoEnDB = async (precio_costo, precio_venta, stock_minimo, id) =>{
     const query = `
     UPDATE productos
     SET
@@ -195,4 +195,3 @@ export default {obtenerProductoPorId,
     obtenerLotePorIdDeProducto,
     reporteCantidadProductos
 }
-

@@ -109,10 +109,13 @@ const asignarTurno = async (req, res) => {
         }
 
         const turno = await turnosModel.guardarTurno(req.body);
-        res.status(201).json({message: "Turno asignado"});
+        return res.status(201).json({message: "Turno asignado", turno});
     } catch (error) {
+        if (error.statusCode) {
+            return res.status(error.statusCode).json({ message: error.message });
+        }
         console.error('Error al asignar el turno:', error);
-        res.status(500).json({ error: error.message });
+        return res.status(500).json({ message: 'No se pudo asignar el turno.' });
     }
 };
 
@@ -125,10 +128,16 @@ const modificarTurno = async (req, res) => {
         }
 
         const turno = await turnosModel.editarTurno(req.params.id, req.body);
-        res.status(200).json({message: "Turno modificado"});
+        if (!turno) {
+            return res.status(404).json({ message: 'No se encontró el turno.' });
+        }
+        return res.status(200).json({message: "Turno modificado", turno});
     } catch (error) {
+        if (error.statusCode) {
+            return res.status(error.statusCode).json({ message: error.message });
+        }
         console.error('Error al modificar el turno:', error);
-        res.status(500).json({ error: error.message });
+        return res.status(500).json({ message: 'No se pudo modificar el turno.' });
     }
 };
 

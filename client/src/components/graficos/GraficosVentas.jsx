@@ -14,6 +14,7 @@ import {
 } from "recharts";
 import React, { useState, useEffect } from "react";
 import api from '../../../config/api.js'
+import './GraficosVentas.css';
 
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
 
@@ -44,7 +45,7 @@ const obtenerEtiqueta = (fecha,periodo) => {
 function generarGraficoLinea(data, periodo) {
   console.log(data, periodo);
   if (!Array.isArray(data?.reporte)) {
-    return <p>Cargando datos...</p>;
+    return <p className="graficos-ventas-mensaje">Cargando datos...</p>;
   }
   const datosGraficos = data.reporte.map((item) => ({
     fecha: obtenerEtiqueta(item.fecha, periodo),
@@ -53,32 +54,34 @@ function generarGraficoLinea(data, periodo) {
   }));
 
   return (
-    <>
-      <h2>Ventas del {periodo}</h2>
-      <LineChart
-        width={600}
-        height={300}
-        responsive={true}
-        data={datosGraficos}
-      >
-        <CartesianGrid strokeDasharray="3 3" />
-        <XAxis dataKey="fecha" />
-        <YAxis
-          tickFormatter={(valor) =>
-            `$${valor.toLocaleString('es-AR')}`
-            }
-          />
-        <Tooltip formatter={(valor) => [`$${Number(valor).toLocaleString('es-AR')}`, 'Ingresos']} />
-        <Legend />
-        <Line type="monotone" dataKey="total" stroke="#ff7300" />
-      </LineChart>
-    </>
+    <div className="graficos-ventas-grafico-item">
+      <h3 className="graficos-ventas-grafico-titulo">Ventas del {periodo}</h3>
+      <div className="graficos-ventas-chart">
+        <LineChart
+          width={600}
+          height={300}
+          responsive={true}
+          data={datosGraficos}
+        >
+          <CartesianGrid strokeDasharray="3 3" />
+          <XAxis dataKey="fecha" />
+          <YAxis
+            tickFormatter={(valor) =>
+              `$${valor.toLocaleString('es-AR')}`
+              }
+            />
+          <Tooltip formatter={(valor) => [`$${Number(valor).toLocaleString('es-AR')}`, 'Ingresos']} />
+          <Legend />
+          <Line type="monotone" dataKey="total" stroke="#ff7300" />
+        </LineChart>
+      </div>
+    </div>
   );
 }
 
 const generarGraficoTorta = (data, periodo) => {
   if (!Array.isArray(data?.reporte)) {
-    return <p>Cargando datos...</p>;
+    return <p className="graficos-ventas-mensaje">Cargando datos...</p>;
   }
   const totales = data.reporte.reduce((acc, item) => {
     acc.efectivo = (acc.efectivo || 0) + Number(item.efectivo);
@@ -92,60 +95,64 @@ const generarGraficoTorta = (data, periodo) => {
     { name: 'Transferencia', value: totales.transferencia },
   ].filter(item => item.value > 0);
   if(datosGraficos.length === 0) {
-    return <p>No hay datos para mostrar</p>;
+    return <p className="graficos-ventas-mensaje">No hay datos para mostrar</p>;
   }
   return (
-    <>
-      <h2>Ventas del {periodo}</h2>
-      <PieChart
-        width={600}
-        height={300}
-        responsive={true}
-       
-      >
-        <Tooltip />
-        <Legend />
-        <Pie data={datosGraficos} 
-            dataKey="value"
-            nameKey="name"
-            innerRadius={40} 
-            outerRadius={80} 
-            label={({percent}) => `${(percent * 100).toFixed(1)}%`}
+    <div className="graficos-ventas-grafico-item">
+      <h3 className="graficos-ventas-grafico-titulo">Métodos de Pago - {periodo}</h3>
+      <div className="graficos-ventas-chart">
+        <PieChart
+          width={600}
+          height={300}
+          responsive={true}
+         
         >
-          {datosGraficos.map((entry, index) => (
-            <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-          ))}
-        </Pie>
-      </PieChart>
-    </>
+          <Tooltip />
+          <Legend />
+          <Pie data={datosGraficos} 
+              dataKey="value"
+              nameKey="name"
+              innerRadius={40} 
+              outerRadius={80} 
+              label={({percent}) => `${(percent * 100).toFixed(1)}%`}
+          >
+            {datosGraficos.map((entry, index) => (
+              <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+            ))}
+          </Pie>
+        </PieChart>
+      </div>
+    </div>
   );
 };
 
 const graficoProductoMasVendido = (data,periodo) => {
   
   if (!Array.isArray(data?.reporte)) {
-    return <p>Cargando datos...</p>;
+    return <p className="graficos-ventas-mensaje">Cargando datos...</p>;
   }
   
     const datos = data.reporte;
     console.log(datos);
   return (
-    <div>
-      <h2>Producto más vendido del {periodo}</h2>
-      <BarChart
-        width={600}
-        height={300}
-        data={datos}
-        layout="vertical"
+    <div className="graficos-ventas-grafico-item">
+      <h3 className="graficos-ventas-grafico-titulo">Producto más vendido del {periodo}</h3>
+      <div className="graficos-ventas-chart">
+        <BarChart
+          width={600}
+          height={300}
+          data={datos}
+          layout="vertical"
 
-      >
-        <CartesianGrid strokeDasharray="3 3" />
-        <XAxis type="number" dataKey="total_vendido" />
-        <YAxis type="category" dataKey="producto_nombre" width={200} />
-        <Tooltip />
-        <Legend />
-        <Bar dataKey="total_vendido" fill="#8884d8" />
-      </BarChart>
+        >
+          <CartesianGrid strokeDasharray="3 3" />
+          <XAxis type="number" dataKey="total_vendido" />
+          <YAxis type="category" dataKey="producto_nombre" width={200} />
+          <Tooltip />
+          <Legend />
+          <Bar dataKey="total_vendido" fill="#8884d8" />
+        </BarChart>
+      </div>
     </div>
   );
 };
@@ -194,41 +201,48 @@ const GraficosVentas = () => {
   }, [fechaInicio, fechaFin]);
 
   return (
-    <div>
-        <button onClick={() => setPeriodo('dia')}>Día</button>
-        <button onClick={() => setPeriodo('semana')}>Semana</button>
-        <button onClick={() => setPeriodo('mes')}>Mes</button>
-        <label>
-          Fecha Inicio
+    <div className="graficos-ventas-container">
+      <div className="graficos-ventas-controles">
+        <button className="graficos-ventas-boton" onClick={() => setPeriodo('dia')}>Día</button>
+        <button className="graficos-ventas-boton" onClick={() => setPeriodo('semana')}>Semana</button>
+        <button className="graficos-ventas-boton" onClick={() => setPeriodo('mes')}>Mes</button>
+        <div className="graficos-ventas-filtro">
+          <label>Fecha Inicio</label>
           <input
             type="date"
             value={fechaInicio}
             onChange={(e) => setFechaInicio(e.target.value)}
           />
-        </label>
-        {periodo !== "dia" && <label> Fecha fin<input type="date" value={fechaFin} onChange={(e) => setFechaFin(e.target.value)} /></label>}
-      {periodo === 'dia' && (
-        <div>
-          {generarGraficoLinea(ventasDiarias, "dia")}
-          {generarGraficoTorta(ventasDiarias, "dia")}
-          {graficoProductoMasVendido(productoMasVendido, "dia")}
         </div>
-     )}
-     {periodo === 'semana' && (
-        <div>
-          {generarGraficoLinea(ventasSemanales, "semana")}
-          {generarGraficoTorta(ventasSemanales, "semana")}
-          {graficoProductoMasVendido(productoMasVendido, "semana")}
-        </div>
-     )}
-     {periodo === 'mes' && (
-        <div>
-          {generarGraficoLinea(ventasMensuales, "mes")}
-          {generarGraficoTorta(ventasMensuales, "mes")}
-          {graficoProductoMasVendido(productoMasVendido, "mes")}
-        </div>
-     )}
-     </div>
+        {periodo !== "dia" && <div className="graficos-ventas-filtro">
+          <label>Fecha Fin</label>
+          <input type="date" value={fechaFin} onChange={(e) => setFechaFin(e.target.value)} />
+        </div>}
+      </div>
+      <div className="graficos-ventas-graficos">
+        {periodo === 'dia' && (
+          <>
+            {generarGraficoLinea(ventasDiarias, "dia")}
+            {generarGraficoTorta(ventasDiarias, "dia")}
+            {graficoProductoMasVendido(productoMasVendido, "dia")}
+          </>
+       )}
+       {periodo === 'semana' && (
+          <>
+            {generarGraficoLinea(ventasSemanales, "semana")}
+            {generarGraficoTorta(ventasSemanales, "semana")}
+            {graficoProductoMasVendido(productoMasVendido, "semana")}
+          </>
+       )}
+       {periodo === 'mes' && (
+          <>
+            {generarGraficoLinea(ventasMensuales, "mes")}
+            {generarGraficoTorta(ventasMensuales, "mes")}
+            {graficoProductoMasVendido(productoMasVendido, "mes")}
+          </>
+       )}
+      </div>
+    </div>
   );
 };
 

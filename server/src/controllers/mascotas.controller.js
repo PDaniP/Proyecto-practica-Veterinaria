@@ -1,7 +1,7 @@
 import mascotasModel from '../models/mascotas.model.js';
 import { actualizarStockLote } from '../models/ventas.model.js';
 
-const { añadirMascotaADB, obtenerListaMascotas, editarMascotaADB, eliminarMascotaADB, obtenerDetalleConsulta, datosMascota, añadirConsulta, obtenerConsultaPorID, obtenerMotivos, editarConsulta, obtenerAntecedentes, obtenerVacunasAplicadas, obtenerDiagnosticosPorMotivo } = mascotasModel;
+const { añadirMascotaADB, obtenerListaMascotas, editarMascotaADB, eliminarMascotaADB, obtenerDetalleConsulta, datosMascota, añadirConsulta, obtenerConsultaPorID, obtenerConsultasConInsumosPorCliente, obtenerMotivos, editarConsulta, obtenerAntecedentes, obtenerVacunasAplicadas, obtenerDiagnosticosPorMotivo } = mascotasModel;
 
 const listaMascotas = async (req, res) => {
     try {
@@ -165,6 +165,22 @@ const consultaPorId = async (req, res) => {
         console.error(error);
     }
 };
+
+const consultasConInsumosPorCliente = async (req, res) => {
+    const idCliente = Number(req.params.id_cliente);
+    if (!Number.isInteger(idCliente) || idCliente <= 0) {
+        return res.status(400).json({ message: 'El ID del cliente no es válido' });
+    }
+
+    try {
+        const consultas = await obtenerConsultasConInsumosPorCliente(idCliente);
+        res.status(200).json({ consultas });
+    } catch (error) {
+        console.error('Error al obtener consultas del cliente:', error);
+        res.status(500).json({ message: 'Error al obtener las consultas del cliente' });
+    }
+};
+
 const motivosConsultas = async (req, res) => {
     try {
         const motivos = await obtenerMotivos();
@@ -258,6 +274,7 @@ export default {
     historiaClinica,
     registrarConsulta,
     consultaPorId,
+    consultasConInsumosPorCliente,
     motivosConsultas,
     editarConsultaPorId,
     diagnosticosPorMotivo

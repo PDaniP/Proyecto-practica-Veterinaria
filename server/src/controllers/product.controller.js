@@ -48,16 +48,32 @@ const añadirLote = async (req,res) => {
 
 const editarProducto = async (req,res) => {
     const{precio_costo,precio_venta, stock_minimo} = req.body
-    const {id} = req.params
-    if(!precio_costo || !precio_venta || !stock_minimo){
-        return res.status(401).json({message:"Error al añadir, existen campos vacios"})
+    const id = Number(req.params.id);
+    const costo = Number(precio_costo);
+    const venta = Number(precio_venta);
+    const minimo = Number(stock_minimo);
+    if(!Number.isInteger(id) || id <= 0 ||
+        precio_costo === '' || stock_minimo === '' ||
+        !Number.isFinite(costo) || costo < 0 ||
+        precio_venta === null || precio_venta === undefined ||
+        precio_venta === '' || !Number.isFinite(venta) || venta <= 0 ||
+        !Number.isInteger(minimo) || minimo < 0){
+        return res.status(400).json({message:"Ingrese precios válidos y un stock mínimo no negativo."})
     }
-    const datos = await productModel.editarProductoEnDB(precio_costo,precio_venta,stock_minimo,id)
-    
-    if(!datos){
-        return res.status(401).json({message: "Error al editar productos"})
+
+    try {
+        const datos = await productModel.editarProductoEnDB(costo,venta,minimo,id);
+        if(!datos){
+            return res.status(404).json({message: "Producto no encontrado"})
+        }
+        return res.status(200).json({message:"Producto editado con exito", producto: datos})
+    } catch (error) {
+        console.error('Error al editar el producto:', error);
+        return res.status(500).json({
+            message: 'No se pudo actualizar el producto. Revisá los datos y la conexión con la base de datos.',
+            code: error.code
+        });
     }
-    res.status(200).json({message:"Producto editado con exito"})
 }
 
 const eliminarProducto = async (req,res) => {
