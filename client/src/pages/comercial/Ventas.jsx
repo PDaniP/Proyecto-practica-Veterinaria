@@ -4,6 +4,7 @@ import Modal from "../../components/Modal";
 import "./Ventas.css";
 import {useNavigate} from "react-router-dom";
 import FormularioNuevaVenta from "../../components/FormularioNuevaVenta";
+import ExportarPDF from "../../components/ExportarPDF.jsx";
 
 //const API_URL = "http://localhost:3000";
 
@@ -261,6 +262,37 @@ export default function Ventas() {
               Limpiar
             </button>
           </div>
+          {!loading && (
+            <ExportarPDF
+              titulo="Ventas"
+              nombreArchivo={`ventas-${fechaDesde || "inicio"}-${fechaHasta || "hoy"}`}
+              metadata={{
+                Desde: fechaDesde || "Sin límite",
+                Hasta: fechaHasta || "Sin límite",
+              }}
+              secciones={[
+                {
+                  titulo: "Resumen del período",
+                  columnas: ["Ventas", "Total"],
+                  filas: [[
+                    stats.totalVentas,
+                    `$${stats.ingresos.toLocaleString("es-AR")}`,
+                  ]],
+                },
+                {
+                  titulo: "Detalle de ventas",
+                  columnas: ["Fecha", "Venta", "Cliente", "Importe", "Método de pago"],
+                  filas: ventasFiltradas.map((v) => [
+                    formatearFecha(v.fecha_venta),
+                    `#${String(v.id).padStart(3, "0")}`,
+                    v.cliente_nombre || "—",
+                    `$${Number(v.total).toLocaleString("es-AR")}`,
+                    v.metodo_pago || "—",
+                  ]),
+                },
+              ]}
+            />
+          )}
         </div>
       </div>
 

@@ -8,6 +8,7 @@ import "../comercial/Productos.css";
 import "./HistoriasClinicas.css";
 import { obtenerEspecies, obtenerRazas } from "../../service/especiesService";
 import FormularioEdicionConsulta from "../../components/FormularioEdicionConsulta";
+import ExportarPDF from "../../components/ExportarPDF.jsx";
 
 const formatearFecha = (fecha) => {
   if (!fecha) return "-";
@@ -150,6 +151,60 @@ export default function HistoriasClinicas() {
           <h1>Historia clínica de {historia.nombre}</h1>
           <p className="historia-clinica-owner">Dueño: {historia.dueño}</p>
         </div>
+        <ExportarPDF
+          titulo={`Historia clínica de ${historia.nombre}`}
+          nombreArchivo={`historia-clinica-${historia.nombre}`}
+          metadata={{
+            Propietario: historia.dueño,
+            Especie: historia.especie,
+            Raza: historia.raza,
+          }}
+          secciones={[
+            {
+              titulo: "Datos generales y clínicos",
+              columnas: ["Dato", "Información"],
+              filas: [
+                ["Fecha de nacimiento", formatearFecha(historia.fecha_nacimiento)],
+                ["Sexo", historia.sexo],
+                ["Estado", historia.activo ? "Activo" : "Inactivo"],
+                ["Alergias", historia.alergias],
+                ["Observaciones", historia.observaciones],
+                ["Número de chip", historia.numero_chip],
+              ],
+            },
+            {
+              titulo: "Consultas (orden cronológico)",
+              columnas: ["Fecha", "Motivo", "Diagnóstico", "Tratamiento", "Observaciones", "Peso", "Temperatura"],
+              filas: [...consultas].reverse().map((c) => [
+                formatearFecha(c.fecha_consulta),
+                c.motivo,
+                c.diagnostico,
+                c.tratamiento,
+                c.observaciones,
+                c.peso_actual == null ? "—" : `${c.peso_actual} kg`,
+                c.temperatura == null ? "—" : `${c.temperatura} °C`,
+              ]),
+            },
+            {
+              titulo: "Vacunas aplicadas",
+              columnas: ["Vacuna", "Fecha de aplicación", "Próxima dosis"],
+              filas: vacunas.map((v) => [
+                v.nombre_vacuna,
+                formatearFecha(v.fecha_aplicacion),
+                formatearFecha(v.proxima_dosis),
+              ]),
+            },
+            {
+              titulo: "Antecedentes",
+              columnas: ["Tipo", "Descripción", "Fecha de diagnóstico"],
+              filas: (historia.antecedentes || []).map((antecedente) => [
+                antecedente.tipo,
+                antecedente.descripcion,
+                formatearFecha(antecedente.fecha_diagnostico),
+              ]),
+            },
+          ]}
+        />
       </header>
 
       <div className="historia-clinica-grid">

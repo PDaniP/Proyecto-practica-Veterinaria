@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import "./FormulariosClinicos.css";
 import api from "../../config/api.js";
+import EstudiosConsulta from "./EstudiosConsulta.jsx";
 
 const formatearFecha = (fecha) => {
   if (!fecha) return "-";
@@ -60,6 +61,7 @@ export default function DetalleConsulta({ idConsulta, onClose }) {
       {!error && !consulta && <p className="cf-subtitulo">Cargando...</p>}
 
       {consulta && (
+        <>
         <dl className="cf-detalle">
           <div>
             <dt>Fecha</dt>
@@ -123,6 +125,8 @@ export default function DetalleConsulta({ idConsulta, onClose }) {
             <dd>{consulta.observaciones || "-"}</dd>
           </div>
         </dl>
+        <EstudiosConsulta idConsulta={idConsulta} />
+        </>
       )}
 
       <div className="cf-acciones">

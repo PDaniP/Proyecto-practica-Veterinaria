@@ -4,6 +4,7 @@ import { hoy, vacunaVacia } from "../utils/vacuna.js";
 import "./FormulariosClinicos.css";
 //import { motivosConsulta } from "../utils/motivosConsulta.js";
 import api from "../../config/api.js";
+import EstudiosConsulta from "./EstudiosConsulta.jsx";
 
 export default function FormularioEdicionConsulta({
   nombreMascota,
@@ -404,6 +405,11 @@ export default function FormularioEdicionConsulta({
             onChange={handleChange}
           ></textarea>
         </div>
+
+        <EstudiosConsulta
+          idConsulta={consulta.id}
+          permitirAdjuntar
+        />
 
         <div className="cf-vacuna-bloque">
           <label className="cf-vacuna-toggle" htmlFor="consulta-aplico-vacuna">

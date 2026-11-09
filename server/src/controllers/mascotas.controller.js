@@ -118,6 +118,7 @@ const registrarConsulta = async (req, res) => {
         if (!Array.isArray(insumos)) {
             return res.status(400).json({ message: 'La lista de insumos no es válida' });
         }
+        let consultaRegistrada;
         if(id_mascota){
             const consulta = {
                 id_mascota,
@@ -129,7 +130,7 @@ const registrarConsulta = async (req, res) => {
                 tratamiento,
                 observaciones
             };
-            const consultaRegistrada = await añadirConsulta(consulta, insumos);
+            consultaRegistrada = await añadirConsulta(consulta, insumos);
             console.log('Consulta registrada:', consultaRegistrada);
             if(!consultaRegistrada) {
             return res.status(500).json({ message: 'Error al registrar la consulta' });
@@ -138,7 +139,10 @@ const registrarConsulta = async (req, res) => {
         
         
         
-        res.status(200).json({ message: 'Operacion registrada correctamente'});
+        res.status(201).json({
+            message: 'Operacion registrada correctamente',
+            id_consulta: consultaRegistrada.id
+        });
     } catch (error) {
         if (error.statusCode) {
             return res.status(error.statusCode).json({ message: error.message });
