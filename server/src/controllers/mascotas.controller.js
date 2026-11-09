@@ -35,7 +35,7 @@ const editarMascota = async (req, res) => {
             return res.status(400).json({ message: 'Falta el ID de la mascota' });
         }
         const mascota = req.body;
-        if(!mascota.id_cliente || !mascota.nombre || !mascota.id_especie || !mascota.id_raza || !mascota.fecha_nacimiento || !mascota.genero) {
+        if(!mascota.id_cliente || !mascota.observaciones || !mascota.numero_chip || mascota.activo === undefined) {
             return res.status(400).json({ message: 'Faltan datos obligatorios de la mascota' });
         }
         const mascotaEditada = await editarMascotaADB(id, mascota);
