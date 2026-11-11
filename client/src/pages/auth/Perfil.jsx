@@ -4,6 +4,7 @@ import api from "../../../config/api.js"
 import Modal from '../../components/Modal.jsx'
 import FormularioEdicionUsuario from '../../components/FormularioEdicionUsuario.jsx'
 import './Perfil.css'
+import WhatsApp from '../WhatsApp.jsx'
 
 const API_URL = 'users'
 
@@ -93,6 +94,7 @@ export default function Perfil() {
 					onUsuarioActualizado={cargarPerfil}
 				/>
 			</Modal>
+			<WhatsApp />
 		</section>
 	)
 }
