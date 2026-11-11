@@ -18,6 +18,8 @@ router.get('/lista', validarUsuario, userController.obtenerUsuarios)
 
 router.patch('/estado/:id', validarUsuario, userController.cambiarEstadoUsuario)
 
+router.patch('/restablecer-contrasena/:id', validarUsuario, userController.restablecerContrasenaUsuario)
+
 router.patch('/datos/:id', validarUsuario, userController.editarDatosPropios)
 
 router.get('/roles', validarUsuario, userController.obtenerRoles)

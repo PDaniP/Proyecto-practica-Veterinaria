@@ -131,6 +131,44 @@ const cambiarEstadoUsuario = async (req, res) => {
     }
 };
 
+const restablecerContrasenaUsuario = async (req, res) => {
+    try {
+        const { id } = req.params;
+        if (!Number.isSafeInteger(Number(id)) || Number(id) <= 0) {
+            return res.status(400).json({ message: 'El ID del usuario no es válido.' });
+        }
+
+        const administrador = await userModel.obtenerUsuarioPorId(req.user.id);
+        if (!administrador || administrador.rol?.trim().toLowerCase() !== 'administrador') {
+            return res.status(403).json({ message: 'Solo un administrador puede restablecer contraseñas.' });
+        }
+
+        const usuarioObjetivo = await userModel.obtenerUsuarioPorId(id);
+        if (!usuarioObjetivo) {
+            return res.status(404).json({ message: 'Usuario no encontrado.' });
+        }
+        if (usuarioObjetivo.rol?.trim().toLowerCase() === 'administrador') {
+            return res.status(403).json({ message: 'No se puede restablecer la contraseña de un administrador.' });
+        }
+
+        const passwordHash = await bcrypt.hash('temp123', 10);
+        const usuarioActualizado = await userModel.restablecerContrasenaUsuarioADB(
+            id,
+            passwordHash,
+        );
+        if (!usuarioActualizado) {
+            return res.status(403).json({ message: 'No se puede restablecer la contraseña de un administrador.' });
+        }
+
+        return res.status(200).json({
+            message: 'La contraseña se restableció correctamente.',
+        });
+    } catch (error) {
+        console.error('Error al restablecer la contraseña del usuario:', error);
+        return res.status(500).json({ message: 'No se pudo restablecer la contraseña.' });
+    }
+};
+
 const editarDatosPropios = async (req, res) => {
     try {
         const { usuario, email, password } = req.body;
@@ -226,6 +264,7 @@ export default {
     obtenerPerfil,
     obtenerUsuarios,
     cambiarEstadoUsuario,
+    restablecerContrasenaUsuario,
     editarDatosPropios,
     cerrarSesion,
     crearUsuario,

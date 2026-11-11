@@ -44,6 +44,22 @@ const actualizarEstadoUsuarioADB = async (id, activo) => {
     return rows[0];
 }
 
+const restablecerContrasenaUsuarioADB = async (id, passwordHash) => {
+    const { rows } = await db.query(`
+        UPDATE usuarios AS u
+        SET password_hash = $2
+        WHERE u.id = $1
+          AND NOT EXISTS (
+              SELECT 1
+              FROM roles AS r
+              WHERE r.id = u.id_rol
+                AND LOWER(TRIM(r.nombre)) = 'administrador'
+          )
+        RETURNING u.id
+    `, [id, passwordHash]);
+    return rows[0];
+}
+
 const añadirUsuarioADB = async (user) => {
     const {nombre, usuario,email,password_hash, id_rol,activo} = user;
     const {rows} = await db.query('INSERT INTO usuarios (nombre, usuario,email,password_hash, id_rol,activo, fecha_creacion) VALUES ($1, $2, $3, $4, $5, $6, NOW()) RETURNING *', [nombre, usuario,email,password_hash, id_rol,activo]);
@@ -84,6 +100,7 @@ export default {
     obtenerUsuarioPorId,
     obtenerUsuarios,
     actualizarEstadoUsuarioADB,
+    restablecerContrasenaUsuarioADB,
     obtenerRoles,
     añadirUsuarioADB,
     editarUsuarioADB,

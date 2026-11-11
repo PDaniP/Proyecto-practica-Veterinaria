@@ -16,6 +16,9 @@ export default function PanelControl() {
   const [error, setError] = useState('')
   const [errorEstado, setErrorEstado] = useState('')
   const [actualizandoEstado, setActualizandoEstado] = useState({})
+  const [restableciendoContrasena, setRestableciendoContrasena] = useState({})
+  const [mensajeContrasena, setMensajeContrasena] = useState('')
+  const [errorContrasena, setErrorContrasena] = useState('')
   const [modalAbierto, setModalAbierto] = useState(false)
   const [busqueda, setBusqueda] = useState('')
 
@@ -30,6 +33,40 @@ export default function PanelControl() {
       setError('No se pudieron cargar los usuarios.')
     } finally {
       setCargando(false)
+    }
+  }
+
+  const restablecerContrasena = async (usuario) => {
+    const confirmar = window.confirm(
+      `¿Restablecer la contraseña de ${usuario.nombre} a "temp123"?`,
+    )
+    if (!confirmar) return
+
+    setMensajeContrasena('')
+    setErrorContrasena('')
+    setRestableciendoContrasena((actuales) => ({
+      ...actuales,
+      [usuario.id]: true,
+    }))
+    try {
+      await api.patch(
+        `${API_URL}/restablecer-contrasena/${usuario.id}`,
+        {},
+        { withCredentials: true },
+      )
+      setMensajeContrasena(
+        `La contraseña de ${usuario.nombre} se restableció a "temp123".`,
+      )
+    } catch (err) {
+      console.error('Error al restablecer la contraseña:', err)
+      setErrorContrasena(
+        err.response?.data?.message || 'No se pudo restablecer la contraseña.',
+      )
+    } finally {
+      setRestableciendoContrasena((actuales) => ({
+        ...actuales,
+        [usuario.id]: false,
+      }))
     }
   }
 
@@ -126,6 +163,20 @@ export default function PanelControl() {
           {errorEstado && (
             <p className="usuarios-error" role="alert">{errorEstado}</p>
           )}
+          {mensajeContrasena && (
+            <p className="usuarios-status" role="status" aria-live="polite">
+              <span className="usuarios-status__icon" aria-hidden="true">✓</span>
+              <span>
+                {mensajeContrasena}
+                <small>El usuario ya puede ingresar con esta contraseña.</small>
+              </span>
+            </p>
+          )}
+          {errorContrasena && (
+            <p className="usuarios-reset-error" role="alert">
+              {errorContrasena}
+            </p>
+          )}
           <div className="usuarios-tabla-wrapper">
             <table className="usuarios-tabla">
               <thead>
@@ -134,6 +185,7 @@ export default function PanelControl() {
                   <th>Usuario</th>
                   <th>Email</th>
                   <th>Rol</th>
+                  <th>Contraseña</th>
                   <th>Estado</th>
                 </tr>
               </thead>
@@ -149,6 +201,25 @@ export default function PanelControl() {
                       <td>{usuario.usuario}</td>
                       <td>{usuario.email}</td>
                       <td>{usuario.rol}</td>
+                      <td>
+                        <button
+                          type="button"
+                          className="usuario-reset"
+                          onClick={() => restablecerContrasena(usuario)}
+                          disabled={
+                            esAdministrador ||
+                            Boolean(restableciendoContrasena[usuario.id])
+                          }
+                          aria-busy={Boolean(restableciendoContrasena[usuario.id])}
+                          title={
+                            esAdministrador
+                              ? 'No se puede restablecer la contraseña de un administrador'
+                              : 'Restablecer contraseña a temp123'
+                          }
+                        >
+                          Reset
+                        </button>
+                      </td>
                       <td>
                         <button
                           type="button"
