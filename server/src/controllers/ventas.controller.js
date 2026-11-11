@@ -176,7 +176,6 @@ const obtenerRegistroVentaPorCliente = async (req, res) => {
 const reporteVentas = async (req, res) => {
     try {
         const reporte = await generarReporteVentas();
-        console.log(reporte)
         res.status(200).json({ message: 'Reporte de ventas generado correctamente', reporte });
     } catch (error) {
         res.status(500).json({ message: 'Error al generar el reporte de ventas', error });
