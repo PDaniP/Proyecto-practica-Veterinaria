@@ -146,7 +146,9 @@ export default function Home() {
         const usuarios = response.data.usuarios ?? [];
 
         const usuariosActivos = usuarios.filter(
-          (usuario) => usuario.activo === true || usuario.activo === "true",
+          (usuario) =>
+            (usuario.activo === true || usuario.activo === "true") &&
+            usuario.nombre?.trim().toLowerCase() !== "admin",
         );
 
         setProfesionales(usuariosActivos);
