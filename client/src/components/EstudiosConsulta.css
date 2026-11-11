@@ -1,0 +1,85 @@
+.estudios-consulta {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.estudios-consulta h3 {
+  margin: 0;
+  color: var(--vet-purple, #7d1f99);
+  font-size: 1rem;
+}
+
+.estudios-adjuntar {
+  align-self: flex-start;
+  padding: 9px 14px;
+  border-radius: 8px;
+  background: var(--vet-purple, #7d1f99);
+  color: #fff;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.estudios-adjuntar input {
+  display: none;
+}
+
+.estudios-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.estudios-lista li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  min-width: 0;
+}
+
+.estudios-seleccionar {
+  overflow: hidden;
+  padding: 6px 0;
+  border: 0;
+  background: transparent;
+  color: var(--vet-purple, #7d1f99);
+  font: inherit;
+  text-align: left;
+  text-overflow: ellipsis;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.estudios-seleccionar[aria-pressed="true"] {
+  font-weight: 700;
+}
+
+.estudios-vista {
+  display: grid;
+  min-height: 120px;
+  max-height: 55vh;
+  place-items: center;
+  overflow: auto;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  background: #f9fafb;
+}
+
+.estudios-vista iframe {
+  width: 100%;
+  min-height: 55vh;
+  border: 0;
+}
+
+.estudios-vista img {
+  display: block;
+  max-width: 100%;
+  max-height: 55vh;
+  object-fit: contain;
+}

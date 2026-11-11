@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import Modal from "../../components/Modal";
 import FormularioNuevaMascota from "../../components/FormularioNuevaMascota";
 import DetalleMascota from "../../components/DetalleMascota";
+import ExportarPDF from "../../components/ExportarPDF.jsx";
 import "../comercial/Productos.css";
 import "./Mascotas.css";
 import { obtenerEspecies, obtenerRazas } from "../../service/especiesService";
@@ -126,6 +127,24 @@ export default function Mascotas() {
           value={busqueda}
           onChange={(event) => setBusqueda(event.target.value)}
         />
+        {!cargando && (
+          <ExportarPDF
+            titulo="Listado de mascotas"
+            nombreArchivo="mascotas"
+            secciones={[{
+              titulo: "Mascotas",
+              columnas: ["ID", "Nombre", "Especie", "Raza", "Propietario", "Estado"],
+              filas: mascotasFiltradas.map((m) => [
+                m.id,
+                m.nombre,
+                obtenerNombreEspecie(m.id_especie),
+                obtenerNombreRaza(m.id_raza),
+                obtenerDueño(m.id_cliente),
+                m.activo ? "Activo" : "Inactivo",
+              ]),
+            }]}
+          />
+        )}
         <button className="btn-primary" onClick={abrirModalCrear}>
           + Nueva mascota
         </button>

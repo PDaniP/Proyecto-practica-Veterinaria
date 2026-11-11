@@ -4,6 +4,7 @@ import FormularioProductos from '../../components/FormularioProductos'
 import FormularioEdicionProductos from '../../components/FormularioEdicionProducto'
 import Modal from '../../components/Modal'
 import FormularioLote from '../../components/FormularioLote'
+import ExportarPDF from '../../components/ExportarPDF.jsx'
 import './Productos.css'
 
 const API_URL = 'products'
@@ -132,6 +133,26 @@ const lotesFiltrados = lotes.filter((l) =>
           value={busqueda}
           onChange={(e) => setBusqueda(e.target.value)}
         />
+
+        {!vistaLotes && !loading && (
+          <ExportarPDF
+            titulo="Listado de productos"
+            nombreArchivo="productos"
+            secciones={[{
+              titulo: "Productos",
+              columnas: ["ID", "Nombre", "Categoría (ID)", "Marca", "Precio costo", "Precio venta", "Stock"],
+              filas: productosFiltrados.map((p) => [
+                p.id,
+                p.nombre,
+                p.id_categoria,
+                p.marca,
+                p.precio_costo == null ? "—" : `$${Number(p.precio_costo).toLocaleString("es-AR")}`,
+                p.precio_venta == null ? "Sin definir" : `$${Number(p.precio_venta).toLocaleString("es-AR")}`,
+                p.stock_actual,
+              ]),
+            }]}
+          />
+        )}
 
         <button
           className={`btn-toggle${vistaLotes ? ' active' : ''}`}

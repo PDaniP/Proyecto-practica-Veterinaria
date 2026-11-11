@@ -6,6 +6,7 @@ import { hoy, vacunaVacia } from "../utils/vacuna.js";
 import "./FormulariosClinicos.css";
 //import { motivosConsulta } from "../utils/motivosConsulta.js";
 import api from "../../config/api.js";
+import { subirEstudio } from "../service/estudiosService.js";
 
 export default function FormularioConsulta({ idMascota, nombreMascota, onClose, onGuardado }) {
   const [consulta, setConsulta] = useState({
@@ -23,6 +24,8 @@ export default function FormularioConsulta({ idMascota, nombreMascota, onClose, 
   const [productosSeleccionados, setProductosSeleccionados] = useState([]);
   const [error, setError] = useState("");
   const [guardando, setGuardando] = useState(false);
+  const [archivosEstudio, setArchivosEstudio] = useState([]);
+  const [consultaRegistradaId, setConsultaRegistradaId] = useState(null);
 
   const [motivos, setMotivos] = useState([]);
   const [cargandoMotivos, setCargandoMotivos] = useState(true);
@@ -200,18 +203,35 @@ export default function FormularioConsulta({ idMascota, nombreMascota, onClose, 
         : [],
     };
 
+    let idConsulta = consultaRegistradaId;
     try {
-      await api.post(
-        "mascotas/historia/consulta",
-        datos
-      );
+      if (!idConsulta) {
+        const { data } = await api.post("mascotas/historia/consulta", datos);
+        idConsulta = Number(data.id_consulta);
+        if (!Number.isInteger(idConsulta) || idConsulta <= 0) {
+          throw new Error(
+            "La consulta se registró, pero el servidor no devolvió su identificador. No vuelva a guardar la consulta.",
+          );
+        }
+        setConsultaRegistradaId(idConsulta);
+      }
+
+      for (const archivo of archivosEstudio) {
+        await subirEstudio(idConsulta, archivo);
+        setArchivosEstudio((actuales) =>
+          actuales.filter((pendiente) => pendiente !== archivo),
+        );
+      }
 
       await onGuardado?.();
       onClose?.();
     } catch (err) {
       console.error("Error al registrar la consulta:", err);
       setError(
-        err.response?.data?.message || "No se pudo registrar la consulta.",
+        err.response?.data?.message ||
+          (idConsulta
+            ? `La consulta quedó registrada (ID ${idConsulta}), pero no se pudieron adjuntar todos los estudios. Vuelva a intentar para cargar los archivos pendientes.`
+            : err.message || "No se pudo registrar la consulta."),
       );
     } finally {
       setGuardando(false);
@@ -269,6 +289,10 @@ export default function FormularioConsulta({ idMascota, nombreMascota, onClose, 
       {nombreMascota && (<p className="cf-subtitulo">Paciente: {nombreMascota}</p>)}
 
       <form className="cf-form" onSubmit={handleSubmit}>
+        <fieldset
+          className="cf-campos-consulta"
+          disabled={guardando || Boolean(consultaRegistradaId)}
+        >
         <div className="cf-fila cf-fila-3">
           {/** 
           <div className="cf-campo">
@@ -411,6 +435,49 @@ export default function FormularioConsulta({ idMascota, nombreMascota, onClose, 
           ></textarea>
         </div>
 
+        <div className="cf-campo">
+          <label htmlFor="consulta-estudios">Adjuntar estudio</label>
+          <input
+            id="consulta-estudios"
+            type="file"
+            accept=".pdf,.jpg,.jpeg,.png,.webp,application/pdf,image/jpeg,image/png,image/webp"
+            multiple
+            disabled={guardando || Boolean(consultaRegistradaId)}
+            onChange={(event) => {
+              const archivos = Array.from(event.target.files || []);
+              setArchivosEstudio((actuales) => [...actuales, ...archivos]);
+              event.target.value = "";
+            }}
+          />
+          <p className="cf-ayuda">PDF, JPG, PNG o WEBP; hasta 50 MB por archivo.</p>
+          {consultaRegistradaId && (
+            <p className="cf-ayuda" role="status">
+              La consulta ya está guardada. El próximo intento enviará únicamente los estudios pendientes.
+            </p>
+          )}
+          {archivosEstudio.length > 0 && (
+            <ul className="cf-detalle-insumos">
+              {archivosEstudio.map((archivo, indice) => (
+                <li key={`${archivo.name}-${archivo.lastModified}-${indice}`}>
+                  {archivo.name}
+                  <button
+                    type="button"
+                    className="cf-btn-cancelar"
+                    disabled={guardando || Boolean(consultaRegistradaId)}
+                    onClick={() =>
+                      setArchivosEstudio((actuales) =>
+                        actuales.filter((_, posicion) => posicion !== indice),
+                      )
+                    }
+                  >
+                    Quitar
+                  </button>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+
         <div className="cf-vacuna-bloque">
           <label className="cf-vacuna-toggle" htmlFor="consulta-aplico-vacuna">
             <input
@@ -434,6 +501,7 @@ export default function FormularioConsulta({ idMascota, nombreMascota, onClose, 
             </div>
           )}
         </div>
+        </fieldset>
 
         {error && <p className="cf-error" role="alert">{error}</p>}
 
@@ -443,7 +511,11 @@ export default function FormularioConsulta({ idMascota, nombreMascota, onClose, 
           </button>
 
           <button type="submit" className="btn-primary" disabled={guardando}>
-            {guardando ? "Guardando..." : "Guardar consulta"}
+            {guardando
+              ? "Guardando..."
+              : consultaRegistradaId
+                ? "Reintentar adjuntos"
+                : "Guardar consulta"}
           </button>
         </div>
       </form>

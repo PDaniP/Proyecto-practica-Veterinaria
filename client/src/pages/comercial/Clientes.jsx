@@ -4,6 +4,7 @@ import FormularioClientes from '../../components/FormularioClientes'
 import FichaCliente from '../../components/FichaCliente'
 import HistorialCompras from '../../components/HistorialCompras'
 import Modal from '../../components/Modal'
+import ExportarPDF from '../../components/ExportarPDF.jsx'
 import './Clientes.css'
 
 const CLIENTES_URL = 'clientes'
@@ -129,6 +130,20 @@ export default function Clientes() {
           value={busqueda}
           onChange={(e) => setBusqueda(e.target.value)}
         />
+
+        {!loading && (
+          <ExportarPDF
+            titulo="Listado de clientes"
+            nombreArchivo="clientes"
+            secciones={[{
+              titulo: "Clientes",
+              columnas: ["ID", "Nombre", "Apellido", "DNI"],
+              filas: clientesFiltrados.map((c) => [
+                c.id, c.nombre, c.apellido, c.dni,
+              ]),
+            }]}
+          />
+        )}
 
         <button className="btn-primary" onClick={abrirModalCrear}>
           + Nuevo cliente

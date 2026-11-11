@@ -2,6 +2,8 @@ import GraficoEspecies from '../components/graficos/GraficoEspecies.jsx'
 import GraficoStock from '../components/graficos/GraficoStock.jsx'
 import GraficosVentas from '../components/graficos/GraficosVentas.jsx'
 import ReporteTurnos from '../components/graficos/GraficoTurnos.jsx'
+import GraficosConsultas from '../components/graficos/GraficosConsultas.jsx'
+
 import './Estadisticas.css'
 
 const Estadisticas = () => (
@@ -33,6 +35,12 @@ const Estadisticas = () => (
       <h2 className="estadisticas-seccion-titulo">Reporte de Turnos</h2>
       <div className="estadisticas-contenido">
         <ReporteTurnos />
+      </div>
+    </section>
+    <section className="estadisticas-seccion">
+      <h2 className="estadisticas-seccion-titulo">Reporte de Consultas</h2>
+      <div className="estadisticas-contenido">
+        <GraficosConsultas />
       </div>
     </section>
   </div>

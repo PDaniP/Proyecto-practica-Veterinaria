@@ -1,7 +1,7 @@
 import mascotasModel from '../models/mascotas.model.js';
 import { actualizarStockLote } from '../models/ventas.model.js';
 
-const { añadirMascotaADB, obtenerListaMascotas, editarMascotaADB, eliminarMascotaADB, obtenerDetalleConsulta, datosMascota, añadirConsulta, obtenerConsultaPorID, obtenerConsultasConInsumosPorCliente, obtenerMotivos, editarConsulta, obtenerAntecedentes, obtenerVacunasAplicadas, obtenerDiagnosticosPorMotivo } = mascotasModel;
+const { añadirMascotaADB, obtenerListaMascotas, editarMascotaADB, eliminarMascotaADB, obtenerDetalleConsulta,reporteConsultasPorMotivos, datosMascota, añadirConsulta, obtenerConsultaPorID, obtenerConsultasConInsumosPorCliente, obtenerMotivos, editarConsulta, obtenerAntecedentes, obtenerVacunasAplicadas, obtenerDiagnosticosPorMotivo } = mascotasModel;
 
 const listaMascotas = async (req, res) => {
     try {
@@ -35,7 +35,7 @@ const editarMascota = async (req, res) => {
             return res.status(400).json({ message: 'Falta el ID de la mascota' });
         }
         const mascota = req.body;
-        if(!mascota.id_cliente || !mascota.nombre || !mascota.id_especie || !mascota.id_raza || !mascota.fecha_nacimiento || !mascota.genero) {
+        if(!mascota.id_cliente || !mascota.observaciones || !mascota.numero_chip || mascota.activo === undefined) {
             return res.status(400).json({ message: 'Faltan datos obligatorios de la mascota' });
         }
         const mascotaEditada = await editarMascotaADB(id, mascota);
@@ -118,6 +118,7 @@ const registrarConsulta = async (req, res) => {
         if (!Array.isArray(insumos)) {
             return res.status(400).json({ message: 'La lista de insumos no es válida' });
         }
+        let consultaRegistrada;
         if(id_mascota){
             const consulta = {
                 id_mascota,
@@ -129,7 +130,7 @@ const registrarConsulta = async (req, res) => {
                 tratamiento,
                 observaciones
             };
-            const consultaRegistrada = await añadirConsulta(consulta, insumos);
+            consultaRegistrada = await añadirConsulta(consulta, insumos);
             console.log('Consulta registrada:', consultaRegistrada);
             if(!consultaRegistrada) {
             return res.status(500).json({ message: 'Error al registrar la consulta' });
@@ -138,7 +139,10 @@ const registrarConsulta = async (req, res) => {
         
         
         
-        res.status(200).json({ message: 'Operacion registrada correctamente'});
+        res.status(201).json({
+            message: 'Operacion registrada correctamente',
+            id_consulta: consultaRegistrada.id
+        });
     } catch (error) {
         if (error.statusCode) {
             return res.status(error.statusCode).json({ message: error.message });
@@ -265,6 +269,16 @@ const editarConsultaPorId = async (req, res) => {
     }
 };
 
+const reporteConsultasPorMotivosController = async (req, res) => {
+    try {
+        const { fecha_inicio, fecha_fin } = req.query;
+        const consultas = await reporteConsultasPorMotivos(fecha_inicio, fecha_fin);
+        res.status(200).json(consultas);
+    } catch (error) {
+        res.status(500).json({ message: 'Error al generar el reporte', error: error.message });
+        console.error(error);
+    }
+};
 
 export default {
     listaMascotas,
@@ -277,5 +291,6 @@ export default {
     consultasConInsumosPorCliente,
     motivosConsultas,
     editarConsultaPorId,
-    diagnosticosPorMotivo
+    diagnosticosPorMotivo,
+    reporteConsultasPorMotivosController
 };
