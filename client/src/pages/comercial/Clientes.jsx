@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import api from "../../../config/api.js";
+import { normalizarTexto } from "../../utils/normalizarTexto.js";
 import FormularioClientes from "../../components/FormularioClientes";
 import FichaCliente from "../../components/FichaCliente";
 import HistorialCompras from "../../components/HistorialCompras";
@@ -109,12 +110,12 @@ export default function Clientes() {
   };
 
   const clientesFiltrados = clientes.filter((c) => {
-    const texto = busqueda.trim().toLowerCase();
+    const texto = normalizarTexto(busqueda);
     if (!texto) return true;
 
     const nombreCompleto =
-      `${c.nombre ?? ""} ${c.apellido ?? ""}`.toLowerCase();
-    const telefono = (c.telefono ?? "").toLowerCase();
+      normalizarTexto(`${c.nombre ?? ""} ${c.apellido ?? ""}`);
+    const telefono = normalizarTexto(c.telefono ?? "");
 
     return nombreCompleto.includes(texto) || telefono.includes(texto);
   });

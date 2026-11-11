@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import api from "../../../config/api.js"
+import { normalizarTexto } from "../../utils/normalizarTexto.js"
 import Modal from '../../components/Modal.jsx'
 import FormularioAltaUsuario from '../../components/FormularioAltaUsuario.jsx'
 import './PanelControl.css'
@@ -35,12 +36,12 @@ export default function PanelControl() {
   }, [])
 
   const usuariosFiltrados = usuarios.filter((usuario) => {
-    const texto = busqueda.trim().toLowerCase()
+    const texto = normalizarTexto(busqueda)
 
     if (!texto) return true
 
     return [usuario.nombre, usuario.usuario, usuario.email, usuario.rol]
-      .some((dato) => dato?.toLowerCase().includes(texto))
+      .some((dato) => normalizarTexto(dato).includes(texto))
   })
 
   return (

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import api from "../../config/api.js";
+import { normalizarTexto } from "../utils/normalizarTexto.js";
 
 export default function FormularioNuevaMascota({ onClose }) {
   const [tipoDueño, setTipoDueño] = useState("");
@@ -47,7 +48,9 @@ export default function FormularioNuevaMascota({ onClose }) {
 
   const dueñosFiltrados = dueños.filter((cliente) => {
     const nombreCompleto = `${cliente.nombre} ${cliente.apellido} ${cliente.dni}`;
-    return nombreCompleto.toLowerCase().includes(busquedaDueño.toLowerCase());
+    return normalizarTexto(nombreCompleto).includes(
+      normalizarTexto(busquedaDueño),
+    );
   });
 
   useEffect(() => {

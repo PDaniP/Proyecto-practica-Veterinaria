@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import api from "../../config/api.js";
+import { normalizarTexto } from "../utils/normalizarTexto.js";
 
 export default function FormularioNuevaVenta({ onClose, onVentaRegistrada }) {
   const [tipoCliente, setTipoCliente] = useState("");
@@ -277,7 +278,9 @@ export default function FormularioNuevaVenta({ onClose, onVentaRegistrada }) {
                 {busqueda && !clienteSeleccionado && (
                   <ul className="suggestions">
                     {clientes.filter((c) =>
-                      c.nombre.toLowerCase().includes(busqueda.toLowerCase()),
+                      normalizarTexto(c.nombre).includes(
+                        normalizarTexto(busqueda),
+                      ),
                     ).length === 0 ? (
                       <li className="suggestion-item">
                         No se encontraron clientes
@@ -285,9 +288,9 @@ export default function FormularioNuevaVenta({ onClose, onVentaRegistrada }) {
                     ) : (
                       clientes
                         .filter((c) =>
-                          c.nombre
-                            .toLowerCase()
-                            .includes(busqueda.toLowerCase()),
+                          normalizarTexto(c.nombre).includes(
+                            normalizarTexto(busqueda),
+                          ),
                         )
                         .map((c) => (
                           <li
@@ -416,7 +419,9 @@ export default function FormularioNuevaVenta({ onClose, onVentaRegistrada }) {
                   {productos.filter((p) =>
                   p.venta_al_publico &&
                   p.precio_venta != null &&
-                  p.nombre.toLowerCase().includes(busquedaProducto.toLowerCase()),
+                  normalizarTexto(p.nombre).includes(
+                    normalizarTexto(busquedaProducto),
+                  ),
                   ).length === 0 ? (
                     <li className="suggestion-item">
                       No se encontro el producto
@@ -426,7 +431,9 @@ export default function FormularioNuevaVenta({ onClose, onVentaRegistrada }) {
                       .filter((p) =>
                       p.venta_al_publico &&
                       p.precio_venta != null &&
-                      p.nombre.toLowerCase().includes(busquedaProducto.toLowerCase()),
+                      normalizarTexto(p.nombre).includes(
+                        normalizarTexto(busquedaProducto),
+                      ),
                       )
                       .map((p) => (
                         <li

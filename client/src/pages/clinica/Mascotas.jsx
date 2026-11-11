@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import api from "../../../config/api.js";
 import { useNavigate } from "react-router-dom";
+import { normalizarTexto } from "../../utils/normalizarTexto.js";
 import Modal from "../../components/Modal";
 import FormularioNuevaMascota from "../../components/FormularioNuevaMascota";
 import DetalleMascota from "../../components/DetalleMascota";
@@ -110,11 +111,11 @@ export default function Mascotas() {
   };
 
   const mascotasFiltradas = mascotas.filter((mascota) => {
-    const termino = busqueda.toLowerCase();
-    const dueño = obtenerDueño(mascota.id_cliente).toLowerCase();
+    const termino = normalizarTexto(busqueda);
+    const dueño = normalizarTexto(obtenerDueño(mascota.id_cliente));
 
     return (
-      mascota.nombre?.toLowerCase().includes(termino) || dueño.includes(termino)
+      normalizarTexto(mascota.nombre).includes(termino) || dueño.includes(termino)
     );
   });
 

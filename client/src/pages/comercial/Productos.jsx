@@ -5,6 +5,7 @@ import FormularioEdicionProductos from "../../components/FormularioEdicionProduc
 import Modal from "../../components/Modal";
 import FormularioLote from "../../components/FormularioLote";
 import ExportarPDF from "../../components/ExportarPDF.jsx";
+import { normalizarTexto } from "../../utils/normalizarTexto.js";
 import "./Productos.css";
 
 const API_URL = "products";
@@ -107,11 +108,11 @@ export default function Productos() {
   };
 
   const productosFiltrados = productos.filter((p) =>
-    p.nombre.toLowerCase().includes(busqueda.toLowerCase()),
+    normalizarTexto(p.nombre).includes(normalizarTexto(busqueda)),
   );
 
   const lotesFiltrados = lotes.filter((l) =>
-    l.nombre_producto?.toLowerCase().includes(busqueda.toLowerCase()),
+    normalizarTexto(l.nombre_producto).includes(normalizarTexto(busqueda)),
   );
 
   const POR_PAGINA = 15;
