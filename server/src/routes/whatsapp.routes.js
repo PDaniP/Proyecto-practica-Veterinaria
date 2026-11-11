@@ -17,7 +17,7 @@ router.get('/estado', (req, res) => {
             process.env.JWT_SECRET
         );
 
-        if (usuario.rol !== 'admin') {
+        if (Number(usuario.rol) !== 1) {
             return res.sendStatus(403);
         }
 

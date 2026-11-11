@@ -18,7 +18,7 @@ const client = new Client({
 client.on('qr', (qr) => {
     whatsappListo = false;
     qrActual = qr;
-    estadoWhatsapp = 'esperando QR';
+    estadoWhatsapp = 'esperando_qr';
     console.log('📱 Escaneá este código QR con el WhatsApp de la veterinaria:');
     qrcode.generate(qr, { small: true });
 });
@@ -37,7 +37,7 @@ client.on('ready', () => {
 client.on('auth_failure', (error) => {
     whatsappListo = false;
     qrActual = null;
-    estadoWhatsapp = 'error de autenticación';
+    estadoWhatsapp = 'error_autenticacion';
     console.error('Error de autenticación en WhatsApp:', error);
 });
 client.on('disconnected', (reason) => {
