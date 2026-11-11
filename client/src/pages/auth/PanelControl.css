@@ -87,11 +87,35 @@
 }
 
 .usuario-estado {
-  display: inline-block;
-  padding: 5px 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  width: 88px;
+  min-height: 28px;
+  padding: 5px 8px;
+  border: 0;
   border-radius: 999px;
   font-size: 0.78rem;
   font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: filter 0.2s, transform 0.15s;
+}
+
+.usuario-estado:hover:not(:disabled) {
+  filter: brightness(0.94);
+  transform: translateY(-1px);
+}
+
+.usuario-estado:focus-visible {
+  outline: 3px solid rgba(125, 31, 153, 0.25);
+  outline-offset: 2px;
+}
+
+.usuario-estado:disabled {
+  cursor: not-allowed;
+  opacity: 0.8;
 }
 
 .usuario-estado.activo {

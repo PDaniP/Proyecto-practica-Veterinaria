@@ -28,6 +28,22 @@ const obtenerUsuarios = async () => {
     return rows;
 }
 
+const actualizarEstadoUsuarioADB = async (id, activo) => {
+    const { rows } = await db.query(`
+        UPDATE usuarios AS u
+        SET activo = $2
+        WHERE u.id = $1
+          AND NOT EXISTS (
+              SELECT 1
+              FROM roles AS r
+              WHERE r.id = u.id_rol
+                AND LOWER(TRIM(r.nombre)) = 'administrador'
+          )
+        RETURNING u.id, u.nombre, u.usuario, u.email, u.activo, u.id_rol
+    `, [id, activo]);
+    return rows[0];
+}
+
 const añadirUsuarioADB = async (user) => {
     const {nombre, usuario,email,password_hash, id_rol,activo} = user;
     const {rows} = await db.query('INSERT INTO usuarios (nombre, usuario,email,password_hash, id_rol,activo, fecha_creacion) VALUES ($1, $2, $3, $4, $5, $6, NOW()) RETURNING *', [nombre, usuario,email,password_hash, id_rol,activo]);
@@ -67,6 +83,7 @@ export default {
     userModel,
     obtenerUsuarioPorId,
     obtenerUsuarios,
+    actualizarEstadoUsuarioADB,
     obtenerRoles,
     añadirUsuarioADB,
     editarUsuarioADB,

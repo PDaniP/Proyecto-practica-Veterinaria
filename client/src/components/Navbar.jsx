@@ -1,7 +1,6 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 import { NavLink, useNavigate } from 'react-router-dom'
 import logo from '../assets/Logo Veterinaria.png'
-import axios from 'axios'
 import api from '../../config/api.js'
 
 const navItems = [
@@ -23,21 +22,42 @@ export default function Navbar() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    api.get('/users/comprobar',{withCredentials: true})
-      .then(response => {
-        if (response.data.valid) {
-          setUsuario(response.data.user.usuario);
-          setMostrarBotones(true);
-        } else {
-          setUsuario(null);
-        }
-      })
-      .catch(error => {
-        console.error("Error al comprobar el token:", error);
-        setUsuario(null);
-        
-      });
-  }, []);
+    let activo = true;
+    let intervalId;
+
+    const comprobarSesion = () => {
+      api.get('/users/comprobar', { withCredentials: true })
+        .then((response) => {
+          if (!activo) return;
+          if (response.data.valid) {
+            setUsuario(response.data.user.usuario);
+            setMostrarBotones(true);
+            if (!intervalId) {
+              intervalId = window.setInterval(comprobarSesion, 15000);
+            }
+          }
+        })
+        .catch((error) => {
+          if (!activo) return;
+          if (error.response?.status === 401) {
+            setMostrarBotones(false);
+            setUsuario(null);
+            if (window.location.pathname !== '/login') {
+              navigate('/login');
+            }
+            return;
+          }
+          console.error("Error al comprobar el token:", error);
+        });
+    };
+
+    comprobarSesion();
+
+    return () => {
+      activo = false;
+      if (intervalId) window.clearInterval(intervalId);
+    };
+  }, [navigate]);
   
   
   const cerrarSesion = () => {
