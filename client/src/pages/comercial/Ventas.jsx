@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo } from "react";
 import api from "../../../config/api.js";
 import Modal from "../../components/Modal";
 import "./Ventas.css";
-import {useNavigate} from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import FormularioNuevaVenta from "../../components/FormularioNuevaVenta";
 import ExportarPDF from "../../components/ExportarPDF.jsx";
 
@@ -47,7 +47,9 @@ export default function Ventas() {
     setLoading(true);
 
     try {
-      const response = await api.get(`ventas/lista-ventas`, { withCredentials: true });
+      const response = await api.get(`ventas/lista-ventas`, {
+        withCredentials: true,
+      });
 
       const listaVentas = response.data.ventas || [];
 
@@ -59,9 +61,9 @@ export default function Ventas() {
       await Promise.all(
         listaVentas.map(async (venta) => {
           try {
-            const res = await api.get(
-              `ventas/detalles-venta/${venta.id}`, {withCredentials: true}
-            );
+            const res = await api.get(`ventas/detalles-venta/${venta.id}`, {
+              withCredentials: true,
+            });
 
             resumen[venta.id] = res.data.detalles || [];
           } catch (error) {
@@ -74,7 +76,7 @@ export default function Ventas() {
           }
         }),
       );
-      
+
       setProductosPorVenta(resumen);
     } catch (error) {
       console.error("Error al cargar las ventas:", error);
@@ -89,10 +91,9 @@ export default function Ventas() {
     setLoadingDetalle(true);
 
     try {
-      const res = await api.get(
-        `ventas/detalles-venta/${venta.id}`,
-        { withCredentials: true }
-      );
+      const res = await api.get(`ventas/detalles-venta/${venta.id}`, {
+        withCredentials: true,
+      });
       setDetalleSeleccionado(res.data.detalles || []);
     } catch (error) {
       console.error(error);
@@ -186,7 +187,6 @@ export default function Ventas() {
 
   const resumenProductos = (idVenta) => {
     const detalles = productosPorVenta[idVenta];
-    
 
     if (!detalles || detalles.length === 0) return "—";
 
@@ -219,25 +219,74 @@ export default function Ventas() {
     return <span className={`badge ${clase}`}>{metodo}</span>;
   };
 
+  const POR_PAGINA = 15;
+  const [pagina, setPagina] = useState(1);
+
+  const totalPaginas = Math.ceil(ventasFiltradas.length / POR_PAGINA);
+  const paginaActual = Math.min(pagina, Math.max(totalPaginas, 1));
+  const filasPagina = ventasFiltradas.slice(
+    (paginaActual - 1) * POR_PAGINA,
+    paginaActual * POR_PAGINA,
+  );
+
   return (
     <section className="page-shell ventas-page">
       <div className="ventas-header">
         <h1>Ventas</h1>
-        <div>
-        <button className="btn-primary" onClick={() => navigate('/reportes')}>
-          Reporte de Ventas
-        </button>
-        <button onClick={abrirModal} className="btn-primary">
-          Nueva Venta
-        </button>
+        <div className="ventas-header__actions">
+          {!loading && (
+            <ExportarPDF
+              titulo="Ventas"
+              nombreArchivo={`ventas-${fechaDesde || "inicio"}-${fechaHasta || "hoy"}`}
+              metadata={{
+                Desde: fechaDesde || "Sin límite",
+                Hasta: fechaHasta || "Sin límite",
+              }}
+              secciones={[
+                {
+                  titulo: "Resumen del período",
+                  columnas: ["Ventas", "Total"],
+                  filas: [
+                    [
+                      stats.totalVentas,
+                      `$${stats.ingresos.toLocaleString("es-AR")}`,
+                    ],
+                  ],
+                },
+                {
+                  titulo: "Detalle de ventas",
+                  columnas: [
+                    "Fecha",
+                    "Venta",
+                    "Cliente",
+                    "Importe",
+                    "Método de pago",
+                  ],
+                  filas: ventasFiltradas.map((v) => [
+                    formatearFecha(v.fecha_venta),
+                    `#${String(v.id).padStart(3, "0")}`,
+                    v.cliente_nombre || "—",
+                    `$${Number(v.total).toLocaleString("es-AR")}`,
+                    v.metodo_pago || "—",
+                  ]),
+                },
+              ]}
+            />
+          )}
 
+          <button className="btn-primary" onClick={() => navigate("/reportes")}>
+            Reporte de Ventas
+          </button>
+          <button onClick={abrirModal} className="btn-primary">
+            Nueva Venta
+          </button>
+        </div>
         <Modal isOpen={mostrarModal} onClose={cerrarModales}>
           <FormularioNuevaVenta
             onClose={cerrarModales}
             onVentaRegistrada={fetchVentas}
           />
         </Modal>
-        </div>
       </div>
       <div className="ventas-toolbar">
         <h2>Historial de ventas:</h2>
@@ -262,37 +311,6 @@ export default function Ventas() {
               Limpiar
             </button>
           </div>
-          {!loading && (
-            <ExportarPDF
-              titulo="Ventas"
-              nombreArchivo={`ventas-${fechaDesde || "inicio"}-${fechaHasta || "hoy"}`}
-              metadata={{
-                Desde: fechaDesde || "Sin límite",
-                Hasta: fechaHasta || "Sin límite",
-              }}
-              secciones={[
-                {
-                  titulo: "Resumen del período",
-                  columnas: ["Ventas", "Total"],
-                  filas: [[
-                    stats.totalVentas,
-                    `$${stats.ingresos.toLocaleString("es-AR")}`,
-                  ]],
-                },
-                {
-                  titulo: "Detalle de ventas",
-                  columnas: ["Fecha", "Venta", "Cliente", "Importe", "Método de pago"],
-                  filas: ventasFiltradas.map((v) => [
-                    formatearFecha(v.fecha_venta),
-                    `#${String(v.id).padStart(3, "0")}`,
-                    v.cliente_nombre || "—",
-                    `$${Number(v.total).toLocaleString("es-AR")}`,
-                    v.metodo_pago || "—",
-                  ]),
-                },
-              ]}
-            />
-          )}
         </div>
       </div>
 
@@ -352,7 +370,7 @@ export default function Ventas() {
             </thead>
 
             <tbody>
-              {ventasFiltradas.map((v) => (
+              {filasPagina.map((v) => (
                 <tr key={v.id}>
                   <td>#{String(v.id).padStart(3, "0")}</td>
                   <td>{formatearFecha(v.fecha_venta)}</td>
@@ -375,13 +393,39 @@ export default function Ventas() {
         </div>
       )}
 
+      <div className="productos-pagination" aria-label="Paginación">
+        <button
+          className="productos-pagination__button"
+          onClick={() => setPagina((p) => Math.max(p - 1, 1))}
+          disabled={paginaActual === 1}
+          aria-label="Ir a la página anterior"
+        >
+          Anterior
+        </button>
+
+        <span className="productos-pagination__info">
+          Página <strong>{paginaActual}</strong> de{" "}
+          <strong>{Math.max(totalPaginas, 1)}</strong>
+        </span>
+
+        <button
+          className="productos-pagination__button"
+          onClick={() => setPagina((p) => Math.min(p + 1, totalPaginas))}
+          disabled={paginaActual >= totalPaginas}
+          aria-label="Ir a la página siguiente"
+        >
+          Siguiente
+        </button>
+      </div>
+
       <Modal isOpen={modalAbierto} onClose={cerrarModal}>
         <h2 className="detalle-titulo">
           Venta #
           {ventaSeleccionada && String(ventaSeleccionada.id).padStart(3, "0")}
         </h2>
         <h2 className="detalle-titulo">
-          Cliente: {`${ventaSeleccionada?.cliente_nombre || "Cliente"} ${ventaSeleccionada?.cliente_apellido || "general"}`.trim()}
+          Cliente:{" "}
+          {`${ventaSeleccionada?.cliente_nombre || "Cliente"} ${ventaSeleccionada?.cliente_apellido || "general"}`.trim()}
         </h2>
 
         {loadingDetalle ? (
@@ -438,6 +482,71 @@ const formStyles = `
 
 .btn-primary:active {
   transform: scale(0.97);
+}
+
+.productos-pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  margin: 20px 0;
+}
+
+.productos-pagination__button {
+  min-height: 40px;
+  padding: 0 18px;
+  border: 1px solid var(--vet-purple);
+  border-radius: 8px;
+  background: var(--vet-purple);
+  color: #fff;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
+}
+
+.productos-pagination__button:hover:not(:disabled) {
+  background: var(--vet-purple-light);
+  box-shadow: 0 3px 10px rgba(125, 31, 153, 0.2);
+  transform: translateY(-1px);
+}
+
+.productos-pagination__button:focus-visible {
+  outline: 3px solid rgba(125, 31, 153, 0.25);
+  outline-offset: 3px;
+}
+
+.productos-pagination__button:disabled {
+  border-color: var(--vet-purple-border);
+  background: var(--vet-purple-bg);
+  color: var(--text-muted);
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+}
+
+.productos-pagination__info {
+  color: var(--text-muted);
+  font-size: 0.92rem;
+  white-space: nowrap;
+}
+
+.productos-pagination__info strong {
+  color: var(--vet-purple);
+}
+
+@media (max-width: 480px) {
+  .productos-pagination {
+    gap: 8px;
+  }
+
+  .productos-pagination__button {
+    padding: 0 12px;
+  }
+
+  .productos-pagination__info {
+    font-size: 0.82rem;
+  }
 }
 
 `;
