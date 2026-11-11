@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 
 import './App.css'
+import WhatsApp from './pages/WhatsApp.jsx'
 import Navbar from './components/Navbar.jsx'
 import Home from './pages/home.jsx'
 import Productos from './pages/comercial/Productos.jsx'
@@ -44,6 +45,7 @@ function App() {
               <Route path="/panel-control" element={<PanelControl />} />
               <Route path="/historias-clinicas/:id" element={<HistoriasClinicas />} />
               <Route path="/estadisticas" element={<Estadisticas />} />
+              <Route path="/whatsapp" element={<WhatsApp />} />
             </Route>
           </Routes>
         </main>

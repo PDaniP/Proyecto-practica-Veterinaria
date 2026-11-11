@@ -5,6 +5,8 @@ import path from 'path';
 import os from 'os';
 
 let whatsappListo = false;
+let qrActual = null;
+let estadoWhatsapp = 'iniciando'
 // Creamos el cliente de WhatsApp
 const client = new Client({
     authStrategy: new LocalAuth({
@@ -15,23 +17,40 @@ const client = new Client({
 
 client.on('qr', (qr) => {
     whatsappListo = false;
+    qrActual = qr;
+    estadoWhatsapp = 'esperando QR';
     console.log('📱 Escaneá este código QR con el WhatsApp de la veterinaria:');
     qrcode.generate(qr, { small: true });
 });
-
+client.on('authenticated', () => {
+    whatsappListo = true;
+    qrActual = null;
+    estadoWhatsapp = 'autenticado';
+    console.log('✅ Cliente de WhatsApp autenticado correctamente.');
+});
 client.on('ready', () => {
     whatsappListo = true;
+    qrActual = null;
+    estadoWhatsapp = 'conectado';
     console.log('✅ Cliente de WhatsApp conectado y listo para enviar mensajes.');
 });
 client.on('auth_failure', (error) => {
     whatsappListo = false;
+    qrActual = null;
+    estadoWhatsapp = 'error de autenticación';
     console.error('Error de autenticación en WhatsApp:', error);
 });
 client.on('disconnected', (reason) => {
     whatsappListo = false;
+    qrActual = null;
+    estadoWhatsapp = 'desconectado';
     console.log('Cliente de WhatsApp desconectado:', reason);
 });
 
+const obtenerEstadoWhatsapp = () => ({
+    estado: estadoWhatsapp,
+    qr: qrActual
+});
 // Función para enviar notificaciones
 const enviarNotificacion = async (telefono, mensaje) => {
     try {
@@ -50,4 +69,4 @@ const enviarNotificacion = async (telefono, mensaje) => {
     }
 };
 
-export { client, enviarNotificacion };
+export { client, enviarNotificacion, obtenerEstadoWhatsapp };

@@ -11,6 +11,7 @@ import mascotasRoutes from './routes/mascotas.routes.js'
 import especiesRoutes from "./routes/especies.routes.js"
 import estudiosRoutes from "./routes/estudios.routes.js"
 import turnosRoutes from './routes/turnos.routes.js';
+import whatsappRoutes from './routes/whatsapp.routes.js';
 import { client } from './config/whatsapp.js';
 import { iniciarCronRecordatorios } from './config/cron.js';
 const app = express();
@@ -43,6 +44,7 @@ app.use('/mascotas', mascotasRoutes);
 app.use("/especies", especiesRoutes);
 app.use("/estudios", estudiosRoutes);
 app.use("/turnos", turnosRoutes);
+app.use("/whatsapp", whatsappRoutes);
 
 const PORT = process.env.PORT || 3000;
 
