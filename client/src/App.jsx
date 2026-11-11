@@ -17,16 +17,18 @@ import Perfil from './pages/auth/Perfil.jsx'
 import PanelControl from './pages/auth/PanelControl.jsx'
 import FormularioProductos from './components/FormularioProductos.jsx'
 import Estadisticas from './pages/Estadisticas.jsx'
+import { SystemFeedbackProvider } from './components/SystemFeedback.jsx'
 
 function App() {
 
 
   return (
     <BrowserRouter>
-      <div className="app-shell">
-        <Navbar />
-        <main className="app-main">
-          <Routes>
+      <SystemFeedbackProvider>
+        <div className="app-shell">
+          <Navbar />
+          <main className="app-main">
+            <Routes>
             <Route path="/" element={<Login />} />
             <Route path="/login" element={<Login />} />
 
@@ -47,9 +49,10 @@ function App() {
               <Route path="/estadisticas" element={<Estadisticas />} />
               <Route path="/whatsapp" element={<WhatsApp />} />
             </Route>
-          </Routes>
-        </main>
-      </div>
+            </Routes>
+          </main>
+        </div>
+      </SystemFeedbackProvider>
     </BrowserRouter>
   )
 }

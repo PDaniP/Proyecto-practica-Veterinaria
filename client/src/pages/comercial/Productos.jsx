@@ -5,6 +5,7 @@ import FormularioEdicionProductos from "../../components/FormularioEdicionProduc
 import Modal from "../../components/Modal";
 import FormularioLote from "../../components/FormularioLote";
 import ExportarPDF from "../../components/ExportarPDF.jsx";
+import useSystemFeedback from "../../hooks/useSystemFeedback.js";
 import { normalizarTexto } from "../../utils/normalizarTexto.js";
 import "./Productos.css";
 
@@ -13,6 +14,7 @@ const API_URL = "products";
 const cargarProductos = () => api.get(API_URL, { withCredentials: true });
 
 export default function Productos() {
+  const { confirmarAccion } = useSystemFeedback();
   const [vistaLotes, setVistaLotes] = useState(false);
   const [productos, setProductos] = useState([]);
   const [lotes, setLotes] = useState([]);
@@ -66,8 +68,9 @@ export default function Productos() {
   };
 
   const handleEliminar = async (id) => {
-    const confirmar = window.confirm(
+    const confirmar = await confirmarAccion(
       "¿Seguro que querés eliminar este producto? Esta acción no se puede deshacer.",
+      { variante: "warning", textoConfirmar: "Eliminar" },
     );
     if (!confirmar) return;
 

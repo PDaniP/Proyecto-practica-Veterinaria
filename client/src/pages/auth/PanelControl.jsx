@@ -3,6 +3,7 @@ import api from "../../../config/api.js"
 import { normalizarTexto } from "../../utils/normalizarTexto.js"
 import Modal from '../../components/Modal.jsx'
 import FormularioAltaUsuario from '../../components/FormularioAltaUsuario.jsx'
+import useSystemFeedback from '../../hooks/useSystemFeedback.js'
 import './PanelControl.css'
 
 
@@ -11,6 +12,7 @@ const obtenerUsuarios = () =>
   api.get(`${API_URL}/lista`, { withCredentials: true })
 
 export default function PanelControl() {
+  const { confirmarAccion } = useSystemFeedback()
   const [usuarios, setUsuarios] = useState([])
   const [cargando, setCargando] = useState(true)
   const [error, setError] = useState('')
@@ -37,8 +39,9 @@ export default function PanelControl() {
   }
 
   const restablecerContrasena = async (usuario) => {
-    const confirmar = window.confirm(
+    const confirmar = await confirmarAccion(
       `¿Restablecer la contraseña de ${usuario.nombre} a "temp123"?`,
+      { variante: 'warning', textoConfirmar: 'Restablecer' },
     )
     if (!confirmar) return
 

@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react'
 import axios from 'axios' // Podés borrar esto si usás solo tu instancia 'api'
 import api from "../../config/api.js";
+import useSystemFeedback from "../hooks/useSystemFeedback.js";
 
 // const API_URL = 'http://localhost:3000/clientes'
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
 export default function FormularioClientes({ clienteInicial, onClose }) {
+  const { mostrarAlerta } = useSystemFeedback();
   const esEdicion = Boolean(clienteInicial)
 
   const [cliente, setCliente] = useState({
@@ -80,10 +82,10 @@ export default function FormularioClientes({ clienteInicial, onClose }) {
     try {
       if (esEdicion) {
         await api.put(`clientes/editar/${clienteInicial.id}`, cliente)
-        alert('Cliente actualizado correctamente.')
+        await mostrarAlerta('Cliente actualizado correctamente.', { variante: 'success' })
       } else {
         await api.post(`clientes/add`, cliente)
-        alert('Cliente registrado correctamente.')
+        await mostrarAlerta('Cliente registrado correctamente.', { variante: 'success' })
 
         setCliente({
           nombre: '',
@@ -103,7 +105,7 @@ export default function FormularioClientes({ clienteInicial, onClose }) {
       onClose()
     } catch (error) {
       console.error('Error al guardar el cliente:', error)
-      alert('Hubo un error al guardar el cliente. Por favor, inténtelo de nuevo.')
+      await mostrarAlerta('Hubo un error al guardar el cliente. Por favor, inténtelo de nuevo.', { variante: 'error' })
     } finally {
       setEnviando(false)
     }

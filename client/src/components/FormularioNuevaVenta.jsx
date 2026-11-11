@@ -1,8 +1,10 @@
 import { useState, useEffect } from "react";
 import api from "../../config/api.js";
 import { normalizarTexto } from "../utils/normalizarTexto.js";
+import useSystemFeedback from "../hooks/useSystemFeedback.js";
 
 export default function FormularioNuevaVenta({ onClose, onVentaRegistrada }) {
+  const { mostrarAlerta } = useSystemFeedback();
   const [tipoCliente, setTipoCliente] = useState("");
   const [clientes, setClientes] = useState([]);
   const [busqueda, setBusqueda] = useState("");
@@ -123,7 +125,7 @@ export default function FormularioNuevaVenta({ onClose, onVentaRegistrada }) {
       (insumo) => !idsAgregados.has(Number(insumo.id_detalle_consulta)),
     );
     if (insumosNuevos.length === 0) {
-      alert("Los insumos de esta consulta ya están agregados a la venta.");
+      mostrarAlerta("Los insumos de esta consulta ya están agregados a la venta.", { variante: "warning" });
       return;
     }
 
@@ -161,22 +163,22 @@ export default function FormularioNuevaVenta({ onClose, onVentaRegistrada }) {
   const registrarVenta = async () => {
     if (guardandoVenta) return;
     if (!usuario?.id) {
-      alert("Debe iniciar sesión para registrar una venta.");
+      mostrarAlerta("Debe iniciar sesión para registrar una venta.", { variante: "warning" });
       return;
     }
 
     if (!clienteSeleccionado?.id) {
-      alert("Debe seleccionar un cliente para registrar la venta.");
+      mostrarAlerta("Debe seleccionar un cliente para registrar la venta.", { variante: "warning" });
       return;
     }
 
     if (!metodoPago) {
-      alert("Debe seleccionar un método de pago.");
+      mostrarAlerta("Debe seleccionar un método de pago.", { variante: "warning" });
       return;
     }
 
     if (productosVenta.length === 0) {
-      alert("Debe agregar al menos un producto para registrar la venta.");
+      mostrarAlerta("Debe agregar al menos un producto para registrar la venta.", { variante: "warning" });
       return;
     }
 
@@ -189,7 +191,7 @@ export default function FormularioNuevaVenta({ onClose, onVentaRegistrada }) {
           Number(item.precio_venta) <= 0),
     );
     if (insumosSinPrecio.length > 0) {
-      alert("Defina el precio de venta de los insumos desde Productos antes de registrar la venta.");
+      mostrarAlerta("Defina el precio de venta de los insumos desde Productos antes de registrar la venta.", { variante: "warning" });
       return;
     }
 
@@ -211,12 +213,12 @@ export default function FormularioNuevaVenta({ onClose, onVentaRegistrada }) {
         { withCredentials: true },
       );
 
-      window.alert("La venta se ha efectuado con éxito.");
+      await mostrarAlerta("La venta se ha efectuado con éxito.", { variante: "success" });
       if (onVentaRegistrada) await onVentaRegistrada();
       onClose?.();
     } catch (error) {
       console.error("Error al registrar la venta:", error);
-      alert(error.response?.data?.message || "No se pudo registrar la venta.");
+      await mostrarAlerta(error.response?.data?.message || "No se pudo registrar la venta.", { variante: "error" });
     } finally {
       setGuardandoVenta(false);
     }

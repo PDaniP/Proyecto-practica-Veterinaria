@@ -24,6 +24,7 @@ import Modal from "../components/Modal.jsx";
 import FormularioTurno from "../components/turnos/FormularioTurnos.jsx";
 import VistaSemana from "../components/turnos/VistaSemana.jsx";
 import VistaMes from "../components/turnos/VistaMes.jsx";
+import useSystemFeedback from "../hooks/useSystemFeedback.js";
 
 const formatearFecha = (fecha) => {
   return [
@@ -55,6 +56,7 @@ const desplazarFecha = (fecha, cantidadDias) => {
 
 
 export default function Home() {
+  const { mostrarAlerta, confirmarAccion } = useSystemFeedback();
   const [stock, setStock] = useState([]);
   const [ventasDiarias, setVentasDiarias] = useState([]);
   const [ventasSemanales, setVentasSemanales] = useState([]);
@@ -214,8 +216,9 @@ export default function Home() {
   };
 
   const manejarCompletarTurno = async (turno) => {
-    const confirmar = window.confirm(
+    const confirmar = await confirmarAccion(
       `¿Querés marcar como completado el turno de ${turno.nombre_contacto}?`,
+      { variante: "warning", textoConfirmar: "Completar turno" },
     );
 
     if (!confirmar) return;
@@ -226,13 +229,14 @@ export default function Home() {
       setActualizarTurnos((actual) => actual + 1);
     } catch (error) {
       console.error("Error al completar el turno:", error);
-      alert(error.response?.data?.message || "No se pudo completar el turno.");
+      await mostrarAlerta(error.response?.data?.message || "No se pudo completar el turno.", { variante: "error" });
     }
   };
 
   const manejarCancelarTurno = async (turno) => {
-    const confirmar = window.confirm(
+    const confirmar = await confirmarAccion(
       `¿Querés cancelar el turno de ${turno.nombre_contacto}?`,
+      { variante: "error", textoConfirmar: "Cancelar turno" },
     );
 
     if (!confirmar) return;
@@ -243,7 +247,7 @@ export default function Home() {
       setActualizarTurnos((actual) => actual + 1);
     } catch (error) {
       console.error("Error al cancelar el turno:", error);
-      alert(error.response?.data?.message || "No se pudo cancelar el turno.");
+      await mostrarAlerta(error.response?.data?.message || "No se pudo cancelar el turno.", { variante: "error" });
     }
   };
 

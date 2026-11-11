@@ -6,6 +6,7 @@ import FichaCliente from "../../components/FichaCliente";
 import HistorialCompras from "../../components/HistorialCompras";
 import Modal from "../../components/Modal";
 import ExportarPDF from "../../components/ExportarPDF.jsx";
+import useSystemFeedback from "../../hooks/useSystemFeedback.js";
 import "./Clientes.css";
 
 const CLIENTES_URL = "clientes";
@@ -13,6 +14,7 @@ const MASCOTAS_URL = "mascotas";
 const VENTAS_URL = "ventas/lista-ventas";
 
 export default function Clientes() {
+  const { mostrarAlerta, confirmarAccion } = useSystemFeedback();
   const [clientes, setClientes] = useState([]);
   const [idsConMascotas, setIdsConMascotas] = useState(new Set());
   const [idsConCompras, setIdsConCompras] = useState(new Set());
@@ -60,8 +62,9 @@ export default function Clientes() {
   };
 
   const handleEliminar = async (id) => {
-    const confirmar = window.confirm(
+    const confirmar = await confirmarAccion(
       "¿Seguro que querés eliminar este cliente? Esta acción no se puede deshacer.",
+      { variante: "warning", textoConfirmar: "Eliminar" },
     );
     if (!confirmar) return;
 
@@ -73,7 +76,7 @@ export default function Clientes() {
       setModalAbierto(false);
     } catch (err) {
       console.error("Error al eliminar cliente:", err);
-      alert("Hubo un error al eliminar el cliente.");
+      await mostrarAlerta("Hubo un error al eliminar el cliente.", { variante: "error" });
     }
   };
 

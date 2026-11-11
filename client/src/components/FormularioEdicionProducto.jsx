@@ -1,7 +1,9 @@
 import { useState, useEffect } from "react";
 import api from "../../config/api.js";
+import useSystemFeedback from "../hooks/useSystemFeedback.js";
 
 export default function FormularioEdicionProductos({ productoInicial, onClose }) {
+  const { mostrarAlerta } = useSystemFeedback();
   const [producto, setProducto] = useState(() => ({
     precio_costo: productoInicial?.precio_costo ?? "",
     precio_venta: productoInicial?.precio_venta ?? "",
@@ -41,7 +43,7 @@ export default function FormularioEdicionProductos({ productoInicial, onClose })
   };  
   
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     const erroresValidacion = validar();
@@ -57,21 +59,25 @@ export default function FormularioEdicionProductos({ productoInicial, onClose })
     };
 
     console.log("Datos a enviar:", productoFormateado);
-    api
-      .patch(`products/product/update/${productoInicial.id}`, productoFormateado)
-      .then((response) => {
-        console.log("Producto editado:", response.data);
-        alert("Producto actualizado correctamente.");
-        onClose();
-      })
-      .catch((error) => {
-        console.error("Error al actualizar el producto:", error);
-        alert(
-          error.response?.data?.message ||
-            error.message ||
-            "Error al actualizar el producto.",
-        );
+    try {
+      const response = await api.patch(
+        `products/product/update/${productoInicial.id}`,
+        productoFormateado,
+      );
+      console.log("Producto editado:", response.data);
+      await mostrarAlerta("Producto actualizado correctamente.", {
+        variante: "success",
       });
+      onClose();
+    } catch (error) {
+      console.error("Error al actualizar el producto:", error);
+      await mostrarAlerta(
+        error.response?.data?.message ||
+          error.message ||
+          "Error al actualizar el producto.",
+        { variante: "error" },
+      );
+    }
   };
 
   useEffect(() => {
