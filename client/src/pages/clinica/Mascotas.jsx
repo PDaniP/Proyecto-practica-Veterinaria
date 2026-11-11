@@ -110,6 +110,23 @@ export default function Mascotas() {
     setModalDetalleAbierto(true);
   };
 
+  const actualizarMascota = (mascotaActualizada) => {
+    setMascotas((actuales) =>
+      actuales
+        .map((mascota) =>
+          Number(mascota.id) === Number(mascotaActualizada.id)
+            ? { ...mascota, ...mascotaActualizada }
+            : mascota,
+        )
+        .filter((mascota) => mascota.activo),
+    );
+    setMascotaSeleccionada((actual) =>
+      actual && Number(actual.id) === Number(mascotaActualizada.id)
+        ? { ...actual, ...mascotaActualizada }
+        : actual,
+    );
+  };
+
   const mascotasFiltradas = mascotas.filter((mascota) => {
     const termino = normalizarTexto(busqueda);
     const dueño = normalizarTexto(obtenerDueño(mascota.id_cliente));
@@ -266,6 +283,7 @@ export default function Mascotas() {
         onClose={() => setModalDetalleAbierto(false)}
       >
         <DetalleMascota
+          key={mascotaSeleccionada?.id}
           mascota={
             mascotaSeleccionada
               ? {
@@ -280,6 +298,7 @@ export default function Mascotas() {
               ? obtenerDueño(mascotaSeleccionada.id_cliente)
               : ""
           }
+          onMascotaActualizada={actualizarMascota}
         />
       </Modal>
     </section>
