@@ -136,7 +136,6 @@ const registrarConsulta = async (req, res) => {
                 observaciones
             };
             consultaRegistrada = await añadirConsulta(consulta, insumos);
-            console.log('Consulta registrada:', consultaRegistrada);
             if(!consultaRegistrada) {
             return res.status(500).json({ message: 'Error al registrar la consulta' });
             }

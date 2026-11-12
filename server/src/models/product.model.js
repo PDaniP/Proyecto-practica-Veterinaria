@@ -26,6 +26,17 @@ const obtenerProductoPorId = async (id) => {
     return rows
 }
 
+const obtenerLotesPorIdDeProducto = async (id_producto) => {
+    const query = `
+    SELECT *, SUM(stock_actual) as stock_actual FROM lotes
+    WHERE id_producto = $1
+    GROUP BY id_producto
+    ORDER BY fecha_vencimiento ASC
+    `;
+    const {rows} = await db.query(query, [id_producto]);
+    return rows;
+}
+
 const añadirProductoADB = async (categoria,nombre,marca,descripcion,codigo_barra,costo,venta,stockMinimo,ventaAlPublico) => {
     const query = `
         INSERT INTO productos (
@@ -193,5 +204,6 @@ export default {obtenerProductoPorId,
     obtenerLoteConProducto,
     productosConStockSumado,
     obtenerLotePorIdDeProducto,
-    reporteCantidadProductos
+    reporteCantidadProductos,
+    obtenerLotePorIdDeProducto
 }

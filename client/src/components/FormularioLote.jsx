@@ -13,8 +13,7 @@ export default function FormularioLote({productoId, onClose }) {
   const [lote, setLote] = useState({
     id_producto: idProducto,
     codigo_lote: "",
-    stock_inicial: "",
-    stock_actual: "",
+    cantidad: "",
     fecha_vencimiento: "",
     activo: true,
   });
@@ -37,18 +36,10 @@ export default function FormularioLote({productoId, onClose }) {
       nuevosErrores.codigo_lote = "El código de lote es obligatorio.";
     }
 
-    if (!lote.stock_inicial || lote.stock_inicial < 0) {
-      nuevosErrores.stock_inicial = "Ingrese un stock inicial válido.";
+    if (!lote.cantidad || lote.cantidad < 0) {
+      nuevosErrores.cantidad = "Ingrese una cantidad válida.";
     }
 
-    if (!lote.stock_actual || lote.stock_actual < 0) {
-      nuevosErrores.stock_actual = "Ingrese un stock actual válido.";
-    }
-
-    if (Number(lote.stock_actual) > Number(lote.stock_inicial)) {
-      nuevosErrores.stock_actual =
-        "El stock actual no puede ser mayor al stock inicial.";
-    }
 
     if (lote.fecha_vencimiento) {
       const ingreso = new Date(lote.fecha_ingreso);
@@ -104,8 +95,7 @@ export default function FormularioLote({productoId, onClose }) {
       setLote({
         codigo_lote: "",
         idProducto: idProducto,
-        stock_inicial: "",
-        stock_actual: "",
+        cantidad: "",
         fecha_vencimiento: "",
         activo: true,
       });
@@ -153,30 +143,16 @@ export default function FormularioLote({productoId, onClose }) {
           </div>
 
           <div className="field">
-            <label htmlFor="stock_inicial">Stock inicial</label>
+            <label htmlFor="cantidad">Cantidad</label>
             <input
-              id="stock_inicial"
+              id="cantidad"
               type="number"
-              name="stock_inicial"
-              value={lote.stock_inicial}
+              name="cantidad"
+              value={lote.cantidad}
               onChange={handleChange}
             />
-            {errores.stock_inicial && (
-              <p className="error">{errores.stock_inicial}</p>
-            )}
-          </div>
-
-          <div className="field">
-            <label htmlFor="stock_actual">Stock actual</label>
-            <input
-              id="stock_actual"
-              type="number"
-              name="stock_actual"
-              value={lote.stock_actual}
-              onChange={handleChange}
-            />
-            {errores.stock_actual && (
-              <p className="error">{errores.stock_actual}</p>
+            {errores.cantidad && (
+              <p className="error">{errores.cantidad}</p>
             )}
           </div>
 
