@@ -1,4 +1,6 @@
 import turnosModel from '../models/turnos.model.js';
+import { enviarNotificacion } from '../config/whatsapp.js';
+import { format } from 'date-fns';
 
 const validarHorarioAtencion = (horario) => {
     const { hora_inicio, hora_fin, dia_inicio, dia_fin } = horario ?? {};
@@ -109,7 +111,34 @@ const asignarTurno = async (req, res) => {
         }
 
         const turno = await turnosModel.guardarTurno(req.body);
-        return res.status(201).json({message: "Turno asignado", turno});
+        
+        // Le respondemos rápido al frontend para que el usuario no se quede esperando
+        res.status(201).json({message: "Turno asignado", turno});
+
+        // ========================================================
+        // NUEVA LÓGICA: Confirmación por WhatsApp a los 2 minutos
+        // ========================================================
+        const { nombre_contacto, telefono_contacto, fecha_hora } = req.body;
+
+        if (telefono_contacto) {
+            setTimeout(async () => {
+                try {
+                    const fechaObj = new Date(fecha_hora);
+                    
+                    // date-fns extrae la hora local automáticamente
+                    const fechaFormateada = format(fechaObj, 'dd/MM/yyyy');
+                    const horaFormateada = format(fechaObj, 'HH:mm');
+                    
+                    const mensajeConfirmacion = `¡Hola ${nombre_contacto || 'cliente'}! Te confirmamos que tu turno para el día ${fechaFormateada} a las ${horaFormateada} fue registrado exitosamente. ¡Te esperamos! 🐾`;
+
+                    await enviarNotificacion(telefono_contacto, mensajeConfirmacion);
+                    console.log(`✅ Confirmación de 2 min enviada a ${telefono_contacto}`);
+                } catch (error) {
+                    console.error('❌ Error enviando la confirmación de WhatsApp:', error);
+                }
+            }, 120000);
+        }
+
     } catch (error) {
         if (error.statusCode) {
             return res.status(error.statusCode).json({ message: error.message });
@@ -131,7 +160,28 @@ const modificarTurno = async (req, res) => {
         if (!turno) {
             return res.status(404).json({ message: 'No se encontró el turno.' });
         }
-        return res.status(200).json({message: "Turno modificado", turno});
+        
+        // Respondemos rápido al frontend
+        res.status(200).json({message: "Turno modificado", turno});
+
+        // ========================================================
+        // AVISO DE MODIFICACIÓN POR WHATSAPP (Inmediato)
+        // ========================================================
+        if (turno.telefono_contacto) {
+            try {
+                const fechaObj = new Date(turno.fecha_hora);
+                const fechaFormateada = format(fechaObj, 'dd/MM/yyyy');
+                const horaFormateada = format(fechaObj, 'HH:mm');
+                
+                const mensaje = `¡Hola ${turno.nombre_contacto || 'cliente'}! Te informamos que tu turno en nuestra veterinaria fue reprogramado para el día ${fechaFormateada} a las ${horaFormateada}. ¡Te esperamos! 🐾`;
+                
+                await enviarNotificacion(turno.telefono_contacto, mensaje);
+                console.log(`✅ Aviso de modificación enviado a ${turno.telefono_contacto}`);
+            } catch (error) {
+                console.error('❌ Error enviando WhatsApp de modificación:', error);
+            }
+        }
+
     } catch (error) {
         if (error.statusCode) {
             return res.status(error.statusCode).json({ message: error.message });
@@ -144,7 +194,28 @@ const modificarTurno = async (req, res) => {
 const cancelarTurno = async (req, res) => {
     try {
         const turno = await turnosModel.eliminarTurno(req.params.id);
+        
+        // Respondemos rápido al frontend
         res.status(200).json({message: "Turno cancelado"});
+
+        // ========================================================
+        // AVISO DE CANCELACIÓN POR WHATSAPP (Inmediato)
+        // ========================================================
+        if (turno && turno.telefono_contacto) {
+            try {
+                const fechaObj = new Date(turno.fecha_hora);
+                const fechaFormateada = format(fechaObj, 'dd/MM/yyyy');
+                const horaFormateada = format(fechaObj, 'HH:mm');
+                
+                const mensaje = `¡Hola ${turno.nombre_contacto || 'cliente'}! Te confirmamos que tu turno del día ${fechaFormateada} a las ${horaFormateada} ha sido cancelado. Si necesitás volver a programarlo, avisanos. ¡Saludos! 🐾`;
+                
+                await enviarNotificacion(turno.telefono_contacto, mensaje);
+                console.log(`✅ Aviso de cancelación enviado a ${turno.telefono_contacto}`);
+            } catch (error) {
+                console.error('❌ Error enviando WhatsApp de cancelación:', error);
+            }
+        }
+
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
@@ -222,6 +293,8 @@ const reportesTurnos = async (req, res) => {
         return res.status(500).json({ error: error.message });
     }
 };
+
+
 
 export default {
     asignarTurno,

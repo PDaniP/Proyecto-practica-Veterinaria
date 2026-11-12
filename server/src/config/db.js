@@ -3,6 +3,10 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
+// El código 1114 es "timestamp without time zone".
+// Esto le dice a Postgres: "devolveme la fecha como un texto literal, no la conviertas a UTC"
+pg.types.setTypeParser(1114, str => str);
+
 const { Pool } = pg;
 
 const isProduction = process.env.NODE_ENV === 'production';
