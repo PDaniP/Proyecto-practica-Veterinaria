@@ -47,7 +47,7 @@ const eliminarLoteVacio = async (req, res) => {
 
 const registrarVenta = async (req, res) => {
     const { id_usuario, id_cliente, metodoPago, total } = req.body;
-    console.log('Datos recibidos para registrar la venta:', { id_usuario, id_cliente, metodoPago, total });
+    
     if(!id_usuario || !id_cliente || !metodoPago || !total) {
         return res.status(400).json({ message: 'Faltan datos para registrar la venta' });
     }

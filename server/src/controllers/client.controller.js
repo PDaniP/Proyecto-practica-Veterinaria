@@ -45,7 +45,7 @@ const editarCliente = async (req, res) => {
             return res.status(400).json({ message: 'Faltan datos obligatorios del cliente' });
         }
         const clienteEditado = await editarClienteADB(id, cliente);
-        console.log('Cliente editado:', clienteEditado); // Agrega este log para verificar el resultado de la edición
+        
         if(!clienteEditado) {
             return res.status(404).json({ message: 'Cliente no encontrado' });
         }

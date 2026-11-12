@@ -20,7 +20,7 @@ client.on('qr', (qr) => {
     qrActual = qr;
     estadoWhatsapp = 'esperando_qr';
     console.log('📱 Escaneá este código QR con el WhatsApp de la veterinaria:');
-    qrcode.generate(qr, { small: true });
+    
 });
 client.on('authenticated', () => {
     whatsappListo = true;

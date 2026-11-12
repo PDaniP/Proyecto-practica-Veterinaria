@@ -132,7 +132,7 @@ const obtenerConsultasConInsumosPorCliente = async (idCliente) => {
 
 const obtenerMotivos = async () => {
     const {rows} = await db.query('SELECT * FROM motivos');
-    console.log(rows); 
+    
     return rows;
 }
 

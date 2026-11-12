@@ -54,7 +54,7 @@ export default function Ventas() {
       const listaVentas = response.data.ventas || [];
 
       setVentas(listaVentas);
-      console.log("Ventas obtenidas:", listaVentas);
+      
 
       const resumen = {};
 

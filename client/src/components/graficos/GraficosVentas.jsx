@@ -43,7 +43,7 @@ const obtenerEtiqueta = (fecha,periodo) => {
 }
     
 function generarGraficoLinea(data, periodo) {
-  console.log(data, periodo);
+  
   if (!Array.isArray(data?.reporte)) {
     return <p className="graficos-ventas-mensaje">Cargando datos...</p>;
   }
@@ -133,7 +133,7 @@ const graficoProductoMasVendido = (data,periodo) => {
   }
   
     const datos = data.reporte;
-    console.log(datos);
+    
   return (
     <div className="graficos-ventas-grafico-item">
       <h3 className="graficos-ventas-grafico-titulo">Producto más vendido del {periodo}</h3>

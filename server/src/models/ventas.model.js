@@ -259,7 +259,7 @@ const obtenerDetallesVenta = async (id_venta) => {
         LEFT JOIN ventas v ON dv.id_venta = v.id
         WHERE dv.id_venta = $1`, [id_venta]
     )
-    console.log(rows)
+    
     return rows
 }
 const obtenerRegistroVentaPorCliente = async (id_cliente) => {

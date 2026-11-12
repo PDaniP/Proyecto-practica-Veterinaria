@@ -83,7 +83,7 @@ const ReporteTurnos = () => {
         const fetchData = async () => {
             try {
                 const response = await api.get(`/turnos/reportes?fecha_inicio=${fechaInicio}&fecha_fin=${fechaFin}`);
-                console.log("Datos de turnos:", response.data.rows2);
+                
                 setTurnosData(response.data.rows);
                 setProfesionalData(response.data.rows2)
             } catch (error) {

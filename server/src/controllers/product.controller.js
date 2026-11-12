@@ -39,7 +39,7 @@ const añadirLote = async (req,res) => {
     const LoteProducto = await productModel.obtenerLotePorIdDeProducto(Number(id_producto))
     let stock_actual = cantidad 
  
-    console.log("Stock actual calculado:", LoteProducto)
+    
     const datos = await productModel.añadirLoteADB(Number(id_producto),codigo_lote,Number(cantidad), stock_actual,fecha_vencimiento,activo)
     
     if(datos.fecha_vencimiento < new Date().toISOString().split('T')[0]) {
