@@ -3,6 +3,7 @@ import api from '../../../config/api.js'
 import {useState, useEffect} from 'react'
 import './GraficoEspecies.css'
 
+const COLORES_ESPECIES = ['#176f65', '#55a98f', '#b5cda9', '#55879a', '#daa15c', '#9d879e']
 
 const GraficoEspecies = () =>{ 
   const [data, setData] = useState([]);
@@ -20,19 +21,20 @@ const GraficoEspecies = () =>{
       <div className="grafico-especies-wrapper">
         <h2 className="grafico-especies-titulo">Distribución de Especies</h2>
         <div className="grafico-especies-chart">
-          <PieChart width={400} height={400}>
+          <PieChart width={340} height={260} responsive={true}>
             <Pie
               data={data}
-              cx={200}
-              cy={200}
+              cx="50%"
+              cy="46%"
               labelLine={false}
               label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
-              outerRadius={80}
+              innerRadius={36}
+              outerRadius={72}
               fill="#8884d8"
               dataKey="value"
             >
               {data.map((entry, index) => (
-                <Cell key={`cell-${index}`} fill={`hsl(${(index * 360 / data.length)}, 70%, 50%)`} />
+                <Cell key={`cell-${index}`} fill={COLORES_ESPECIES[index % COLORES_ESPECIES.length]} />
               ))}
             </Pie>
             <Tooltip />

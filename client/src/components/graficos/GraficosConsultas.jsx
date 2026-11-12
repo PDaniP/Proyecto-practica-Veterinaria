@@ -11,10 +11,10 @@ const generarGraficoPie = (data) => {
   }));
   
   return (
-    <PieChart width={400} height={400}>
-      <Pie data={datos} dataKey="total" nameKey="motivo" cx="50%" cy="50%" outerRadius={100} fill="#8884d8" label>
+    <PieChart width={340} height={260} responsive={true}>
+      <Pie data={datos} dataKey="total" nameKey="motivo" cx="50%" cy="46%" innerRadius={36} outerRadius={74} fill="#176f65" label>
         {datos.map((entry, index) => (
-          <Cell key={`cell-${index}`} fill={['#8884d8', '#82ca9d', '#ffc658', '#ff8042'][index % 4]} />
+          <Cell key={`cell-${index}`} fill={['#176f65', '#55a98f', '#daa15c', '#55879a'][index % 4]} />
         ))}
       </Pie>
       <Tooltip />

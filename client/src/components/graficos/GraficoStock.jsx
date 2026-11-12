@@ -3,7 +3,7 @@ import {useState, useEffect} from 'react'
 import api from '../../../config/api.js'
 import './GraficoStock.css'
 
-
+const COLORES_STOCK = ['#176f65', '#55a98f', '#b5cda9', '#55879a', '#daa15c', '#9d879e']
 
 const GraficoStock = () => {
   const [data, setData] = useState([]);
@@ -17,19 +17,20 @@ const GraficoStock = () => {
       <div className="grafico-stock-wrapper">
         <h2 className="grafico-stock-titulo">Stock de Productos</h2>
         <div className="grafico-stock-chart">
-          <PieChart width={600} height={600}>
+          <PieChart width={360} height={260} responsive={true}>
             <Pie
               data={data}
-              cx={300}
-              cy={300}
+              cx="50%"
+              cy="46%"
               labelLine={false}
               label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
-              outerRadius={80}
+              innerRadius={36}
+              outerRadius={72}
               fill="#8884d8"
               dataKey="value"
             >
               {data.map((entry, index) => (
-                <Cell key={`cell-${index}`} fill={`hsl(${(index * 360 / data.length)}, 70%, 50%)`} />
+                <Cell key={`cell-${index}`} fill={COLORES_STOCK[index % COLORES_STOCK.length]} />
               ))}
             </Pie>
             <Tooltip />
