@@ -205,7 +205,7 @@ export default function FormularioLote({productoId, onClose }) {
             />
           </div>
 
-          <button className="btn" type="submit">
+          <button className="producto-form__guardar" type="submit">
             Guardar
           </button>
         </form>

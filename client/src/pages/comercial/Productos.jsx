@@ -334,15 +334,8 @@ export default function Productos() {
               key={productoSeleccionado.id}
               productoInicial={productoSeleccionado}
               onClose={cerrarModal}
+              onEliminar={() => handleEliminar(productoSeleccionado.id)}
             />
-            <div className="modal-eliminar">
-              <button
-                className="btn-danger"
-                onClick={() => handleEliminar(productoSeleccionado?.id)}
-              >
-                Eliminar producto
-              </button>
-            </div>
           </>
         )}
         {tipoModal === "crear" && <FormularioProductos onClose={cerrarModal} />}

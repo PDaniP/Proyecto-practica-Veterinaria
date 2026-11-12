@@ -1,0 +1,361 @@
+.nueva-venta .card {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 720px;
+  max-height: calc(100vh - 180px);
+  overflow-y: auto;
+  padding: 36px 32px;
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 0 40px rgba(255, 255, 255, 0.35);
+  -webkit-overflow-scrolling: touch;
+}
+
+.nueva-venta .card-title {
+  margin: 0 0 25px;
+  color: #111;
+  font-size: 32px;
+  font-weight: 600;
+  text-align: center;
+}
+
+.nueva-venta .form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.nueva-venta .cliente-field + .cliente-seleccionado {
+  margin-top: -12px;
+}
+
+.nueva-venta .field {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.nueva-venta .field label {
+  flex: 0 0 140px;
+  color: #000;
+  font-size: 16px;
+  font-weight: 500;
+  text-align: left;
+}
+
+.nueva-venta .field input,
+.nueva-venta .field select,
+.nueva-venta .field textarea {
+  box-sizing: border-box;
+  min-width: 0;
+  flex: 1;
+  padding: 10px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  background: #f9fafb;
+  color: #111;
+  font-size: 13px;
+}
+
+.nueva-venta .field input:focus,
+.nueva-venta .field select:focus,
+.nueva-venta .field textarea:focus {
+  outline: none;
+  border-color: #8b5cf6;
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.16);
+}
+
+.nueva-venta .field-content {
+  position: relative;
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  flex-direction: column;
+}
+
+.nueva-venta .consulta-selector-fila {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.nueva-venta .consulta-selector-fila select {
+  min-width: 0;
+  flex: 1;
+}
+
+.nueva-venta .consulta-selector-fila .btn {
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.nueva-venta .selected-info {
+  margin: 0;
+  padding: 10px;
+  border-radius: 8px;
+  background: #f5f3ff;
+  color: #000;
+  font-size: 16px;
+}
+
+.nueva-venta .cliente-seleccionado {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 0;
+}
+
+.nueva-venta .suggestions {
+  position: absolute;
+  z-index: 999;
+  top: calc(100% + 4px);
+  right: 0;
+  left: 0;
+  display: flex;
+  max-height: 150px;
+  flex-direction: column;
+  overflow-y: auto;
+  margin: 0;
+  padding: 0;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+  list-style: none;
+}
+
+.nueva-venta .suggestion-item {
+  padding: 10px 12px;
+  border-bottom: 1px solid #f3f4f6;
+  color: #111;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.nueva-venta .suggestion-item:last-child {
+  border-bottom: none;
+}
+
+.nueva-venta .suggestion-item:hover {
+  background: #f9fafb;
+}
+
+.nueva-venta .productos-venta {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.nueva-venta .section-title {
+  margin: 4px 0 6px;
+  color: #111;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.nueva-venta .producto-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  background: #f9fafb;
+}
+
+.nueva-venta .producto-info {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.nueva-venta .producto-datos {
+  display: flex;
+  align-items: center;
+  gap: 25px;
+}
+
+.nueva-venta .producto-nombre {
+  color: #111;
+  font-weight: 600;
+}
+
+.nueva-venta .producto-marca,
+.nueva-venta .helper-text {
+  color: #6b7280;
+  font-size: 12px;
+}
+
+.nueva-venta .producto-precio {
+  color: #111;
+  font-size: 12px;
+}
+
+.nueva-venta .helper-text {
+  margin: 4px 0 0;
+}
+
+.nueva-venta .error {
+  margin: 4px 0 0;
+  color: #b91c1c;
+  font-size: 13px;
+}
+
+.nueva-venta .btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.nueva-venta .cantidad-input {
+  box-sizing: border-box;
+  width: 56px;
+  padding: 8px 6px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  background: #fff;
+  color: #111;
+  font-size: 13px;
+  text-align: center;
+}
+
+.nueva-venta .cantidad-input::-webkit-inner-spin-button {
+  height: 20px;
+  opacity: 1;
+}
+
+.nueva-venta .producto-total {
+  min-width: 85px;
+  color: #111;
+  font-size: 13px;
+  font-weight: 600;
+  text-align: right;
+}
+
+.nueva-venta .icon-btn {
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 999px;
+  background: #fee2e2;
+  color: #f80303;
+  cursor: pointer;
+}
+
+.nueva-venta .icon-btn:hover {
+  background: #fecaca;
+}
+
+.nueva-venta .total {
+  display: flex;
+  width: fit-content;
+  max-width: 100%;
+  margin: 16px 0 0;
+  padding: 14px 16px;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  background: #709fcf;
+  color: #111;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.nueva-venta .selectorMetPago {
+  max-width: 200px;
+}
+
+.nueva-venta .actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.nueva-venta .btn {
+  max-width: 180px;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 10px;
+  background: #534ab7;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.nueva-venta .btn:hover:not(:disabled) {
+  background: #43399f;
+  transform: translateY(-1px);
+}
+
+.nueva-venta .btn-secondary {
+  border: 1px solid #e5e7eb;
+  background: #f3f4f6;
+  color: #111;
+}
+
+.nueva-venta .btn-secondary:hover:not(:disabled) {
+  background: #e5e7eb;
+  color: #111;
+}
+
+@media (max-width: 640px) {
+  .nueva-venta .card {
+    max-height: calc(100vh - 120px);
+    padding: 24px 18px;
+  }
+
+  .nueva-venta .card-title {
+    font-size: 26px;
+  }
+
+  .nueva-venta .producto-item {
+    flex-wrap: wrap;
+  }
+
+  .nueva-venta .cantidad-input {
+    width: 64px;
+  }
+
+  .nueva-venta .producto-total {
+    min-width: auto;
+    text-align: left;
+  }
+
+  .nueva-venta .actions {
+    flex-direction: column;
+  }
+
+  .nueva-venta .actions .btn {
+    width: 100%;
+    max-width: none;
+  }
+
+  .nueva-venta .field {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .nueva-venta .field label {
+    flex-basis: auto;
+  }
+
+  .nueva-venta .consulta-selector-fila {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .nueva-venta .consulta-selector-fila .btn {
+    width: 100%;
+    max-width: none;
+  }
+
+  .nueva-venta .producto-datos {
+    flex-wrap: wrap;
+    gap: 8px 16px;
+  }
+}

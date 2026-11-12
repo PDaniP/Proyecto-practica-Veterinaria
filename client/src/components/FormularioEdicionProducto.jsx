@@ -2,7 +2,11 @@ import { useState, useEffect } from "react";
 import api from "../../config/api.js";
 import useSystemFeedback from "../hooks/useSystemFeedback.js";
 
-export default function FormularioEdicionProductos({ productoInicial, onClose }) {
+export default function FormularioEdicionProductos({
+  productoInicial,
+  onClose,
+  onEliminar,
+}) {
   const { mostrarAlerta } = useSystemFeedback();
   const [producto, setProducto] = useState(() => ({
     precio_costo: productoInicial?.precio_costo ?? "",
@@ -147,9 +151,18 @@ export default function FormularioEdicionProductos({ productoInicial, onClose })
           {errores.stock_minimo && <p className="error">{errores.stock_minimo}</p>}
         </div>
 
-        <button className="btn" type="submit">
-          Guardar cambios
-        </button>
+        <div className="producto-form__acciones">
+          <button className="producto-form__guardar" type="submit">
+            Guardar
+          </button>
+          <button
+            className="btn-danger"
+            type="button"
+            onClick={onEliminar}
+          >
+            Eliminar producto
+          </button>
+        </div>
       </form>
     </div>
   );

@@ -449,7 +449,12 @@ export default function FormularioTurno({
       )}
 
       <div className="formulario-turno__acciones">
-        <button type="button" onClick={onClose} disabled={guardando}>
+        <button
+          type="button"
+          className="formulario-turno__cancelar"
+          onClick={onClose}
+          disabled={guardando}
+        >
           Cancelar
         </button>
 

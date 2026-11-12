@@ -110,7 +110,7 @@ const registrarVentaCompleta = async ({ id_usuario, id_cliente, metodoPago, item
             }
 
             const { rows: productos } = await client.query(
-                `SELECT id, precio_venta, venta_al_publico
+                `SELECT id, nombre, precio_venta, venta_al_publico
                  FROM productos
                  WHERE id = $1`,
                 [idProducto]
@@ -151,7 +151,7 @@ const registrarVentaCompleta = async ({ id_usuario, id_cliente, metodoPago, item
             }
 
             if (restante > 0) {
-                const error = new Error(`Stock insuficiente para el producto ${idProducto}.`);
+                const error = new Error(`Stock insuficiente para el producto "${producto.nombre}".`);
                 error.statusCode = 400;
                 throw error;
             }

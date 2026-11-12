@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import axios from 'axios'
 import api from "../../config/api.js";
+import "./FormularioUsuario.css";
 
 const API_URL = 'http://localhost:3000/users'
 
@@ -129,7 +130,7 @@ export default function FormularioEdicionUsuario({
           {onClose && (
             <button
               type="button"
-              className="btn-secondary"
+              className="btn-secondary usuario-cancelar"
               onClick={onClose}
             >
               Cancelar

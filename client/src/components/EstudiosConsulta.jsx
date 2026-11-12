@@ -12,6 +12,9 @@ const esVistaPrevia = (tipo) =>
 export default function EstudiosConsulta({
   idConsulta,
   permitirAdjuntar = false,
+  archivosPendientes = [],
+  onArchivosPendientesChange,
+  bloqueado = false,
 }) {
   const [estudios, setEstudios] = useState([]);
   const [estudioSeleccionado, setEstudioSeleccionado] = useState(null);
@@ -126,6 +129,11 @@ export default function EstudiosConsulta({
     event.target.value = "";
     if (!archivos.length) return;
 
+    if (onArchivosPendientesChange) {
+      onArchivosPendientesChange((actuales) => [...actuales, ...archivos]);
+      return;
+    }
+
     setSubiendo(true);
     setCargando(true);
     setError("");
@@ -147,21 +155,49 @@ export default function EstudiosConsulta({
   };
 
   return (
-    <section className="estudios-consulta" aria-label="Estudios médicos">
-      <h3>Estudios médicos</h3>
+    <section className="estudios-consulta cf-campo" aria-label="Estudios médicos">
+      <div className="cf-adjunto-encabezado">
+        <label htmlFor="consulta-estudios-existentes">Adjuntar estudio</label>
+        <p className="cf-ayuda">
+          PDF, JPG, PNG o WEBP; hasta 50 MB por archivo.
+        </p>
+      </div>
       {permitirAdjuntar && (
-        <label className="estudios-adjuntar">
-          {subiendo ? "Adjuntando..." : "Adjuntar estudio"}
-          <input
-            type="file"
-            accept=".pdf,.jpg,.jpeg,.png,.webp,application/pdf,image/jpeg,image/png,image/webp"
-            multiple
-            disabled={subiendo}
-            onChange={adjuntar}
-          />
-        </label>
+        <input
+          id="consulta-estudios-existentes"
+          type="file"
+          accept=".pdf,.jpg,.jpeg,.png,.webp,application/pdf,image/jpeg,image/png,image/webp"
+          multiple
+          disabled={subiendo || bloqueado}
+          aria-label={subiendo ? "Adjuntando estudios" : "Elegir archivos de estudio"}
+          onChange={adjuntar}
+        />
       )}
 
+      {archivosPendientes.length > 0 && (
+        <ul className="estudios-lista estudios-pendientes" aria-label="Archivos pendientes">
+          {archivosPendientes.map((archivo, indice) => (
+            <li key={`${archivo.name}-${archivo.lastModified}-${indice}`}>
+              <span>{archivo.name}</span>
+              <button
+                type="button"
+                className="cf-btn-cancelar"
+                disabled={bloqueado}
+                aria-label={`Quitar ${archivo.name}`}
+                onClick={() =>
+                  onArchivosPendientesChange((actuales) =>
+                    actuales.filter((_, posicion) => posicion !== indice),
+                  )
+                }
+              >
+                Quitar
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
+
+      {subiendo && <p className="cf-ayuda" role="status">Adjuntando estudios...</p>}
       {error && <p className="cf-error" role="alert">{error}</p>}
       {cargando ? (
         <p className="cf-ayuda">Cargando estudios...</p>
