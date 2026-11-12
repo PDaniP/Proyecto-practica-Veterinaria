@@ -321,11 +321,11 @@ const formStyles = `
 .card {
   background: #fff;
   border-radius: 16px;
-  padding: 36px 32px;
+  padding: 0px 10px;
   width: 100%;
   max-width: 720px;
-  max-height: calc(100vh - 180px);
-  overflow-y: auto;
+  max-height: none;
+  overflow-y: visible;
   -webkit-overflow-scrolling: touch;
   box-shadow: 0 0 40px rgba(255, 255, 255, 0.35);
 }
@@ -335,7 +335,7 @@ const formStyles = `
   font-weight: 500;
   color: #111;
   text-align: center;
-  margin: 0 0 4px;
+  margin: 00 0 20px;
 }
 
 .categoria-row {
@@ -374,9 +374,15 @@ const formStyles = `
 
 
 .field {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
+  display: grid;
+  grid-template-columns: 140px minmax(0, 1fr);
+  align-items: center;
+  gap: 8px 12px;
+}
+
+.field > .error {
+  grid-column: 2;
+  margin-top: 0;
 }
 
 
@@ -396,13 +402,16 @@ color: #111;
   background: #f9fafb;
   padding: 10px 12px;
   font-size: 13px;
+    width: 100%;
+  max-width: 600px;
+  box-sizing: border-box;
 }
 
 .field.checkbox-field {
   display: flex;
   flex-direction: row;
   align-items: center;
-  gap: 4px;
+  gap: 42px;
 }
 
 .field.checkbox-field label {
@@ -443,5 +452,11 @@ color: #111;
   border: none;
   border-radius: 8px;
   cursor: pointer;
+}
+
+@media (max-width: 600px) {
+  .field {
+    grid-template-columns: 112px minmax(0, 1fr);
+  }
 }
 `;
