@@ -177,6 +177,24 @@
   font-weight: 600;
 }
 
+.cf-adjunto-encabezado {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 4px 10px;
+}
+
+.cf-adjunto-encabezado .cf-ayuda {
+  font-size: 0.75rem;
+}
+
+.cf-adjunto-encabezado h3 {
+  margin: 0;
+  color: #374151;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
 .cf-campo input,
 .cf-campo select,
 .cf-campo textarea {
@@ -202,6 +220,32 @@
   outline: none;
   border-color: #8b5cf6;
   box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.16);
+}
+
+.cf-campo input[type="file"]::file-selector-button {
+  margin-right: 12px;
+  padding: 8px 14px;
+  border: 0;
+  border-radius: 7px;
+  background: var(--vet-purple, #7d1f99);
+  color: #fff;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.15s ease;
+}
+
+.cf-campo input[type="file"]::file-selector-button:hover {
+  background: var(--vet-purple-light, #9b3db8);
+}
+
+.cf-campo input[type="file"]::file-selector-button:active {
+  transform: scale(0.98);
+}
+
+.cf-campo input[type="file"]:disabled::file-selector-button {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .cf-motivo-control {

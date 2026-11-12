@@ -129,11 +129,6 @@ export default function FichaCliente({ clienteId, onClose }) {
           <p className="ficha-subtitulo">Teléfono: {cliente.telefono}</p>
           <p className="ficha-subtitulo">Email: {cliente.email || '—'}</p>
         </div>
-        {onClose && (
-          <button className="ficha-btn-cerrar" onClick={onClose} aria-label="Cerrar ficha">
-            ✕
-          </button>
-        )}
       </div>
 
 

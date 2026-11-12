@@ -436,7 +436,12 @@ export default function FormularioConsulta({ idMascota, nombreMascota, onClose, 
         </div>
 
         <div className="cf-campo">
-          <label htmlFor="consulta-estudios">Adjuntar estudio</label>
+          <div className="cf-adjunto-encabezado">
+            <label htmlFor="consulta-estudios">Adjuntar estudio</label>
+            <p className="cf-ayuda">
+              PDF, JPG, PNG o WEBP; hasta 50 MB por archivo.
+            </p>
+          </div>
           <input
             id="consulta-estudios"
             type="file"
@@ -449,7 +454,6 @@ export default function FormularioConsulta({ idMascota, nombreMascota, onClose, 
               event.target.value = "";
             }}
           />
-          <p className="cf-ayuda">PDF, JPG, PNG o WEBP; hasta 50 MB por archivo.</p>
           {consultaRegistradaId && (
             <p className="cf-ayuda" role="status">
               La consulta ya está guardada. El próximo intento enviará únicamente los estudios pendientes.

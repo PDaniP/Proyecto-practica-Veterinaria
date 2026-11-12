@@ -14,6 +14,7 @@ import turnosRoutes from './routes/turnos.routes.js';
 import whatsappRoutes from './routes/whatsapp.routes.js';
 import { client } from './config/whatsapp.js';
 import { iniciarCronRecordatorios } from './config/cron.js';
+import { verificarCuentaActiva } from './middlewares/validator.middlewares.js';
 const app = express();
 client.initialize().catch(error => {
   console.error('Error initializing WhatsApp client:', error);
@@ -29,6 +30,7 @@ app.use(cors({
 
 app.use(express.json());
 app.use(cookieParser());
+app.use(verificarCuentaActiva);
 
 
 

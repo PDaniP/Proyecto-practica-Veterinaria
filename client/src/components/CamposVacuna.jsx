@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import api from "../../config/api.js";
+import { normalizarTexto } from "../utils/normalizarTexto.js";
 
 const categorias_atencion = [
   "Higiene y Cuidado Diario",
@@ -50,9 +51,9 @@ export default function CamposVacuna({
     (producto) => String(producto.id_categoria) === categoriaSeleccionada,
   );
   const productosCoincidentes = productosDeCategoria.filter((producto) =>
-    producto.nombre
-      .toLowerCase()
-      .includes(busquedaProducto.trim().toLowerCase()),
+    normalizarTexto(producto.nombre).includes(
+      normalizarTexto(busquedaProducto),
+    ),
   );
   const cambiarCategoria = (event) => {
     setCategoriaSeleccionada(event.target.value);

@@ -52,6 +52,8 @@
     padding: 10px;
     border: 1px solid var(--turnos-border);
     border-radius: 8px;
+    background: #f9fafb;
+    color: var(--turnos-text);
     font: inherit;
     grid-column: 2;
 }
@@ -147,6 +149,17 @@
     background: var(--turnos-primary);
     color: #fff;
     border-color: var(--turnos-primary);
+}
+
+.formulario-turno__acciones .formulario-turno__cancelar {
+    background: var(--turnos-danger-action);
+    color: #fff;
+    border-color: var(--turnos-danger-action);
+}
+
+.formulario-turno__acciones .formulario-turno__cancelar:hover:not(:disabled) {
+    background: var(--turnos-danger-action-hover);
+    border-color: var(--turnos-danger-action-hover);
 }
 
 .formulario-turno__acciones button:disabled {

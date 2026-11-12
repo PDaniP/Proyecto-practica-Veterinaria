@@ -2,8 +2,10 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import api from "../../config/api.js";
+import useSystemFeedback from "../hooks/useSystemFeedback.js";
 
 export default function FormularioLote({productoId, onClose }) {
+  const { mostrarAlerta } = useSystemFeedback();
   const navegar = useNavigate();
   const [idProducto, setIdProducto] = useState(productoId);
   const [productos, setProductos] = useState([]);
@@ -83,7 +85,7 @@ export default function FormularioLote({productoId, onClose }) {
       .then((response) => {setProductos(response.data)})
     } catch (error) {
       console.error("Error al obtener productos:", error);
-      alert("Error al obtener productos. Asegúrate de que el servidor esté en funcionamiento.");
+      await mostrarAlerta("Error al obtener productos. Asegúrate de que el servidor esté en funcionamiento.", { variante: "error" });
       return;
     }
 
@@ -95,7 +97,7 @@ export default function FormularioLote({productoId, onClose }) {
         { withCredentials: true }
       );
 
-      alert("Lote registrado correctamente.");
+      await mostrarAlerta("Lote registrado correctamente.", { variante: "success" });
       onClose();
       
 
@@ -111,7 +113,7 @@ export default function FormularioLote({productoId, onClose }) {
       setErrores({});
     } catch (error) {
       console.error("Error al registrar lote:", error);
-      alert("Error al registrar el lote.");
+      await mostrarAlerta("Error al registrar el lote.", { variante: "error" });
     }
   };
 
@@ -203,7 +205,7 @@ export default function FormularioLote({productoId, onClose }) {
             />
           </div>
 
-          <button className="btn" type="submit">
+          <button className="producto-form__guardar" type="submit">
             Guardar
           </button>
         </form>

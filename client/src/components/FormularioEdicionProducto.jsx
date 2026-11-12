@@ -1,7 +1,13 @@
 import { useState, useEffect } from "react";
 import api from "../../config/api.js";
+import useSystemFeedback from "../hooks/useSystemFeedback.js";
 
-export default function FormularioEdicionProductos({ productoInicial, onClose }) {
+export default function FormularioEdicionProductos({
+  productoInicial,
+  onClose,
+  onEliminar,
+}) {
+  const { mostrarAlerta } = useSystemFeedback();
   const [producto, setProducto] = useState(() => ({
     precio_costo: productoInicial?.precio_costo ?? "",
     precio_venta: productoInicial?.precio_venta ?? "",
@@ -41,7 +47,7 @@ export default function FormularioEdicionProductos({ productoInicial, onClose })
   };  
   
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     const erroresValidacion = validar();
@@ -57,21 +63,25 @@ export default function FormularioEdicionProductos({ productoInicial, onClose })
     };
 
     console.log("Datos a enviar:", productoFormateado);
-    api
-      .patch(`products/product/update/${productoInicial.id}`, productoFormateado)
-      .then((response) => {
-        console.log("Producto editado:", response.data);
-        alert("Producto actualizado correctamente.");
-        onClose();
-      })
-      .catch((error) => {
-        console.error("Error al actualizar el producto:", error);
-        alert(
-          error.response?.data?.message ||
-            error.message ||
-            "Error al actualizar el producto.",
-        );
+    try {
+      const response = await api.patch(
+        `products/product/update/${productoInicial.id}`,
+        productoFormateado,
+      );
+      console.log("Producto editado:", response.data);
+      await mostrarAlerta("Producto actualizado correctamente.", {
+        variante: "success",
       });
+      onClose();
+    } catch (error) {
+      console.error("Error al actualizar el producto:", error);
+      await mostrarAlerta(
+        error.response?.data?.message ||
+          error.message ||
+          "Error al actualizar el producto.",
+        { variante: "error" },
+      );
+    }
   };
 
   useEffect(() => {
@@ -141,9 +151,18 @@ export default function FormularioEdicionProductos({ productoInicial, onClose })
           {errores.stock_minimo && <p className="error">{errores.stock_minimo}</p>}
         </div>
 
-        <button className="btn" type="submit">
-          Guardar cambios
-        </button>
+        <div className="producto-form__acciones">
+          <button className="producto-form__guardar" type="submit">
+            Guardar
+          </button>
+          <button
+            className="btn-danger"
+            type="button"
+            onClick={onEliminar}
+          >
+            Eliminar producto
+          </button>
+        </div>
       </form>
     </div>
   );

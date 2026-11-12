@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from 'axios'
 import api from "../../config/api.js";
+import "./FormularioUsuario.css";
 
 
 // const API_URL = 'http://localhost:3000/users'
@@ -149,6 +150,7 @@ export default function FormularioAltaUsuario({
           <label htmlFor="rol">Rol</label>
 
           <select
+            className="usuario-rol-select"
             id="rol"
             name="rol"
             value={formulario.rol}
@@ -184,7 +186,7 @@ export default function FormularioAltaUsuario({
           {onClose && (
             <button
               type="button"
-              className="btn-secondary"
+              className="btn-secondary usuario-cancelar"
               onClick={onClose}
             >
               Cancelar

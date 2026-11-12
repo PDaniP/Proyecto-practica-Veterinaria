@@ -1,0 +1,80 @@
+.formulario-usuario .formulario-acciones {
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.formulario-usuario .formulario-acciones .usuario-cancelar {
+  min-height: 40px;
+  padding: 0 20px;
+  border: 1px solid var(--vet-purple, #7d1f99);
+  border-radius: 8px;
+  background: #fff;
+  color: var(--vet-purple, #7d1f99);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.15s ease;
+}
+
+.formulario-usuario .formulario-acciones .usuario-cancelar:hover {
+  border-color: var(--vet-purple-light, #9b3db8);
+  background: var(--vet-purple-bg, #f7f0fa);
+  transform: translateY(-1px);
+}
+
+.formulario-usuario .formulario-acciones .usuario-cancelar:focus-visible,
+.formulario-usuario .usuario-rol-select:focus-visible {
+  outline: 3px solid rgba(125, 31, 153, 0.2);
+  outline-offset: 2px;
+}
+
+.formulario-usuario .usuario-rol-select {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 42px;
+  padding: 9px 40px 9px 12px;
+  border: 1.5px solid var(--vet-purple-border, #e0c8ea);
+  border-radius: 8px;
+  appearance: none;
+  background-color: #fff;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%237d1f99' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  color: var(--text, #1a1a2e);
+  font: inherit;
+  cursor: pointer;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.formulario-usuario .usuario-rol-select:hover:not(:disabled) {
+  border-color: var(--vet-purple, #7d1f99);
+}
+
+.formulario-usuario .usuario-rol-select:focus {
+  border-color: var(--vet-purple, #7d1f99);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(125, 31, 153, 0.12);
+}
+
+.formulario-usuario .usuario-rol-select:disabled {
+  background-color: var(--vet-purple-bg, #f7f0fa);
+  color: var(--text-muted, #6b6b80);
+  cursor: wait;
+}
+
+@media (max-width: 480px) {
+  .formulario-usuario .formulario-acciones {
+    flex-direction: column-reverse;
+  }
+
+  .formulario-usuario .formulario-acciones button {
+    width: 100%;
+  }
+}

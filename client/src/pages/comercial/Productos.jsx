@@ -1,180 +1,207 @@
-import { useState, useEffect } from 'react'
-import api from '../../../config/api.js'
-import FormularioProductos from '../../components/FormularioProductos'
-import FormularioEdicionProductos from '../../components/FormularioEdicionProducto'
-import Modal from '../../components/Modal'
-import FormularioLote from '../../components/FormularioLote'
-import ExportarPDF from '../../components/ExportarPDF.jsx'
-import './Productos.css'
+import { useState, useEffect } from "react";
+import api from "../../../config/api.js";
+import FormularioProductos from "../../components/FormularioProductos";
+import FormularioEdicionProductos from "../../components/FormularioEdicionProducto";
+import Modal from "../../components/Modal";
+import FormularioLote from "../../components/FormularioLote";
+import ExportarPDF from "../../components/ExportarPDF.jsx";
+import useSystemFeedback from "../../hooks/useSystemFeedback.js";
+import { normalizarTexto } from "../../utils/normalizarTexto.js";
+import "./Productos.css";
 
-const API_URL = 'products'
+const API_URL = "products";
 
-const cargarProductos = () => api.get(API_URL, { withCredentials: true })
+const cargarProductos = () => api.get(API_URL, { withCredentials: true });
 
 export default function Productos() {
-  const [vistaLotes, setVistaLotes] = useState(false)
-  const [productos, setProductos] = useState([])
-  const [lotes, setLotes] = useState([])
-  const [busqueda, setBusqueda] = useState('')
-  const [loading, setLoading] = useState(true)
+  const { confirmarAccion } = useSystemFeedback();
+  const [vistaLotes, setVistaLotes] = useState(false);
+  const [productos, setProductos] = useState([]);
+  const [lotes, setLotes] = useState([]);
+  const [busqueda, setBusqueda] = useState("");
+  const [loading, setLoading] = useState(true);
 
-  const [modalAbierto, setModalAbierto] = useState(false)
-  const [tipoModal, setTipoModal] = useState(null)
-  const [productoSeleccionado, setProductoSeleccionado] = useState(null)
+  const [modalAbierto, setModalAbierto] = useState(false);
+  const [tipoModal, setTipoModal] = useState(null);
+  const [productoSeleccionado, setProductoSeleccionado] = useState(null);
 
   const fetchProductos = async () => {
-    setLoading(true)
+    setLoading(true);
     try {
-      const response = await cargarProductos()
-      setProductos(response.data)
+      const response = await cargarProductos();
+      setProductos(response.data);
     } catch (err) {
-      console.error('Error al cargar productos:', err)
+      console.error("Error al cargar productos:", err);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   useEffect(() => {
-    let activo = true
+    let activo = true;
     cargarProductos()
       .then((response) => {
-        if (activo) setProductos(response.data)
+        if (activo) setProductos(response.data);
       })
       .catch((err) => {
-        console.error('Error al cargar productos:', err)
+        console.error("Error al cargar productos:", err);
       })
       .finally(() => {
-        if (activo) setLoading(false)
-      })
+        if (activo) setLoading(false);
+      });
 
     return () => {
-      activo = false
-    }
-  }, [])
-  console.log(productos)
+      activo = false;
+    };
+  }, []);
+  console.log(productos);
 
   const fetchLotes = async () => {
     try {
-      const response = await api.get(`${API_URL}/product/lotes`, { withCredentials: true })
-      setLotes(response.data.datos)
-    
+      const response = await api.get(`${API_URL}/product/lotes`, {
+        withCredentials: true,
+      });
+      setLotes(response.data.datos);
     } catch (err) {
-      console.error('Error al cargar lotes:', err)
+      console.error("Error al cargar lotes:", err);
     }
-  }
-
+  };
 
   const handleEliminar = async (id) => {
-    const confirmar = window.confirm('¿Seguro que querés eliminar este producto? Esta acción no se puede deshacer.')
-    if (!confirmar) return
+    const confirmar = await confirmarAccion(
+      "¿Seguro que querés eliminar este producto? Esta acción no se puede deshacer.",
+      { variante: "warning", textoConfirmar: "Eliminar" },
+    );
+    if (!confirmar) return;
 
     try {
-      await api.delete(`${API_URL}/product/delete/${id}`, { withCredentials: true })
-      setProductos((prev) => prev.filter((p) => p.id !== id))
-      cerrarModal()
+      await api.delete(`${API_URL}/product/delete/${id}`, {
+        withCredentials: true,
+      });
+      setProductos((prev) => prev.filter((p) => p.id !== id));
+      cerrarModal();
     } catch (err) {
-      console.error('Error al eliminar producto:', err)
+      console.error("Error al eliminar producto:", err);
     }
-  }
+  };
 
   const abrirModalCrear = () => {
-    setTipoModal('crear')
-    setProductoSeleccionado(null)
-    setModalAbierto(true)
-  }
+    setTipoModal("crear");
+    setProductoSeleccionado(null);
+    setModalAbierto(true);
+  };
 
   const abrirModalEditar = (producto) => {
-    setTipoModal('editar')
-    setProductoSeleccionado(producto)
-    setModalAbierto(true)
-  }
+    setTipoModal("editar");
+    setProductoSeleccionado(producto);
+    setModalAbierto(true);
+  };
 
   const abrirModalLote = (idproducto) => {
-    setTipoModal('lote')
-    setProductoSeleccionado(idproducto)
-    setModalAbierto(true)
-  }
+    setTipoModal("lote");
+    setProductoSeleccionado(idproducto);
+    setModalAbierto(true);
+  };
 
   const cerrarModal = () => {
-    setModalAbierto(false)
-    setTipoModal(null)
-    setProductoSeleccionado(null)
-    fetchProductos()
-  }
+    setModalAbierto(false);
+    setTipoModal(null);
+    setProductoSeleccionado(null);
+    fetchProductos();
+  };
 
   const productosFiltrados = productos.filter((p) =>
-    p.nombre.toLowerCase().includes(busqueda.toLowerCase())
-  )
+    normalizarTexto(p.nombre).includes(normalizarTexto(busqueda)),
+  );
 
-const lotesFiltrados = lotes.filter((l) =>
-  l.nombre_producto?.toLowerCase().includes(busqueda.toLowerCase())
-)
+  const lotesFiltrados = lotes.filter((l) =>
+    normalizarTexto(l.nombre_producto).includes(normalizarTexto(busqueda)),
+  );
+
+  const POR_PAGINA = 15;
+  const [pagina, setPagina] = useState(1);
+
+  const listaFiltrada = vistaLotes ? lotesFiltrados : productosFiltrados;
+  const totalPaginas = Math.ceil(listaFiltrada.length / POR_PAGINA);
+  const paginaActual = Math.min(pagina, Math.max(totalPaginas, 1));
+  const filasPagina = listaFiltrada.slice((paginaActual - 1) * POR_PAGINA, paginaActual * POR_PAGINA);
 
 
-  
   const badgeStock = (actual, minimo) => {
-    if (actual === 0) return <span className="badge badge-danger">{actual}</span>
-    if (actual <= minimo) return <span className="badge badge-warning">{actual}</span>
-    return <span className="badge badge-ok">{actual}</span>
-  }
+    if (actual === 0)
+      return <span className="badge badge-danger">{actual}</span>;
+    if (actual <= minimo)
+      return <span className="badge badge-warning">{actual}</span>;
+    return <span className="badge badge-ok">{actual}</span>;
+  };
 
-  
   return (
     <section className="page-shell productos-page">
-
       {/* Toolbar */}
       <div className="productos-toolbar">
-        <h1>{vistaLotes ? 'Lotes' : 'Productos'}</h1>
+        <h1>{vistaLotes ? "Lotes" : "Productos"}</h1>
 
         <input
           className="search-input"
           type="text"
           placeholder="Buscar por nombre..."
           value={busqueda}
-          onChange={(e) => setBusqueda(e.target.value)}
+          onChange={(e) => {setBusqueda(e.target.value); setPagina(1);}}
         />
 
         {!vistaLotes && !loading && (
           <ExportarPDF
             titulo="Listado de productos"
             nombreArchivo="productos"
-            secciones={[{
-              titulo: "Productos",
-              columnas: ["ID", "Nombre", "Categoría (ID)", "Marca", "Precio costo", "Precio venta", "Stock"],
-              filas: productosFiltrados.map((p) => [
-                p.id,
-                p.nombre,
-                p.id_categoria,
-                p.marca,
-                p.precio_costo == null ? "—" : `$${Number(p.precio_costo).toLocaleString("es-AR")}`,
-                p.precio_venta == null ? "Sin definir" : `$${Number(p.precio_venta).toLocaleString("es-AR")}`,
-                p.stock_actual,
-              ]),
-            }]}
+            secciones={[
+              {
+                titulo: "Productos",
+                columnas: [
+                  "ID",
+                  "Nombre",
+                  "Categoría (ID)",
+                  "Marca",
+                  "Precio costo",
+                  "Precio venta",
+                  "Stock",
+                ],
+                filas: productosFiltrados.map((p) => [
+                  p.id,
+                  p.nombre,
+                  p.id_categoria,
+                  p.marca,
+                  p.precio_costo == null
+                    ? "—"
+                    : `$${Number(p.precio_costo).toLocaleString("es-AR")}`,
+                  p.precio_venta == null
+                    ? "Sin definir"
+                    : `$${Number(p.precio_venta).toLocaleString("es-AR")}`,
+                  p.stock_actual,
+                ]),
+              },
+            ]}
           />
         )}
 
         <button
-          className={`btn-toggle${vistaLotes ? ' active' : ''}`}
+          className={`btn-toggle${vistaLotes ? " active" : ""}`}
           onClick={() => {
-            setVistaLotes((v) => !v)
-            setBusqueda('')
-            if (!vistaLotes) fetchLotes()
+            setVistaLotes((v) => !v);
+            setBusqueda("");
+            setPagina(1);
+            if (!vistaLotes) fetchLotes();
           }}
         >
-          {vistaLotes ? ' Ver productos' : 'Ver lotes'}
+          {vistaLotes ? " Ver productos" : "Ver lotes"}
         </button>
 
-        <button
-          className="btn-primary"
-          onClick={abrirModalCrear}
-        >
+        <button className="btn-primary" onClick={abrirModalCrear}>
           + Nuevo producto
         </button>
       </div>
 
-      {!vistaLotes && (
-        loading ? (
+      {!vistaLotes &&
+        (loading ? (
           <p className="productos-loading">Cargando productos...</p>
         ) : productosFiltrados.length === 0 ? (
           <p className="productos-empty">No se encontraron productos.</p>
@@ -194,21 +221,31 @@ const lotesFiltrados = lotes.filter((l) =>
                 </tr>
               </thead>
               <tbody>
-                {productosFiltrados.map((p) => (
+                {filasPagina.map((p) => (
                   <tr key={p.id}>
                     <td>{p.nombre}</td>
                     <td>{p.marca}</td>
                     <td>${parseFloat(p.precio_costo).toLocaleString()}</td>
-                    <td>{p.precio_venta == null ? 'Sin definir' : `$${Number(p.precio_venta).toLocaleString()}`}</td>
-                    <td>{badgeStock(p.stock_actual, p.stock_minimo)}</td>
-                    <td>{p.venta_al_publico ? 'Sí' : 'No'}</td>
                     <td>
-                      <button className="btn-editar" onClick={() => abrirModalEditar(p)}>
+                      {p.precio_venta == null
+                        ? "Sin definir"
+                        : `$${Number(p.precio_venta).toLocaleString()}`}
+                    </td>
+                    <td>{badgeStock(p.stock_actual, p.stock_minimo)}</td>
+                    <td>{p.venta_al_publico ? "Sí" : "No"}</td>
+                    <td>
+                      <button
+                        className="btn-editar"
+                        onClick={() => abrirModalEditar(p)}
+                      >
                         Editar
                       </button>
                     </td>
                     <td>
-                      <button className="btn-editar" onClick={() => abrirModalLote(p.id)}>
+                      <button
+                        className="btn-editar"
+                        onClick={() => abrirModalLote(p.id)}
+                      >
                         Añadir lote
                       </button>
                     </td>
@@ -217,11 +254,10 @@ const lotesFiltrados = lotes.filter((l) =>
               </tbody>
             </table>
           </div>
-        )
-      )}
+        ))}
 
-      {vistaLotes && (
-        lotesFiltrados.length === 0 ? (
+      {vistaLotes &&
+        (lotesFiltrados.length === 0 ? (
           <p className="productos-empty">No se encontraron lotes.</p>
         ) : (
           <div className="tabla-wrapper">
@@ -238,7 +274,7 @@ const lotesFiltrados = lotes.filter((l) =>
                 </tr>
               </thead>
               <tbody>
-                {lotesFiltrados.map((l) => (
+                {filasPagina.map((l) => (
                   <tr key={l.id}>
                     <td>{l.codigo_lote}</td>
                     <td>{l.nombre_producto}</td>
@@ -247,8 +283,10 @@ const lotesFiltrados = lotes.filter((l) =>
                     <td>{badgeStock(l.stock_actual, 0)}</td>
                     <td>{l.fecha_vencimiento}</td>
                     <td>
-                      <span className={`badge ${l.activo ? 'badge-ok' : 'badge-danger'}`}>
-                        {l.activo ? 'Activo' : 'Vencido'}
+                      <span
+                        className={`badge ${l.activo ? "badge-ok" : "badge-danger"}`}
+                      >
+                        {l.activo ? "Activo" : "Vencido"}
                       </span>
                     </td>
                   </tr>
@@ -256,35 +294,52 @@ const lotesFiltrados = lotes.filter((l) =>
               </tbody>
             </table>
           </div>
-        )
-      )}
+        ))}
+
+      <div className="productos-pagination" aria-label="Paginación">
+  <button
+    className="productos-pagination__button"
+    onClick={() => setPagina((p) => Math.max(p - 1, 1))}
+    disabled={paginaActual === 1}
+    aria-label="Ir a la página anterior"
+  >
+    Anterior
+  </button>
+
+  <span className="productos-pagination__info">
+    Página <strong>{paginaActual}</strong> de{" "}
+    <strong>{Math.max(totalPaginas, 1)}</strong>
+  </span>
+
+  <button
+    className="productos-pagination__button"
+    onClick={() => setPagina((p) => Math.min(p + 1, totalPaginas))}
+    disabled={paginaActual >= totalPaginas}
+    aria-label="Ir a la página siguiente"
+  >
+    Siguiente
+  </button>
+</div>
 
       <Modal isOpen={modalAbierto} onClose={cerrarModal}>
-        {tipoModal === 'lote' && (
-          <FormularioLote onClose={cerrarModal} productoId={productoSeleccionado} />
+        {tipoModal === "lote" && (
+          <FormularioLote
+            onClose={cerrarModal}
+            productoId={productoSeleccionado}
+          />
         )}
-        {tipoModal === 'editar' && productoSeleccionado && (
+        {tipoModal === "editar" && productoSeleccionado && (
           <>
             <FormularioEdicionProductos
               key={productoSeleccionado.id}
               productoInicial={productoSeleccionado}
               onClose={cerrarModal}
+              onEliminar={() => handleEliminar(productoSeleccionado.id)}
             />
-            <div className="modal-eliminar">
-              <button
-                className="btn-danger"
-                onClick={() => handleEliminar(productoSeleccionado?.id)}
-              >
-                Eliminar producto
-              </button>
-            </div>
           </>
         )}
-        {tipoModal === 'crear' && (
-          <FormularioProductos onClose={cerrarModal} />
-        )}
+        {tipoModal === "crear" && <FormularioProductos onClose={cerrarModal} />}
       </Modal>
-
     </section>
-  )
+  );
 }

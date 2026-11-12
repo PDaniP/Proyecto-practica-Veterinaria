@@ -5,6 +5,7 @@ import "./FormulariosClinicos.css";
 //import { motivosConsulta } from "../utils/motivosConsulta.js";
 import api from "../../config/api.js";
 import EstudiosConsulta from "./EstudiosConsulta.jsx";
+import { subirEstudio } from "../service/estudiosService.js";
 
 export default function FormularioEdicionConsulta({
   nombreMascota,
@@ -29,6 +30,7 @@ export default function FormularioEdicionConsulta({
   const [errorInsumos, setErrorInsumos] = useState("");
   const [error, setError] = useState("");
   const [guardando, setGuardando] = useState(false);
+  const [archivosPendientes, setArchivosPendientes] = useState([]);
   const [motivos, setMotivos] = useState([]);
   const [diagnosticos, setDiagnosticos] = useState([]);
   const [cargandoMotivos, setCargandoMotivos] = useState(true);
@@ -233,19 +235,38 @@ export default function FormularioEdicionConsulta({
         : [],
     };
     
+    let consultaActualizada = false;
+    let falloAdjunto = false;
     try {
       console.log(datos)
       await api.put(
         `mascotas/historia/consulta/editar/${consulta.id}/`, //cambiar el metodo y la ruta para edicion de consulta
         datos,
       );
+      consultaActualizada = true;
+
+      for (const archivo of archivosPendientes) {
+        try {
+          await subirEstudio(consulta.id, archivo);
+        } catch (err) {
+          falloAdjunto = true;
+          throw err;
+        }
+        setArchivosPendientes((actuales) =>
+          actuales.filter((pendiente) => pendiente !== archivo),
+        );
+      }
 
       await onGuardado?.();
       onClose?.();
     } catch (err) {
       console.error("Error al registrar la consulta:", err);
       setError(
-        err.response?.data?.message || "No se pudo registrar la consulta.",
+        falloAdjunto
+          ? "La consulta se guardó, pero no se pudieron adjuntar todos los archivos. Los que faltan siguen pendientes; presioná Guardar consulta para reintentar."
+          : consultaActualizada
+            ? "La consulta se guardó, pero no se pudo actualizar la vista. Cerrá y volvé a abrir el formulario para verificar los cambios."
+            : err.response?.data?.message || "No se pudo registrar la consulta.",
       );
     } finally {
       setGuardando(false);
@@ -409,6 +430,9 @@ export default function FormularioEdicionConsulta({
         <EstudiosConsulta
           idConsulta={consulta.id}
           permitirAdjuntar
+          archivosPendientes={archivosPendientes}
+          onArchivosPendientesChange={setArchivosPendientes}
+          bloqueado={guardando}
         />
 
         <div className="cf-vacuna-bloque">

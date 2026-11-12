@@ -3,8 +3,10 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import NuevaCategoria from "./NuevaCategoria";
 import api from "../../config/api.js";
+import useSystemFeedback from "../hooks/useSystemFeedback.js";
 
 export default function FormularioProductos({ onClose }) {
+  const { mostrarAlerta } = useSystemFeedback();
   const navegar = useNavigate();
   const [producto, setProducto] = useState({
     id_categoria: "",
@@ -105,7 +107,7 @@ export default function FormularioProductos({ onClose }) {
         { withCredentials: true },
       );
 
-      alert("Producto registrado correctamente.");
+      await mostrarAlerta("Producto registrado correctamente.", { variante: "success" });
       onClose(); // Cierra el modal después de guardar
       navegar("/productos");
 
@@ -124,8 +126,9 @@ export default function FormularioProductos({ onClose }) {
       setErrores({});
     } catch (error) {
       console.error("Error al registrar producto:", error);
-      alert(
+      await mostrarAlerta(
         "Hubo un error al registrar el producto. Por favor, inténtelo de nuevo.",
+        { variante: "error" },
       );
     }
   };
@@ -294,7 +297,7 @@ export default function FormularioProductos({ onClose }) {
             />
           </div>
 
-          <button className="btn" type="submit">
+          <button className="producto-form__guardar" type="submit">
             Guardar
           </button>
         </form>

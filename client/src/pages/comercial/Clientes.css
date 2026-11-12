@@ -1,23 +1,22 @@
-
 :root {
-  --vet-purple:        #7d1f99;
-  --vet-purple-light:  #9b3db8;
-  --vet-purple-bg:     #f7f0fa;
+  --vet-purple: #7d1f99;
+  --vet-purple-light: #9b3db8;
+  --vet-purple-bg: #f7f0fa;
   --vet-purple-border: #e0c8ea;
 
-  --danger:            #a32d2d;
-  --danger-bg:         #fdf0f0;
-  --danger-hover:      #8a2020;
+  --danger: #a32d2d;
+  --danger-bg: #fdf0f0;
+  --danger-hover: #8a2020;
 
-  --success:           #2d7a3a;
+  --success: #2d7a3a;
 
-  --text:              #1a1a2e;
-  --text-muted:        #6b6b80;
+  --text: #1a1a2e;
+  --text-muted: #6b6b80;
 
-  --radius:            10px;
-  --radius-sm:         6px;
-  --shadow:            0 2px 8px rgba(125, 31, 153, 0.08);
-  --shadow-md:         0 4px 16px rgba(125, 31, 153, 0.13);
+  --radius: 10px;
+  --radius-sm: 6px;
+  --shadow: 0 2px 8px rgba(125, 31, 153, 0.08);
+  --shadow-md: 0 4px 16px rgba(125, 31, 153, 0.13);
 }
 
 .clientes-toolbar {
@@ -66,7 +65,10 @@
   font-weight: 600;
   cursor: pointer;
   white-space: nowrap;
-  transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+  transition:
+    background 0.2s,
+    transform 0.15s,
+    box-shadow 0.2s;
   box-shadow: 0 2px 8px rgba(125, 31, 153, 0.25);
 }
 
@@ -138,7 +140,9 @@
   background: var(--vet-purple-bg);
   color: var(--vet-purple);
   cursor: pointer;
-  transition: background 0.2s, color 0.2s;
+  transition:
+    background 0.2s,
+    color 0.2s;
 }
 
 .btn-editar:hover {
@@ -170,7 +174,9 @@
   font-weight: 600;
   cursor: pointer;
   margin-top: 8px;
-  transition: background 0.2s, color 0.2s;
+  transition:
+    background 0.2s,
+    color 0.2s;
 }
 
 .btn-danger:hover {
@@ -187,7 +193,7 @@
 }
 
 .clientes-empty::before {
-  content: 'NO HAY CLIENTES';
+  content: "NO HAY CLIENTES";
   display: block;
   font-size: 2.5rem;
   margin-bottom: 0.75rem;
@@ -210,5 +216,73 @@
   .clientes-tabla thead th,
   .clientes-tabla td {
     padding: 10px 12px;
+  }
+}
+
+.productos-pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  margin: 20px 0;
+}
+
+.productos-pagination__button {
+  min-height: 40px;
+  padding: 0 18px;
+  border: 1px solid var(--vet-purple);
+  border-radius: 8px;
+  background: var(--vet-purple);
+  color: #fff;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background 0.2s,
+    transform 0.2s,
+    box-shadow 0.2s;
+}
+
+.productos-pagination__button:hover:not(:disabled) {
+  background: var(--vet-purple-light);
+  box-shadow: 0 3px 10px rgba(125, 31, 153, 0.2);
+  transform: translateY(-1px);
+}
+
+.productos-pagination__button:focus-visible {
+  outline: 3px solid rgba(125, 31, 153, 0.25);
+  outline-offset: 3px;
+}
+
+.productos-pagination__button:disabled {
+  border-color: var(--vet-purple-border);
+  background: var(--vet-purple-bg);
+  color: var(--text-muted);
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+}
+
+.productos-pagination__info {
+  color: var(--text-muted);
+  font-size: 0.92rem;
+  white-space: nowrap;
+}
+
+.productos-pagination__info strong {
+  color: var(--vet-purple);
+}
+
+@media (max-width: 480px) {
+  .productos-pagination {
+    gap: 8px;
+  }
+
+  .productos-pagination__button {
+    padding: 0 12px;
+  }
+
+  .productos-pagination__info {
+    font-size: 0.82rem;
   }
 }

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import api from "../../../config/api.js";
 import { useNavigate } from "react-router-dom";
+import { normalizarTexto } from "../../utils/normalizarTexto.js";
 import Modal from "../../components/Modal";
 import FormularioNuevaMascota from "../../components/FormularioNuevaMascota";
 import DetalleMascota from "../../components/DetalleMascota";
@@ -82,7 +83,9 @@ export default function Mascotas() {
   }, []);
 
   const obtenerDueño = (idCliente) => {
-    const cliente = clientes.find((item) => Number(item.id) === Number(idCliente));
+    const cliente = clientes.find(
+      (item) => Number(item.id) === Number(idCliente),
+    );
     return cliente
       ? `${cliente.nombre} ${cliente.apellido}`
       : "Dueño no disponible";
@@ -107,14 +110,41 @@ export default function Mascotas() {
     setModalDetalleAbierto(true);
   };
 
+  const actualizarMascota = (mascotaActualizada) => {
+    setMascotas((actuales) =>
+      actuales
+        .map((mascota) =>
+          Number(mascota.id) === Number(mascotaActualizada.id)
+            ? { ...mascota, ...mascotaActualizada }
+            : mascota,
+        )
+        .filter((mascota) => mascota.activo),
+    );
+    setMascotaSeleccionada((actual) =>
+      actual && Number(actual.id) === Number(mascotaActualizada.id)
+        ? { ...actual, ...mascotaActualizada }
+        : actual,
+    );
+  };
+
   const mascotasFiltradas = mascotas.filter((mascota) => {
-    const termino = busqueda.toLowerCase();
-    const dueño = obtenerDueño(mascota.id_cliente).toLowerCase();
+    const termino = normalizarTexto(busqueda);
+    const dueño = normalizarTexto(obtenerDueño(mascota.id_cliente));
 
     return (
-      mascota.nombre?.toLowerCase().includes(termino) || dueño.includes(termino)
+      normalizarTexto(mascota.nombre).includes(termino) || dueño.includes(termino)
     );
   });
+
+  const POR_PAGINA = 15;
+  const [pagina, setPagina] = useState(1);
+
+  const totalPaginas = Math.ceil(mascotasFiltradas.length / POR_PAGINA);
+  const paginaActual = Math.min(pagina, Math.max(totalPaginas, 1));
+  const filasPagina = mascotasFiltradas.slice(
+    (paginaActual - 1) * POR_PAGINA,
+    paginaActual * POR_PAGINA,
+  );
 
   return (
     <section className="page-shell mascotas-page">
@@ -125,24 +155,36 @@ export default function Mascotas() {
           type="search"
           placeholder="Buscar por mascota o dueño..."
           value={busqueda}
-          onChange={(event) => setBusqueda(event.target.value)}
+          onChange={(event) => {
+            setBusqueda(event.target.value);
+            setPagina(1);
+          }}
         />
         {!cargando && (
           <ExportarPDF
             titulo="Listado de mascotas"
             nombreArchivo="mascotas"
-            secciones={[{
-              titulo: "Mascotas",
-              columnas: ["ID", "Nombre", "Especie", "Raza", "Propietario", "Estado"],
-              filas: mascotasFiltradas.map((m) => [
-                m.id,
-                m.nombre,
-                obtenerNombreEspecie(m.id_especie),
-                obtenerNombreRaza(m.id_raza),
-                obtenerDueño(m.id_cliente),
-                m.activo ? "Activo" : "Inactivo",
-              ]),
-            }]}
+            secciones={[
+              {
+                titulo: "Mascotas",
+                columnas: [
+                  "ID",
+                  "Nombre",
+                  "Especie",
+                  "Raza",
+                  "Propietario",
+                  "Estado",
+                ],
+                filas: mascotasFiltradas.map((m) => [
+                  m.id,
+                  m.nombre,
+                  obtenerNombreEspecie(m.id_especie),
+                  obtenerNombreRaza(m.id_raza),
+                  obtenerDueño(m.id_cliente),
+                  m.activo ? "Activo" : "Inactivo",
+                ]),
+              },
+            ]}
           />
         )}
         <button className="btn-primary" onClick={abrirModalCrear}>
@@ -169,7 +211,7 @@ export default function Mascotas() {
               </tr>
             </thead>
             <tbody>
-              {mascotasFiltradas.map((mascota) => (
+              {filasPagina.map((mascota) => (
                 <tr key={mascota.id}>
                   <td>{mascota.nombre}</td>
                   <td>{obtenerNombreEspecie(mascota.id_especie)}</td>
@@ -207,6 +249,31 @@ export default function Mascotas() {
         </div>
       )}
 
+      <div className="productos-pagination" aria-label="Paginación">
+        <button
+          className="productos-pagination__button"
+          onClick={() => setPagina((p) => Math.max(p - 1, 1))}
+          disabled={paginaActual === 1}
+          aria-label="Ir a la página anterior"
+        >
+          Anterior
+        </button>
+
+        <span className="productos-pagination__info">
+          Página <strong>{paginaActual}</strong> de{" "}
+          <strong>{Math.max(totalPaginas, 1)}</strong>
+        </span>
+
+        <button
+          className="productos-pagination__button"
+          onClick={() => setPagina((p) => Math.min(p + 1, totalPaginas))}
+          disabled={paginaActual >= totalPaginas}
+          aria-label="Ir a la página siguiente"
+        >
+          Siguiente
+        </button>
+      </div>
+
       <Modal isOpen={modalCrearAbierto} onClose={cerrarModalCrear}>
         <FormularioNuevaMascota onClose={cerrarModalCrear} />
       </Modal>
@@ -216,6 +283,7 @@ export default function Mascotas() {
         onClose={() => setModalDetalleAbierto(false)}
       >
         <DetalleMascota
+          key={mascotaSeleccionada?.id}
           mascota={
             mascotaSeleccionada
               ? {
@@ -230,6 +298,7 @@ export default function Mascotas() {
               ? obtenerDueño(mascotaSeleccionada.id_cliente)
               : ""
           }
+          onMascotaActualizada={actualizarMascota}
         />
       </Modal>
     </section>

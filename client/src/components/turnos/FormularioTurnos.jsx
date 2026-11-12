@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import api from "../../../config/api.js";
+import { normalizarTexto } from "../../utils/normalizarTexto.js";
 import { asignarTurno, modificarTurno } from "../../service/turnosService";
 import "./FormularioTurnos.css";
 import "./TurnosTema.css";
@@ -118,14 +119,14 @@ export default function FormularioTurno({
   }, []);
 
   const clientesFiltrados = clientes.filter((cliente) => {
-    const texto = busquedaCliente.trim().toLowerCase();
+    const texto = normalizarTexto(busquedaCliente);
 
     if (!texto) return true;
 
     const nombreCompleto =
-      `${cliente.nombre ?? ""} ${cliente.apellido ?? ""}`.toLowerCase();
+      normalizarTexto(`${cliente.nombre ?? ""} ${cliente.apellido ?? ""}`);
 
-    const telefono = String(cliente.telefono ?? "").toLowerCase();
+    const telefono = normalizarTexto(cliente.telefono ?? "");
 
     return nombreCompleto.includes(texto) || telefono.includes(texto);
   });
@@ -448,7 +449,12 @@ export default function FormularioTurno({
       )}
 
       <div className="formulario-turno__acciones">
-        <button type="button" onClick={onClose} disabled={guardando}>
+        <button
+          type="button"
+          className="formulario-turno__cancelar"
+          onClick={onClose}
+          disabled={guardando}
+        >
           Cancelar
         </button>
 

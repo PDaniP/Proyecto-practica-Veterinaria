@@ -1,8 +1,11 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import api from "../../config/api.js";
+import { normalizarTexto } from "../utils/normalizarTexto.js";
+import useSystemFeedback from "../hooks/useSystemFeedback.js";
 
 export default function FormularioNuevaMascota({ onClose }) {
+  const { mostrarAlerta } = useSystemFeedback();
   const [tipoDueño, setTipoDueño] = useState("");
   const [tieneChip, setTieneChip] = useState(false);
   const [dueño, setDueño] = useState("");
@@ -47,7 +50,9 @@ export default function FormularioNuevaMascota({ onClose }) {
 
   const dueñosFiltrados = dueños.filter((cliente) => {
     const nombreCompleto = `${cliente.nombre} ${cliente.apellido} ${cliente.dni}`;
-    return nombreCompleto.toLowerCase().includes(busquedaDueño.toLowerCase());
+    return normalizarTexto(nombreCompleto).includes(
+      normalizarTexto(busquedaDueño),
+    );
   });
 
   useEffect(() => {
@@ -87,7 +92,7 @@ export default function FormularioNuevaMascota({ onClose }) {
     event.preventDefault();
 
     if (!idCliente) {
-      alert("Seleccione un dueño para registrar la mascota.");
+      mostrarAlerta("Seleccione un dueño para registrar la mascota.", { variante: "warning" });
       return;
     }
 
@@ -98,7 +103,7 @@ export default function FormularioNuevaMascota({ onClose }) {
       !mascota.fecha_nacimiento ||
       !mascota.genero
     ) {
-      alert("Complete todos los campos obligatorios de la mascota.");
+      mostrarAlerta("Complete todos los campos obligatorios de la mascota.", { variante: "warning" });
       return;
     }
 
@@ -122,11 +127,11 @@ export default function FormularioNuevaMascota({ onClose }) {
         { withCredentials: true },
       );
 
-      alert("Mascota registrada correctamente.");
+      await mostrarAlerta("Mascota registrada correctamente.", { variante: "success" });
       onClose?.();
     } catch (error) {
       console.error("Error al registrar la mascota:", error);
-      alert("No se pudo registrar la mascota.");
+      await mostrarAlerta("No se pudo registrar la mascota.", { variante: "error" });
     }
   };
 

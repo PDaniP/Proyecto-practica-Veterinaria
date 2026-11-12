@@ -120,11 +120,6 @@ export default function HistorialCompras({ clienteId, onClose }) {
           </h2>
           <p className="historial-subtitulo">Teléfono: {cliente.telefono}</p>
         </div>
-        {onClose && (
-          <button className="historial-btn-cerrar" onClick={onClose} aria-label="Cerrar historial">
-            ✕
-          </button>
-        )}
       </div>
 
       <h3 className="historial-seccion-titulo">Historial de compras</h3>

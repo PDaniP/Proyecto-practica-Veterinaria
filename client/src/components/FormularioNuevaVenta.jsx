@@ -1,7 +1,11 @@
 import { useState, useEffect } from "react";
 import api from "../../config/api.js";
+import { normalizarTexto } from "../utils/normalizarTexto.js";
+import useSystemFeedback from "../hooks/useSystemFeedback.js";
+import "./FormularioNuevaVenta.css";
 
 export default function FormularioNuevaVenta({ onClose, onVentaRegistrada }) {
+  const { mostrarAlerta } = useSystemFeedback();
   const [tipoCliente, setTipoCliente] = useState("");
   const [clientes, setClientes] = useState([]);
   const [busqueda, setBusqueda] = useState("");
@@ -79,23 +83,6 @@ export default function FormularioNuevaVenta({ onClose, onVentaRegistrada }) {
     };
   }, [tipoCliente, clienteSeleccionado, categoriaVenta]);
 
-  useEffect(() => {
-    const styleId = "formulario-nueva-venta-styles";
-    if (!document.getElementById(styleId)) {
-      const styleTag = document.createElement("style");
-      styleTag.id = styleId;
-      styleTag.textContent = formStyles;
-      document.head.appendChild(styleTag);
-    }
-
-    return () => {
-      const styleTag = document.getElementById(styleId);
-      if (styleTag) {
-        styleTag.remove();
-      }
-    };
-  }, []);
-
   //fucnion para agregar productos
   const agregarProducto = (producto) => {
     const existe = productosVenta.find((p) => p.id === producto.id);
@@ -122,7 +109,7 @@ export default function FormularioNuevaVenta({ onClose, onVentaRegistrada }) {
       (insumo) => !idsAgregados.has(Number(insumo.id_detalle_consulta)),
     );
     if (insumosNuevos.length === 0) {
-      alert("Los insumos de esta consulta ya están agregados a la venta.");
+      mostrarAlerta("Los insumos de esta consulta ya están agregados a la venta.", { variante: "warning" });
       return;
     }
 
@@ -160,22 +147,22 @@ export default function FormularioNuevaVenta({ onClose, onVentaRegistrada }) {
   const registrarVenta = async () => {
     if (guardandoVenta) return;
     if (!usuario?.id) {
-      alert("Debe iniciar sesión para registrar una venta.");
+      mostrarAlerta("Debe iniciar sesión para registrar una venta.", { variante: "warning" });
       return;
     }
 
     if (!clienteSeleccionado?.id) {
-      alert("Debe seleccionar un cliente para registrar la venta.");
+      mostrarAlerta("Debe seleccionar un cliente para registrar la venta.", { variante: "warning" });
       return;
     }
 
     if (!metodoPago) {
-      alert("Debe seleccionar un método de pago.");
+      mostrarAlerta("Debe seleccionar un método de pago.", { variante: "warning" });
       return;
     }
 
     if (productosVenta.length === 0) {
-      alert("Debe agregar al menos un producto para registrar la venta.");
+      mostrarAlerta("Debe agregar al menos un producto para registrar la venta.", { variante: "warning" });
       return;
     }
 
@@ -188,7 +175,7 @@ export default function FormularioNuevaVenta({ onClose, onVentaRegistrada }) {
           Number(item.precio_venta) <= 0),
     );
     if (insumosSinPrecio.length > 0) {
-      alert("Defina el precio de venta de los insumos desde Productos antes de registrar la venta.");
+      mostrarAlerta("Defina el precio de venta de los insumos desde Productos antes de registrar la venta.", { variante: "warning" });
       return;
     }
 
@@ -210,19 +197,19 @@ export default function FormularioNuevaVenta({ onClose, onVentaRegistrada }) {
         { withCredentials: true },
       );
 
-      window.alert("La venta se ha efectuado con éxito.");
+      await mostrarAlerta("La venta se ha efectuado con éxito.", { variante: "success" });
       if (onVentaRegistrada) await onVentaRegistrada();
       onClose?.();
     } catch (error) {
       console.error("Error al registrar la venta:", error);
-      alert(error.response?.data?.message || "No se pudo registrar la venta.");
+      await mostrarAlerta(error.response?.data?.message || "No se pudo registrar la venta.", { variante: "error" });
     } finally {
       setGuardandoVenta(false);
     }
   };
 
   return (
-    <div>
+    <div className="nueva-venta">
       <div className="card">
         <h2 className="card-title">Nueva Venta</h2>
 
@@ -277,7 +264,9 @@ export default function FormularioNuevaVenta({ onClose, onVentaRegistrada }) {
                 {busqueda && !clienteSeleccionado && (
                   <ul className="suggestions">
                     {clientes.filter((c) =>
-                      c.nombre.toLowerCase().includes(busqueda.toLowerCase()),
+                      normalizarTexto(c.nombre).includes(
+                        normalizarTexto(busqueda),
+                      ),
                     ).length === 0 ? (
                       <li className="suggestion-item">
                         No se encontraron clientes
@@ -285,9 +274,9 @@ export default function FormularioNuevaVenta({ onClose, onVentaRegistrada }) {
                     ) : (
                       clientes
                         .filter((c) =>
-                          c.nombre
-                            .toLowerCase()
-                            .includes(busqueda.toLowerCase()),
+                          normalizarTexto(c.nombre).includes(
+                            normalizarTexto(busqueda),
+                          ),
                         )
                         .map((c) => (
                           <li
@@ -416,7 +405,9 @@ export default function FormularioNuevaVenta({ onClose, onVentaRegistrada }) {
                   {productos.filter((p) =>
                   p.venta_al_publico &&
                   p.precio_venta != null &&
-                  p.nombre.toLowerCase().includes(busquedaProducto.toLowerCase()),
+                  normalizarTexto(p.nombre).includes(
+                    normalizarTexto(busquedaProducto),
+                  ),
                   ).length === 0 ? (
                     <li className="suggestion-item">
                       No se encontro el producto
@@ -426,7 +417,9 @@ export default function FormularioNuevaVenta({ onClose, onVentaRegistrada }) {
                       .filter((p) =>
                       p.venta_al_publico &&
                       p.precio_venta != null &&
-                      p.nombre.toLowerCase().includes(busquedaProducto.toLowerCase()),
+                      normalizarTexto(p.nombre).includes(
+                        normalizarTexto(busquedaProducto),
+                      ),
                       )
                       .map((p) => (
                         <li
@@ -534,350 +527,3 @@ export default function FormularioNuevaVenta({ onClose, onVentaRegistrada }) {
     </div>
   );
 }
-
-const formStyles = `
-.page {
-  min-height: 100vh;
-  width: 100%;
-  background: #ffffff;
-  display: flex;
-  align-items: flex-start;
-  justify-content: center;
-  padding: 110px 20px 20px 20px;
-}
-
-.card {
-  background: #fff;
-  border-radius: 16px;
-  padding: 36px 32px;
-  width: 100%;
-  max-width: 720px;
-  max-height: calc(100vh - 180px);
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-  box-shadow: 0 0 40px rgba(255, 255, 255, 0.35);
-}
-
-.card-title {
-  font-size: 40px;
-  font-weight: 500;
-  color: #111;
-  text-align: center;
-  margin: 0 0 4px;
-  margin-bottom: 25px;
-}
-
-.form {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.cliente-field + .cliente-seleccionado {
-  margin-top: -12px;
-}
-
-.field {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.field label {
-  width: 140px;
-  text-align: left;
-  font-size: 16px;
-  font-weight: 500;
-  color: #000000;
-}
-
-.field input,
-.field select,
-.field textarea {
-  color: #111;
-  flex: 1;
-  border-radius: 8px;
-  border: 1px solid #e5e7eb;
-  background: #f9fafb;
-  padding: 10px 10px;
-  font-size: 13px;
-}
-
-.field input:focus,
-.field select:focus,
-.field textarea:focus {
-  outline: none;
-  border-color: #8b5cf6;
-  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.16);
-}
-
-.field-content {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  position: relative;
-}
-
-.consulta-selector-fila {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.consulta-selector-fila select {
-  min-width: 0;
-  flex: 1;
-}
-
-.consulta-selector-fila .btn {
-  flex-shrink: 0;
-  white-space: nowrap;
-}
-
-.selected-info {
-  margin: 0;
-  padding: 10px 10px;
-  border-radius: 8px;
-  background: #f5f3ff;
-  color: #000000;
-  font-size: 16px;
-}
-
-.cliente-seleccionado {
-  display: flex;
-  align-items: center;
-  gap: 10px; 
-  margin-top: 0px;
-}
-
-
-.suggestions {
-  position: absolute;
-  top: calc(100% + 4px); /* pequeño espacio debajo del input */
-  left: 0;
-  right: 0;
-  list-style: none;
-  display: flex;
-  flex-direction: column;
-  max-height: 150px;
-  overflow-y: auto;
-  padding: 0;
-  margin: 0;
-  border: 1px solid #e5e7eb;
-  border-radius: 8px;
-  background: #fff;
-  box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-  z-index: 999;
-}
-
-.suggestion-item {
-  cursor: pointer;
-  padding: 10px 12px;
-  border-bottom: 1px solid #f3f4f6;
-  font-size: 13px;
-  color: #111;
-}
-
-.suggestion-item:last-child {
-  border-bottom: none;
-}
-
-.suggestion-item:hover {
-  background: #f9fafb;
-}
-
-.productos-venta {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  margin-top: 6px;
-}
-
-.section-title {
-  font-size: 14px;
-  font-weight: 600;
-  color: #111;
-  margin: 4px 0 6px;
-}
-
-.producto-item {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 10px 12px;
-  border: 1px solid #e5e7eb;
-  border-radius: 10px;
-  background: #f9fafb;
-}
-
-.producto-info {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.producto-datos {
-  display: flex;
-  flex-direction: row;
-  gap: 25px;
-  align-items: center;
-}
-
-.producto-nombre {
-  font-weight: 600;
-  color: #111;
-}
-
-.producto-marca {
-  font-size: 12px;
-  color: #6b7280;
-}
-
-.producto-precio {
-  font-size: 12px;
-  color: #111;
-}
-
-.helper-text {
-  margin: 4px 0 0;
-  color: #6b7280;
-  font-size: 12px;
-}
-
-.btn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-  transform: none;
-}
-
-.cantidad-input {
-  width: 40px;
-  border-radius: 8px;
-  border: 1px solid #e5e7eb;
-  padding: 8px 6px;
-  font-size: 13px;
-  color: #111;
-  background: #fff;
-  text-align: center;
-}
-  
-.cantidad-input::-webkit-inner-spin-button {
-  opacity: 1;
-  height: 20px;
-}
-
-.producto-total {
-  font-size: 13px;
-  color: #111;
-  font-weight: 600;
-  min-width: 85px;
-  text-align: right;
-}
-
-.icon-btn {
-  border: none;
-  background: #fee2e2;
-  color: #f80303;
-  border-radius: 999px;
-  width: 32px;
-  height: 32px;
-  cursor: pointer;
-}
-
-.icon-btn:hover {
-  background: #fecaca;
-}
-
-.total {
-  width: 180px;
-  margin-top: 16px;
-  padding: 14px 16px;
-  border-radius: 10px;
-  background: #709fcf;
-  border: 1px solid #e5e7eb;
-  font-size: 18px;
-  font-weight: 600;
-  color: #111;
-  display: flex;
-  justify-content: left;
-}
-
-.selectorMetPago {
-  max-width: 200px;
-}
-
-.actions {
-  display: flex;
-  gap: 10px;
-  margin-top: 8px;
-  flex-wrap: wrap;
-}
-
-.btn {
-  background: #534ab7;
-  max-width: 150px;
-  color: #fff;
-  border: none;
-  border-radius: 10px;
-  padding: 10px 16px;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: transform 0.2s ease, background 0.2s ease;
-}
-
-.btn:hover {
-  background: #358500;
-  transform: translateY(-1px);
-}
-
-.btn-secondary {
-  background: #f3f4f6;
-  color: #111;
-  border: 1px solid #e5e7eb;
-}
-
-.btn-secondary:hover {
-  background: #ff0000;
-  color: #fff;
-}
-
-@media (max-width: 640px) {
-  .card {
-    padding: 24px 18px;
-  }
-
-  .producto-item {
-    flex-wrap: wrap;
-  }
-
-  .cantidad-input {
-    width: 100%;
-  }
-
-  .producto-total {
-    min-width: auto;
-    width: 100%;
-    text-align: left;
-  }
-
-  .actions {
-    flex-direction: column;
-  }
-
-  .btn {
-    width: 100%;
-  }
-
-  .field {
-    align-items: stretch;
-    flex-direction: column;
-  }
-
-  .field label {
-    width: auto;
-    text-align: left;
-  }
-}
-`;
