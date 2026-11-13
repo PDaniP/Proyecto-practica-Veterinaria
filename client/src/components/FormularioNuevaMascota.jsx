@@ -368,9 +368,11 @@ export default function FormularioNuevaMascota({ onClose }) {
             ></textarea>
           </div>
 
-          <button type="submit" className="btn btn-primary">
-            Guardar
-          </button>
+          <div className="pet-form__actions">
+            <button type="submit" className="btn btn-primary">
+              Guardar
+            </button>
+          </div>
         </form>
       </div>
     </div>
@@ -378,6 +380,14 @@ export default function FormularioNuevaMascota({ onClose }) {
 }
 
 const formStyles = `
+.modal:has(.pet-form-container) {
+  overflow-y: auto;
+}
+
+.modal:has(.pet-form-container) .modal__content {
+  padding-top: 10px;
+}
+
 .pet-form-container {
   display: flex;
   justify-content: center;
@@ -388,15 +398,15 @@ const formStyles = `
   box-sizing: border-box;
   background: #fff;
   border-radius: 16px;
-  padding: 36px 32px;
+  padding: 24px 32px 36px;
   width: 100%;
-  max-width: none;
+  max-width: 720px;
   max-height: none;
-  
+  margin: 0 auto;
 }
 
 .pet-form-container .card-title {
-  margin: 0 0 25px;
+  margin: 0 0 12px;
   color: #111;
   font-size: 40px;
   font-weight: 500;
@@ -410,9 +420,11 @@ const formStyles = `
 }
 
 .pet-form-container .field {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
+  display: grid;
+  grid-template-columns: minmax(140px, 0.35fr) minmax(0, 1fr);
+  align-items: center;
+  gap: 6px 12px;
+  margin-bottom: 10px;
 }
 
 .pet-form-container .field label {
@@ -421,7 +433,7 @@ const formStyles = `
   font-weight: 500;
 }
 
-.pet-form-container .field input,
+.pet-form-container .field input:not([type="checkbox"]),
 .pet-form-container .field select,
 .pet-form-container .field textarea {
   box-sizing: border-box;
@@ -434,8 +446,23 @@ const formStyles = `
   font-size: 13px;
 }
 
+.pet-form-container .field > p {
+  grid-column: 2;
+  margin: 0;
+}
+
+.pet-form-container input[type="date"] {
+  color-scheme: light;
+}
+
+.pet-form-container input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: brightness(0);
+  opacity: 1;
+  cursor: pointer;
+}
+
 .pet-form-container .field textarea {
-  min-height: 90px;
+  min-height: 81px;
   resize: vertical;
 }
 
@@ -448,9 +475,7 @@ const formStyles = `
 }
 
 .pet-form-container .checkbox-field {
-  flex-direction: row;
-  align-items: center;
-  gap: 8px;
+  grid-template-columns: minmax(140px, 0.35fr) minmax(0, 1fr);
 }
 
 .pet-form-container .checkbox-field input[type="checkbox"],
@@ -461,17 +486,15 @@ const formStyles = `
 }
 
 .pet-form-container .sexo-field {
-  flex-direction: row;
-  align-items: center;
-  gap: 12px;
+  grid-template-columns: minmax(140px, 0.35fr) minmax(0, 1fr);
 }
 
 .pet-form-container .sexo-label {
-  min-width: 42px;
   margin: 0;
 }
 
 .pet-form-container .sexo-options {
+  grid-column: 2;
   display: flex;
   align-items: center;
   gap: 18px;
@@ -489,8 +512,14 @@ const formStyles = `
 }
 
 .pet-form-container .owner-search-field {
+  grid-column: 1 / -1;
+  grid-template-columns: minmax(140px, 0.35fr) minmax(0, 1fr);
   position: relative;
   margin-top: 4px;
+}
+
+.pet-form-container .owner-search-field > p {
+  grid-column: 2;
 }
 
 .pet-form-container .suggestions {
@@ -536,28 +565,51 @@ const formStyles = `
   background: #f9fafb;
 }
 
-.pet-form-container .btn {
-  width: 100%;
+.pet-form-container .pet-form__actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 4px;
+}
+
+.pet-form-container .pet-form__actions .btn {
+  box-sizing: border-box;
+  width: 140px;
+  min-width: 140px;
   height: 42px;
-  margin-top: 10px;
+  margin: 0;
+  padding: 0 20px;
   color: #fff;
   border: none;
   border-radius: 8px;
-  background: #534ab7;
+  background: var(--vet-purple, #7d1f99);
+  font-size: 0.92rem;
+  font-weight: 600;
   cursor: pointer;
+  transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+  box-shadow: 0 2px 8px rgba(125, 31, 153, 0.25);
 }
 
-.pet-form-container .btn:hover {
-  background: #4338a3;
+.pet-form-container .pet-form__actions .btn:hover {
+  background: var(--vet-purple-light, #9b3db8);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(125, 31, 153, 0.3);
 }
 
 @media (max-width: 600px) {
   .pet-form-container .card {
-    padding: 24px 18px;
+    padding: 18px 18px 24px;
   }
 
   .pet-form-container .card-title {
     font-size: 32px;
+  }
+
+  .pet-form-container .field,
+  .pet-form-container .checkbox-field,
+  .pet-form-container .sexo-field,
+  .pet-form-container .owner-search-field {
+    grid-template-columns: minmax(100px, 0.4fr) minmax(0, 1fr);
+    column-gap: 8px;
   }
 }
 `;

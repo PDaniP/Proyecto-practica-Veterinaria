@@ -284,7 +284,7 @@ export default function FormularioConsulta({ idMascota, nombreMascota, onClose, 
   }, [consulta.motivo_id]);
 
   return (
-    <div className="cf-container">
+    <div className="cf-container cf-container--consulta-form">
       <h2 className="cf-titulo">Nueva consulta</h2>
       {nombreMascota && (<p className="cf-subtitulo">Paciente: {nombreMascota}</p>)}
 
@@ -339,7 +339,7 @@ export default function FormularioConsulta({ idMascota, nombreMascota, onClose, 
 
         <div className="cf-campo">
           <label htmlFor="consulta-motivo">
-            Motivo de la consulta <span className="cf-obligatorio">*</span>
+          Motivo <span className="cf-obligatorio">*</span>
           </label>
           <div className="cf-motivo-control">
             <select name="motivo_id" id="consulta-motivo" value={consulta.motivo_id} onChange={handleChange} required>
@@ -463,7 +463,9 @@ export default function FormularioConsulta({ idMascota, nombreMascota, onClose, 
             <ul className="cf-detalle-insumos">
               {archivosEstudio.map((archivo, indice) => (
                 <li key={`${archivo.name}-${archivo.lastModified}-${indice}`}>
-                  {archivo.name}
+                  <span className="cf-adjunto-nombre" title={archivo.name}>
+                    {archivo.name}
+                  </span>
                   <button
                     type="button"
                     className="cf-btn-cancelar"

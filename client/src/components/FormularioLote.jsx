@@ -124,7 +124,7 @@ export default function FormularioLote({productoId, onClose }) {
 
   return (
     <div>
-      <div className="card">
+      <div className="card formulario-lote-card">
         <h2 className="card-title">Registrar Lote</h2>
 
         <form onSubmit={handleSubmit}>
@@ -181,9 +181,11 @@ export default function FormularioLote({productoId, onClose }) {
             />
           </div>
 
-          <button className="producto-form__guardar" type="submit">
-            Guardar
-          </button>
+          <div className="formulario-lote__acciones">
+            <button className="producto-form__guardar" type="submit">
+              Guardar
+            </button>
+          </div>
         </form>
       </div>
     </div>
@@ -200,6 +202,16 @@ const formStyles = `
   max-height: calc(100vh - 180px);
   overflow-y: auto;
   box-shadow: 0 0 40px rgba(255, 255, 255, 0.35);
+}
+
+.formulario-lote-card {
+  margin: 0 auto;
+}
+
+.formulario-lote__acciones {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 10px;
 }
 
 .card-title {

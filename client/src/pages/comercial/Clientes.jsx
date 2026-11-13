@@ -278,15 +278,8 @@ export default function Clientes() {
             <FormularioClientes
               clienteInicial={clienteSeleccionado}
               onClose={cerrarModal}
+              onEliminar={() => handleEliminar(clienteSeleccionado.id)}
             />
-            <div className="modal-eliminar">
-              <button
-                className="btn-danger"
-                onClick={() => handleEliminar(clienteSeleccionado?.id)}
-              >
-                Eliminar cliente
-              </button>
-            </div>
           </>
         )}
         {tipoModal === "crear" && <FormularioClientes onClose={cerrarModal} />}

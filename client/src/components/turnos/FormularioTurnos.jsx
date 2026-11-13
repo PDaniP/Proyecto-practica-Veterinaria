@@ -264,39 +264,58 @@ export default function FormularioTurno({
             </label>
           </div>
 
-          {usarClienteRegistrado && !clienteSeleccionado && (
-            <div className="formulario-turno__campo">
-              <label htmlFor="buscar-cliente">
-                Buscar cliente por nombre o teléfono
-              </label>
-
+          <div className="formulario-turno__campo">
+            <label htmlFor="nombre-contacto">Nombre del contacto</label>
+            <div className="formulario-turno__contacto-nombre">
               <input
-                id="buscar-cliente"
-                type="text"
-                value={busquedaCliente}
+                id="nombre-contacto"
+                value={nombreContacto}
                 onChange={(e) => {
-                  setBusquedaCliente(e.target.value);
-                  setClienteSeleccionado(null);
-                  setNombreContacto("");
-                  setTelefonoContacto("");
-                }}
-                placeholder="Escribí un nombre o teléfono..."
-              />
+                  const valor = e.target.value;
+                  setNombreContacto(valor);
 
-              {cargandoClientes ? (
+                  if (usarClienteRegistrado) {
+                    setBusquedaCliente(valor);
+                    setClienteSeleccionado(null);
+                    setTelefonoContacto("");
+                  }
+                }}
+                placeholder={
+                  usarClienteRegistrado
+                    ? "Buscar por nombre o teléfono..."
+                    : undefined
+                }
+                required
+              />
+              {usarClienteRegistrado && clienteSeleccionado && (
+                <button
+                  type="button"
+                  className="formulario-turno__cambiar-cliente"
+                  onClick={() => {
+                    setClienteSeleccionado(null);
+                    setBusquedaCliente("");
+                    setNombreContacto("");
+                    setTelefonoContacto("");
+                  }}
+                  aria-label="Cambiar cliente seleccionado"
+                >
+                  Cambiar
+                </button>
+              )}
+            </div>
+            {usarClienteRegistrado &&
+              !clienteSeleccionado &&
+              busquedaCliente.trim() &&
+              (cargandoClientes ? (
                 <p>Cargando clientes...</p>
-              ) : busquedaCliente.trim() ? (
+              ) : (
                 <div className="formulario-turno__resultados">
                   {clientesFiltrados.map((cliente) => (
                     <button
                       type="button"
                       key={cliente.id}
                       onClick={() => seleccionarCliente(cliente)}
-                      className={
-                        clienteSeleccionado?.id === cliente.id
-                          ? "formulario-turno__cliente seleccionado"
-                          : "formulario-turno__cliente"
-                      }
+                      className="formulario-turno__cliente"
                     >
                       {cliente.nombre} {cliente.apellido}
                       {" — "}
@@ -308,39 +327,7 @@ export default function FormularioTurno({
                     <p>No se encontraron clientes.</p>
                   )}
                 </div>
-              ) : null}
-            </div>
-          )}
-
-          {usarClienteRegistrado && clienteSeleccionado && (
-            <div className="formulario-turno__cliente-seleccionado">
-              <span>
-                Cliente seleccionado: {clienteSeleccionado.nombre}{" "}
-                {clienteSeleccionado.apellido}
-              </span>
-              <button
-                type="button"
-                onClick={() => {
-                  setClienteSeleccionado(null);
-                  setBusquedaCliente("");
-                  setNombreContacto("");
-                  setTelefonoContacto("");
-                }}
-                aria-label="Cambiar cliente seleccionado"
-              >
-                Cambiar
-              </button>
-            </div>
-          )}
-
-          <div className="formulario-turno__campo">
-            <label htmlFor="nombre-contacto">Nombre del contacto</label>
-            <input
-              id="nombre-contacto"
-              value={nombreContacto}
-              onChange={(e) => setNombreContacto(e.target.value)}
-              required
-            />
+              ))}
           </div>
 
           <div className="formulario-turno__campo">
@@ -354,76 +341,80 @@ export default function FormularioTurno({
           </div>
         </fieldset>
       )}
-      <div className="formulario-turno__campo">
-        <label htmlFor="fecha-turno">Fecha</label>
-        <input
-          id="fecha-turno"
-          type="date"
-          value={fecha}
-          onChange={(e) => setFecha(e.target.value)}
-          required
-        />
+      <div className="formulario-turno__fila-doble">
+        <div className="formulario-turno__campo">
+          <label htmlFor="fecha-turno">Fecha</label>
+          <input
+            id="fecha-turno"
+            type="date"
+            value={fecha}
+            onChange={(e) => setFecha(e.target.value)}
+            required
+          />
+        </div>
+
+        <div className="formulario-turno__campo">
+          <label htmlFor="hora-turno">Hora</label>
+          <input
+            id="hora-turno"
+            type="time"
+            value={hora}
+            min={horarioAtencion?.hora_inicio}
+            max={horarioAtencion?.hora_fin}
+            onChange={(e) => setHora(e.target.value)}
+            required
+          />
+        </div>
       </div>
 
-      <div className="formulario-turno__campo">
-        <label htmlFor="hora-turno">Hora</label>
-        <input
-          id="hora-turno"
-          type="time"
-          value={hora}
-          min={horarioAtencion?.hora_inicio}
-          max={horarioAtencion?.hora_fin}
-          onChange={(e) => setHora(e.target.value)}
-          required
-        />
-      </div>
-
-      <div className="formulario-turno__campo">
-        <label htmlFor="motivo-turno">Motivo del turno</label>
-        <select
-          id="motivo-turno"
-          value={motivo}
-          onChange={(e) => setMotivo(e.target.value)}
-          required
-          disabled={cargandoMotivos || motivos.length === 0}
-        >
-          <option value="">
-            {cargandoMotivos ? "Cargando motivos..." : "Seleccione un motivo"}
-          </option>
-          {motivo && !motivos.some((item) => item.motivo === motivo) && (
-            <option value={motivo}>{motivo}</option>
+      <div className="formulario-turno__fila-doble">
+        <div className="formulario-turno__campo">
+          <label htmlFor="motivo-turno">Motivo</label>
+          <select
+            id="motivo-turno"
+            value={motivo}
+            onChange={(e) => setMotivo(e.target.value)}
+            required
+            disabled={cargandoMotivos || motivos.length === 0}
+          >
+            <option value="">
+              {cargandoMotivos ? "Cargando motivos..." : "Seleccione un motivo"}
+            </option>
+            {motivo && !motivos.some((item) => item.motivo === motivo) && (
+              <option value={motivo}>{motivo}</option>
+            )}
+            {motivos.map((item) => (
+              <option value={item.motivo} key={item.id}>
+                {item.motivo}
+              </option>
+            ))}
+          </select>
+          {errorMotivos && (
+            <p className="formulario-turno__error" role="alert">
+              {errorMotivos}
+            </p>
           )}
-          {motivos.map((item) => (
-            <option value={item.motivo} key={item.id}>
-              {item.motivo}
-            </option>
-          ))}
-        </select>
-        {errorMotivos && (
-          <p className="formulario-turno__error" role="alert">
-            {errorMotivos}
-          </p>
-        )}
+        </div>
+
+        <div className="formulario-turno__campo">
+          <label htmlFor="profesional-turno">Profesional</label>
+          <select
+            id="profesional-turno"
+            value={profesionalId}
+            onChange={(e) => setProfesionalId(e.target.value)}
+          >
+            <option value="">Sin asignar</option>
+
+            {profesionales.map((profesional) => (
+              <option key={profesional.id} value={profesional.id}>
+                {profesional.nombre}
+              </option>
+            ))}
+          </select>
+        </div>
       </div>
 
-      <div className="formulario-turno__campo">
-        <label htmlFor="profesional-turno">Profesional</label>
-        <select
-          id="profesional-turno"
-          value={profesionalId}
-          onChange={(e) => setProfesionalId(e.target.value)}
-        >
-          <option value="">Sin asignar</option>
-
-          {profesionales.map((profesional) => (
-            <option key={profesional.id} value={profesional.id}>
-              {profesional.nombre}
-            </option>
-          ))}
-        </select>
-      </div>
-
-      <div className="formulario-turno__campo">
+      <div className="formulario-turno__campo formulario-turno__campo--observaciones">
         <label htmlFor="observaciones-turno">Observaciones</label>
         <textarea
           id="observaciones-turno"
@@ -433,38 +424,40 @@ export default function FormularioTurno({
         />
       </div>
 
-      <label className="formulario-turno__recordatorio">
-        <input
-          type="checkbox"
-          checked={recordatorioWhatsApp}
-          onChange={(e) => setRecordatorioWhatsApp(e.target.checked)}
-        />
-        Enviar recordatorio por WhatsApp
-      </label>
-
       {error && (
         <p className="formulario-turno__error" role="alert">
           {error}
         </p>
       )}
 
-      <div className="formulario-turno__acciones">
-        <button
-          type="button"
-          className="formulario-turno__cancelar"
-          onClick={onClose}
-          disabled={guardando}
-        >
-          Cancelar
-        </button>
+      <div className="formulario-turno__pie">
+        <label className="formulario-turno__recordatorio">
+          <input
+            type="checkbox"
+            checked={recordatorioWhatsApp}
+            onChange={(e) => setRecordatorioWhatsApp(e.target.checked)}
+          />
+          Enviar recordatorio por WhatsApp
+        </label>
 
-        <button type="submit" disabled={guardando}>
-          {guardando
-            ? "Guardando..."
-            : turnoEditar
-              ? "Guardar cambios"
-              : "Guardar turno"}
-        </button>
+        <div className="formulario-turno__acciones">
+          <button
+            type="button"
+            className="formulario-turno__cancelar"
+            onClick={onClose}
+            disabled={guardando}
+          >
+            Cancelar
+          </button>
+
+          <button type="submit" disabled={guardando}>
+            {guardando
+              ? "Guardando..."
+              : turnoEditar
+                ? "Guardar cambios"
+                : "Guardar turno"}
+          </button>
+        </div>
       </div>
     </form>
   );

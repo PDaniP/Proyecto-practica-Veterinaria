@@ -43,7 +43,8 @@
 }
 
 .fecha-filtro {
-  display: flex;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto minmax(0, 1fr) auto;
   align-items: center;
   gap: 10px;
   flex: 1;
@@ -55,16 +56,6 @@
   font-weight: 700;
   color: var(--vet-purple);
   white-space: nowrap;
-}
-
-.fecha-hasta-group {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.fecha-hasta-group .search-input {
-  min-width: 180px;
 }
 
 .btn-reset {
@@ -89,9 +80,19 @@
   transform: scale(0.97);
 }
 
-.fecha-filtro .search-input {
-  flex: 1;
+.fecha-filtro .fecha-input {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  padding-right: 10px;
   border-radius: 100px;
+  color-scheme: light;
+}
+
+.fecha-input::-webkit-calendar-picker-indicator {
+  filter: brightness(0);
+  opacity: 1;
+  cursor: pointer;
 }
 
 .ventas-resumen {
@@ -125,6 +126,11 @@
   font-size: 1.5rem;
   font-weight: 700;
   color: var(--vet-purple);
+}
+
+.ventas-resumen .resumen-valor {
+  width: 100%;
+  text-align: right;
 }
 
 .badge-pago-efectivo {
@@ -170,28 +176,39 @@
   }
 
   .fecha-filtro {
-    display: grid;
     grid-template-columns: auto minmax(0, 1fr);
     width: 100%;
     min-width: 0;
     gap: 8px;
   }
 
+  .fecha-label--desde,
+  .fecha-input--desde {
+    grid-row: 1;
+  }
+
+  .fecha-label--hasta,
+  .fecha-input--hasta {
+    grid-row: 2;
+  }
+
+  .fecha-label--desde,
+  .fecha-label--hasta {
+    grid-column: 1;
+  }
+
+  .fecha-input--desde,
+  .fecha-input--hasta {
+    grid-column: 2;
+  }
+
+  .fecha-filtro .btn-reset {
+    grid-column: 2;
+    justify-self: end;
+  }
+
   .fecha-label {
     font-size: 1rem;
-  }
-
-  .fecha-filtro .search-input {
-    min-width: 0;
-  }
-
-  .fecha-hasta-group {
-    width: 100%;
-    min-width: 0;
-  }
-
-  .fecha-hasta-group .search-input {
-    min-width: 0;
   }
 }
 

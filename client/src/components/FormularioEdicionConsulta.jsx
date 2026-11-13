@@ -274,7 +274,7 @@ export default function FormularioEdicionConsulta({
   };
 
   return (
-    <div className="cf-container">
+    <div className="cf-container cf-container--consulta-form">
       <h2 className="cf-titulo">Edicion Consulta</h2>
       {nombreMascota && (
         <p className="cf-subtitulo">Paciente: {nombreMascota}</p>
@@ -327,7 +327,7 @@ export default function FormularioEdicionConsulta({
 
         <div className="cf-campo">
           <label htmlFor="consulta-motivo">
-            Motivo de la consulta <span className="cf-obligatorio">*</span>
+            Motivo <span className="cf-obligatorio">*</span>
           </label>
           <select
             name="motivo_id"

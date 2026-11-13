@@ -123,7 +123,7 @@ export default function AlertasStock() {
         </div>
 
         <div className="tabla-wrapper">
-          <table className="productos-tabla">
+          <table className="productos-tabla alertas-stock-tabla">
             <thead>
               <tr>
                 <th>Producto</th>

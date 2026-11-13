@@ -152,7 +152,7 @@ export default function FormularioProductos({ onClose }) {
 
   return (
     <div>
-      <div className="card">
+      <div className="card producto-form-card">
         <h2 className="card-title">Registrar Producto</h2>
 
         <form onSubmit={handleSubmit}>
@@ -286,20 +286,22 @@ export default function FormularioProductos({ onClose }) {
             )}
           </div>
 
-          <div className="field checkbox-field">
-            <label htmlFor="venta_al_publico">Venta al público</label>
-            <input
-              id="venta_al_publico"
-              type="checkbox"
-              name="venta_al_publico"
-              checked={producto.venta_al_publico}
-              onChange={handleChange}
-            />
-          </div>
+          <div className="producto-form__footer">
+            <div className="field checkbox-field">
+              <label htmlFor="venta_al_publico">Venta al público</label>
+              <input
+                id="venta_al_publico"
+                type="checkbox"
+                name="venta_al_publico"
+                checked={producto.venta_al_publico}
+                onChange={handleChange}
+              />
+            </div>
 
-          <button className="producto-form__guardar" type="submit">
-            Guardar
-          </button>
+            <button className="producto-form__guardar" type="submit">
+              Guardar
+            </button>
+          </div>
         </form>
       </div>
     </div>
@@ -328,6 +330,27 @@ const formStyles = `
   overflow-y: visible;
   -webkit-overflow-scrolling: touch;
   box-shadow: 0 0 40px rgba(255, 255, 255, 0.35);
+}
+
+.producto-form-card {
+  margin: 0 auto;
+}
+
+.producto-form__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.producto-form__footer .checkbox-field {
+  flex: 1;
+  min-width: 0;
+}
+
+.producto-form__footer .producto-form__guardar {
+  flex-shrink: 0;
+  margin-left: auto;
 }
 
 .card-title {
@@ -457,6 +480,10 @@ color: #111;
 @media (max-width: 600px) {
   .field {
     grid-template-columns: 112px minmax(0, 1fr);
+  }
+
+  .producto-form__footer {
+    flex-wrap: wrap;
   }
 }
 `;
