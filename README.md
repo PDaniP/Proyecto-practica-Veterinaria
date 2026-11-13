@@ -257,6 +257,11 @@ client/src/App.jsx
 
 En `App.jsx` se definen las rutas principales de la aplicación usando `react-router-dom`.
 
+En el historial de consultas de una historia clínica, cada consulta permite abrir
+la impresión para imprimirla o guardarla como PDF. Incluye sus datos clínicos,
+insumos y un listado de estudios adjuntos; los archivos de los estudios se
+descargan por separado desde el detalle de la consulta.
+
 ## Componentes principales
 
 ### `Navbar.jsx`

@@ -1,7 +1,9 @@
 import './GraficosConsultas.css';
 import { useEffect, useState } from 'react';
 import api from '../../../config/api.js'
-import { PieChart, Pie, Cell, Tooltip, Legend } from 'recharts'
+import { PieChart, Pie, Cell, Tooltip } from 'recharts'
+
+const COLORES = ['#176f65', '#55a98f', '#daa15c', '#55879a'];
 
 const generarGraficoPie = (data) => {
 
@@ -11,15 +13,25 @@ const generarGraficoPie = (data) => {
   }));
   
   return (
-    <PieChart width={340} height={260} responsive={true}>
-      <Pie data={datos} dataKey="total" nameKey="motivo" cx="50%" cy="46%" innerRadius={36} outerRadius={74} fill="#176f65" label>
+    <div className="graficos-consultas-chart">
+      <PieChart width={240} height={200} responsive={true}>
+        <Pie data={datos} dataKey="total" nameKey="motivo" cx="50%" cy="50%" innerRadius={42} outerRadius={80} fill="#176f65">
+          {datos.map((entry, index) => (
+            <Cell key={`cell-${index}`} fill={COLORES[index % COLORES.length]} />
+          ))}
+        </Pie>
+        <Tooltip />
+      </PieChart>
+      <ul className="graficos-consultas-leyenda" aria-label="Consultas por motivo" tabIndex={0}>
         {datos.map((entry, index) => (
-          <Cell key={`cell-${index}`} fill={['#176f65', '#55a98f', '#daa15c', '#55879a'][index % 4]} />
+          <li key={`${entry.motivo}-${index}`}>
+            <span className="graficos-consultas-color" style={{ backgroundColor: COLORES[index % COLORES.length] }} aria-hidden="true" />
+            <span className="graficos-consultas-motivo">{entry.motivo}</span>
+            <span>{entry.total}</span>
+          </li>
         ))}
-      </Pie>
-      <Tooltip />
-      <Legend />
-    </PieChart>
+      </ul>
+    </div>
   );
 };
 
@@ -54,16 +66,24 @@ const GraficosConsultas = () => {
       <div className="graficos-consultas-graficos">
         <div className="graficos-consultas-grafico-item">
           <h3 className="graficos-consultas-grafico-titulo">Consultas por Motivo</h3>
-          <input
-            type="date"
-            value={fechaInicio}
-            onChange={(e) => setFechaInicio(e.target.value)}
-          />
-          <input
-            type="date"
-            value={fechaFin}
-            onChange={(e) => setFechaFin(e.target.value)}
-          />
+          <div className="graficos-consultas-fechas">
+            <label>
+              Desde
+              <input
+                type="date"
+                value={fechaInicio}
+                onChange={(e) => setFechaInicio(e.target.value)}
+              />
+            </label>
+            <label>
+              Hasta
+              <input
+                type="date"
+                value={fechaFin}
+                onChange={(e) => setFechaFin(e.target.value)}
+              />
+            </label>
+          </div>
           {datos.length === 0 ? (
             <p className="graficos-consultas-loading">Aguardando datos...</p>
           ) : (

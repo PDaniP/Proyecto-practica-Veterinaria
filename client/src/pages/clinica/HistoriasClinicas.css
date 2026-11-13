@@ -191,25 +191,39 @@
   font-size: 0.9rem;
 }
 
+.historia-consultas-wrapper {
+  scrollbar-width: auto;
+}
+
+.historia-consultas-wrapper::-webkit-scrollbar {
+  display: block;
+  height: 8px;
+}
+
 .historia-consultas-tabla {
   width: 100%;
+  min-width: 1040px;
   table-layout: fixed;
 }
 
 .consultas-col-fecha {
-  width: 15%;
+  width: 12%;
 }
 
 .consultas-col-motivo {
-  width: 43%;
+  width: 27%;
 }
 
 .consultas-col-veterinario {
-  width: 22%;
+  width: 17%;
 }
 
 .consultas-col-detalles {
-  width: 15%;
+  width: 12%;
+}
+
+.consultas-col-pdf {
+  width: 20%;
 }
 
 @media (max-width: 700px) {

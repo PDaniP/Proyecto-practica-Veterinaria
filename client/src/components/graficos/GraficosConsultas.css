@@ -45,8 +45,27 @@
   text-align: center;
 }
 
+.graficos-consultas-fechas {
+  display: flex;
+  width: 100%;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+}
+
+.graficos-consultas-fechas label {
+  display: flex;
+  flex: 1 1 150px;
+  max-width: 220px;
+  min-width: 0;
+  flex-direction: column;
+  gap: 4px;
+  color: #455951;
+  font-size: 0.75rem;
+}
+
 .graficos-consultas-grafico-item input[type="date"] {
-  width: min(100%, 220px);
+  width: 100%;
   padding: 7px 9px;
   border: 1px solid #d9e5df;
   border-radius: 7px;
@@ -72,17 +91,46 @@
   stroke-width: 3px;
 }
 
-.graficos-consultas-grafico-item .recharts-pie-label-text,
-.graficos-consultas-grafico-item .recharts-legend-item-text {
-  fill: #455951;
-  color: #455951 !important;
-  font-size: 0.72rem;
-}
-
 .graficos-consultas-chart {
   display: flex;
-  justify-content: center;
   width: 100%;
+  min-width: 0;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.graficos-consultas-leyenda {
+  flex: 1 1 180px;
+  min-width: 0;
+  max-height: 200px;
+  margin: 0;
+  padding: 0 4px 0 0;
+  overflow-y: auto;
+  list-style: none;
+  color: #455951;
+  font-size: 0.8rem;
+}
+
+.graficos-consultas-leyenda li {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  padding: 4px 0;
+}
+
+.graficos-consultas-color {
+  width: 10px;
+  height: 10px;
+  flex: 0 0 10px;
+  border-radius: 2px;
+}
+
+.graficos-consultas-motivo {
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 
 .graficos-consultas-loading {

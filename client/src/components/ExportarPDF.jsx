@@ -111,26 +111,24 @@ export default function ExportarPDF({
   metadata,
   secciones = [],
   className = "btn-primary",
+  obtenerSecciones,
+  ariaLabel,
 }) {
   const [error, setError] = useState("");
+  const [cargando, setCargando] = useState(false);
 
-  const descargar = () => {
+  const descargar = async () => {
     setError("");
 
-    if (!Array.isArray(secciones) || secciones.length === 0) {
+    if (!obtenerSecciones && (!Array.isArray(secciones) || secciones.length === 0)) {
       setError("No hay datos para exportar.");
       return;
     }
 
-    const seccionesValidas = secciones.filter(
-      (seccion) =>
-        Array.isArray(seccion.columnas) &&
-        seccion.columnas.length > 0 &&
-        Array.isArray(seccion.filas) &&
-        seccion.filas.length > 0,
-    );
-
-    if (seccionesValidas.length === 0) {
+    if (!obtenerSecciones && !secciones.some(
+      (seccion) => Array.isArray(seccion.columnas) && seccion.columnas.length > 0 &&
+        Array.isArray(seccion.filas) && seccion.filas.length > 0,
+    )) {
       setError("No hay datos para exportar.");
       return;
     }
@@ -143,6 +141,24 @@ export default function ExportarPDF({
 
     try {
       ventana.opener = null;
+      setCargando(true);
+      const datos = obtenerSecciones ? await obtenerSecciones() : secciones;
+      if (!Array.isArray(datos)) {
+        throw new Error("Los datos para exportar no tienen el formato esperado.");
+      }
+      const seccionesValidas = datos.filter(
+        (seccion) =>
+          Array.isArray(seccion.columnas) &&
+          seccion.columnas.length > 0 &&
+          Array.isArray(seccion.filas) &&
+          seccion.filas.length > 0,
+      );
+      if (seccionesValidas.length === 0) {
+        throw new Error("No hay datos para exportar.");
+      }
+      if (ventana.closed) {
+        throw new Error("Se cerró la ventana de impresión antes de preparar el documento.");
+      }
       ventana.document.open();
       ventana.document.write(
         crearDocumento({
@@ -159,14 +175,20 @@ export default function ExportarPDF({
     } catch (errorImpresion) {
       console.error("Error al preparar el documento PDF:", errorImpresion);
       ventana.close();
-      setError("No se pudo preparar el documento para imprimir.");
+      setError(
+        `No se pudo preparar el documento para imprimir. ${
+          errorImpresion.response?.data?.message || errorImpresion.message || ""
+        }`.trim(),
+      );
+    } finally {
+      setCargando(false);
     }
   };
 
   return (
     <div>
-      <button type="button" className={className} onClick={descargar}>
-        Descargar PDF
+      <button type="button" className={className} onClick={descargar} disabled={cargando} aria-label={ariaLabel}>
+        {cargando ? "Preparando PDF..." : "Descargar PDF"}
       </button>
       {error && (
         <p role="alert" aria-live="polite">

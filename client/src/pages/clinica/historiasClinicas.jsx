@@ -9,6 +9,8 @@ import "./HistoriasClinicas.css";
 import { obtenerEspecies, obtenerRazas } from "../../service/especiesService";
 import FormularioEdicionConsulta from "../../components/FormularioEdicionConsulta";
 import ExportarPDF from "../../components/ExportarPDF.jsx";
+import { obtenerDetalleConsulta } from "../../service/consultasService.js";
+import { listarEstudios } from "../../service/estudiosService.js";
 
 const formatearFecha = (fecha) => {
   if (!fecha) return "-";
@@ -45,6 +47,55 @@ const estadoProximaDosis = (fecha) => {
 
 const porFechaDescendente = (campo) => (a, b) =>
   String(b[campo] ?? "").localeCompare(String(a[campo] ?? ""));
+
+const obtenerSeccionesConsulta = async (idConsulta) => {
+  const [consulta, estudios] = await Promise.all([
+    obtenerDetalleConsulta(idConsulta),
+    listarEstudios(idConsulta),
+  ]);
+
+  return [
+    {
+      titulo: "Detalle de la consulta",
+      columnas: ["Dato", "Información"],
+      filas: [
+        ["Fecha", formatearFecha(consulta.fecha_consulta)],
+        ["Veterinario", consulta.nombre_veterinario || "No informado"],
+        ["Motivo", consulta.motivo || "—"],
+        ["Diagnóstico", consulta.diagnostico || "—"],
+        ["Tratamiento", consulta.tratamiento || "—"],
+        ["Observaciones", consulta.observaciones || "—"],
+        ["Peso", consulta.peso_actual == null ? "—" : `${consulta.peso_actual} kg`],
+        ["Temperatura", consulta.temperatura == null ? "—" : `${consulta.temperatura} °C`],
+      ],
+    },
+    {
+      titulo: "Insumos utilizados",
+      columnas: ["Insumo", "Marca", "Cantidad", "Lote", "Próxima dosis", "Observaciones"],
+      filas: consulta.insumos.length
+        ? consulta.insumos.map((insumo) => [
+            insumo.nombre || "Insumo no disponible",
+            insumo.marca || "—",
+            insumo.cantidad ?? "—",
+            insumo.codigo_lote || "—",
+            formatearFecha(insumo.proxima_dosis),
+            insumo.observaciones || "—",
+          ])
+        : [["No se registraron insumos.", "—", "—", "—", "—", "—"]],
+    },
+    {
+      titulo: "Estudios adjuntos (archivos disponibles en el detalle de la consulta)",
+      columnas: ["Archivo", "Tipo", "Fecha de subida"],
+      filas: estudios.length
+        ? estudios.map((estudio) => [
+            estudio.nombre_archivo,
+            estudio.tipo_archivo,
+            formatearFecha(estudio.fecha_subida),
+          ])
+        : [["No hay estudios adjuntos.", "—", "—"]],
+    },
+  ];
+};
 
 export default function HistoriasClinicas() {
   const { id } = useParams();
@@ -329,7 +380,7 @@ export default function HistoriasClinicas() {
           </button>
         </div>
         {consultas.length ? (
-          <div className="tabla-wrapper">
+          <div className="tabla-wrapper historia-consultas-wrapper">
             <table className="productos-tabla historia-consultas-tabla">
               <colgroup>
                 <col className="consultas-col-fecha" />
@@ -337,6 +388,7 @@ export default function HistoriasClinicas() {
                 <col className="consultas-col-veterinario" />
                 <col className="consultas-col-detalles" />
                 <col className="consultas-col-detalles" />
+                <col className="consultas-col-pdf" />
               </colgroup>
               <thead>
                 <tr>
@@ -345,6 +397,7 @@ export default function HistoriasClinicas() {
                   <th scope="col">Veterinario</th>
                   <th scope="col">Detalles</th>
                   <th scope="col">Editar</th>
+                  <th scope="col">PDF</th>
                 </tr>
               </thead>
               <tbody>
@@ -379,6 +432,20 @@ export default function HistoriasClinicas() {
                       >
                         Editar
                       </button>
+                    </td>
+                    <td>
+                      <ExportarPDF
+                        titulo={`Consulta de ${historia.nombre}`}
+                        nombreArchivo={`consulta-${consulta.id}-${historia.nombre}`}
+                        metadata={{
+                          Mascota: historia.nombre,
+                          Propietario: historia.dueño,
+                          Especie: historia.especie,
+                          Raza: historia.raza,
+                        }}
+                        obtenerSecciones={() => obtenerSeccionesConsulta(consulta.id)}
+                        ariaLabel={`Descargar PDF de la consulta ${consulta.id} del ${formatearFecha(consulta.fecha_consulta)}`}
+                      />
                     </td>
                   </tr>
                 ))}

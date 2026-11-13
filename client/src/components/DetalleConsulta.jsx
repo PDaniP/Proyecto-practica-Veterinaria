@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import "./FormulariosClinicos.css";
-import api from "../../config/api.js";
+import { obtenerDetalleConsulta } from "../service/consultasService.js";
 import EstudiosConsulta from "./EstudiosConsulta.jsx";
 
 const formatearFecha = (fecha) => {
@@ -30,20 +30,10 @@ export default function DetalleConsulta({ idConsulta, onClose }) {
 
     const cargarConsulta = async () => {
       try {
-        const { data } = await api.get(
-          `mascotas/historia/consulta/${idConsulta}`,
-        );
-        const insumos =
-          typeof data.insumos === "string"
-            ? JSON.parse(data.insumos)
-            : data.insumos ?? [];
-
-        if (!Array.isArray(insumos)) {
-          throw new Error("La respuesta de insumos no tiene el formato esperado.");
-        }
+        const data = await obtenerDetalleConsulta(idConsulta);
 
         if (activo) {
-          setConsulta({ ...data, insumos });
+          setConsulta(data);
           setError("");
         }
       } catch (err) {
