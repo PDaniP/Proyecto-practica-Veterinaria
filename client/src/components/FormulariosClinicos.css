@@ -444,6 +444,89 @@
   cursor: not-allowed;
 }
 
+.cf-container--consulta-form {
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.cf-container--consulta-form .cf-titulo,
+.cf-container--consulta-form .cf-subtitulo {
+  text-align: center;
+}
+
+.cf-container--consulta-form .cf-fila-3 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-gap: 24px;
+}
+
+.cf-container--consulta-form .cf-campo {
+  display: grid;
+  grid-template-columns: 140px minmax(0, 1fr);
+  align-items: center;
+  gap: 6px 12px;
+}
+
+.cf-container--consulta-form .cf-fila-3 .cf-campo:last-child {
+  grid-template-columns: max-content minmax(0, 1fr);
+}
+
+.cf-container--consulta-form .cf-campo > label,
+.cf-container--consulta-form .cf-adjunto-encabezado {
+  grid-column: 1;
+}
+
+.cf-container--consulta-form .cf-campo > input:not([type="checkbox"]),
+.cf-container--consulta-form .cf-campo > select,
+.cf-container--consulta-form .cf-campo > textarea,
+.cf-container--consulta-form .cf-campo > .cf-motivo-control,
+.cf-container--consulta-form .cf-campo > p,
+.cf-container--consulta-form .cf-campo > ul {
+  grid-column: 2;
+  min-width: 0;
+}
+
+.cf-container--consulta-form .cf-campo > .cf-detalle-insumos {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.cf-container--consulta-form .cf-detalle-insumos li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.cf-container--consulta-form .cf-adjunto-nombre {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cf-container--consulta-form .cf-detalle-insumos .cf-btn-cancelar {
+  flex: 0 0 auto;
+  margin-left: auto;
+}
+
+.cf-container--consulta-form input[type="date"] {
+  color-scheme: light;
+}
+
+.cf-container--consulta-form input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: brightness(0);
+  opacity: 1;
+  cursor: pointer;
+}
+
+.cf-container--consulta-form .cf-vacuna-bloque {
+  grid-column: 1 / -1;
+}
+
 /* Detalle de consulta */
 .cf-detalle {
   display: grid;
@@ -488,5 +571,10 @@
   .cf-fila-3,
   .cf-detalle {
     grid-template-columns: 1fr;
+  }
+
+  .cf-container--consulta-form .cf-campo {
+    grid-template-columns: 100px minmax(0, 1fr);
+    column-gap: 8px;
   }
 }

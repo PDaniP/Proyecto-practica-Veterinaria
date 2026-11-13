@@ -225,8 +225,8 @@ const filtrarProductoPorID = async (id_producto) => {
 
 const obtenerListaVentas = () => {
     return db.query(
-        // AGREGADO: se suma v.id_cliente al SELECT (antes no venía) para poder filtrar las ventas de cada cliente en el frontend (historial de compra)
-        `SELECT v.id, v.id_cliente, v.fecha_venta, v.total, c.nombre AS cliente_nombre, u.nombre AS usuario_nombre, metodo_pago
+        // Se incluyen los datos del cliente para mostrar su nombre completo en el detalle de ventas.
+        `SELECT v.id, v.id_cliente, v.fecha_venta, v.total, c.nombre AS cliente_nombre, c.apellido AS cliente_apellido, u.nombre AS usuario_nombre, metodo_pago
         FROM ventas v
         JOIN clientes c ON v.id_cliente = c.id
         JOIN usuarios u ON v.id_usuario = u.id

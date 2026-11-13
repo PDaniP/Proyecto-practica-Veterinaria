@@ -155,12 +155,9 @@ export default function EstudiosConsulta({
   };
 
   return (
-    <section className="estudios-consulta cf-campo" aria-label="Estudios médicos">
+    <section className="estudios-consulta cf-campo" aria-label="Estudios adjuntos">
       <div className="cf-adjunto-encabezado">
-        <label htmlFor="consulta-estudios-existentes">Adjuntar estudio</label>
-        <p className="cf-ayuda">
-          PDF, JPG, PNG o WEBP; hasta 50 MB por archivo.
-        </p>
+        <h3>Estudios adjuntos</h3>
       </div>
       {permitirAdjuntar && (
         <input

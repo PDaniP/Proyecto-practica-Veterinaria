@@ -292,25 +292,29 @@ export default function Ventas() {
         <h2>Historial de ventas:</h2>
 
         <div className="fecha-filtro">
-          <label className="fecha-label">Desde</label>
+          <label className="fecha-label fecha-label--desde" htmlFor="ventas-fecha-desde">
+            Desde
+          </label>
           <input
+            id="ventas-fecha-desde"
             type="date"
-            className="search-input"
+            className="search-input fecha-input fecha-input--desde"
             value={fechaDesde}
             onChange={(e) => setFechaDesde(e.target.value)}
           />
-          <label className="fecha-label">Hasta</label>
-          <div className="fecha-hasta-group">
-            <input
-              type="date"
-              className="search-input"
-              value={fechaHasta}
-              onChange={(e) => setFechaHasta(e.target.value)}
-            />
-            <button type="button" className="btn-reset" onClick={resetFechas}>
-              Limpiar
-            </button>
-          </div>
+          <label className="fecha-label fecha-label--hasta" htmlFor="ventas-fecha-hasta">
+            Hasta
+          </label>
+          <input
+            id="ventas-fecha-hasta"
+            type="date"
+            className="search-input fecha-input fecha-input--hasta"
+            value={fechaHasta}
+            onChange={(e) => setFechaHasta(e.target.value)}
+          />
+          <button type="button" className="btn-reset" onClick={resetFechas}>
+            Limpiar
+          </button>
         </div>
       </div>
 
@@ -425,7 +429,14 @@ export default function Ventas() {
         </h2>
         <h2 className="detalle-titulo">
           Cliente:{" "}
-          {`${ventaSeleccionada?.cliente_nombre || "Cliente"} ${ventaSeleccionada?.cliente_apellido || "general"}`.trim()}
+          {Number(ventaSeleccionada?.id_cliente) === 1
+            ? "Cliente general"
+            : [
+                ventaSeleccionada?.cliente_nombre,
+                ventaSeleccionada?.cliente_apellido,
+              ]
+                .filter(Boolean)
+                .join(" ") || "Cliente"}
         </h2>
 
         {loadingDetalle ? (

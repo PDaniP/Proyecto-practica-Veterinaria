@@ -29,6 +29,18 @@ const obtenerFechaActual = () => {
   ].join("-");
 };
 
+const obtenerFechaHace30Dias = (fechaISO) => {
+  const [anio, mes, dia] = fechaISO.split("-").map(Number);
+  const fecha = new Date(anio, mes - 1, dia);
+  fecha.setDate(fecha.getDate() - 30);
+
+  return [
+    fecha.getFullYear(),
+    String(fecha.getMonth() + 1).padStart(2, "0"),
+    String(fecha.getDate()).padStart(2, "0"),
+  ].join("-");
+};
+
 const formatearMoneda = (valor) =>
   `$${Number(valor).toLocaleString("es-AR", { maximumFractionDigits: 2 })}`;
 
@@ -40,8 +52,10 @@ const formatearDia = (fechaISO) =>
   });
 
 export default function ReportesVentas() {
-  const [fechaDesde, setFechaDesde] = useState(obtenerFechaActual);
   const [fechaHasta, setFechaHasta] = useState(obtenerFechaActual);
+  const [fechaDesde, setFechaDesde] = useState(() =>
+    obtenerFechaHace30Dias(fechaHasta),
+  );
   const [reporte, setReporte] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -124,8 +138,9 @@ export default function ReportesVentas() {
     resumen.total > 0 ? `${((monto / resumen.total) * 100).toFixed(1)}%` : "0%";
 
   const hoy = () => {
-    setFechaDesde(obtenerFechaActual());
-    setFechaHasta(obtenerFechaActual());
+    const hoy = obtenerFechaActual();
+    setFechaDesde(obtenerFechaHace30Dias(hoy));
+    setFechaHasta(hoy);
   };
 
   const renderContenido = () => {
@@ -173,8 +188,8 @@ export default function ReportesVentas() {
               <thead>
                 <tr>
                   <th>Forma de pago</th>
-                  <th className="rep-num">Ventas</th>
-                  <th className="rep-num">Total</th>
+                  <th className="rep-num rep-num--centrado">Ventas</th>
+                  <th className="rep-num rep-num--centrado">Total</th>
                   <th className="rep-num">% del total</th>
                 </tr>
               </thead>
@@ -185,8 +200,10 @@ export default function ReportesVentas() {
                     <td>
                       <span className={`badge ${badge}`}>{label}</span>
                     </td>
-                    <td className="rep-num">{resumen.porPago[clave].cantidad}</td>
-                    <td className="rep-num">
+                    <td className="rep-num rep-num--centrado">
+                      {resumen.porPago[clave].cantidad}
+                    </td>
+                    <td className="rep-num rep-num--centrado">
                       {formatearMoneda(resumen.porPago[clave].total)}
                     </td>
                     <td className="rep-num">
@@ -207,10 +224,10 @@ export default function ReportesVentas() {
               <thead>
                 <tr>
                   <th>Fecha</th>
-                  <th className="rep-num">Ventas</th>
-                  <th className="rep-num">Efectivo</th>
-                  <th className="rep-num">Tarjeta</th>
-                  <th className="rep-num">Transferencia</th>
+                  <th className="rep-num rep-num--centrado">Ventas</th>
+                  <th className="rep-num rep-num--centrado">Efectivo</th>
+                  <th className="rep-num rep-num--centrado">Tarjeta</th>
+                  <th className="rep-num rep-num--centrado">Transferencia</th>
                   <th className="rep-num">Total</th>
                 </tr>
               </thead>
@@ -219,10 +236,16 @@ export default function ReportesVentas() {
                 {reporte.map((fila) => (
                   <tr key={fila.fecha}>
                     <td>{formatearDia(fila.fecha)}</td>
-                    <td className="rep-num">{Number(fila.total_ventas)}</td>
-                    <td className="rep-num">{formatearMoneda(fila.efectivo)}</td>
-                    <td className="rep-num">{formatearMoneda(fila.tarjeta)}</td>
-                    <td className="rep-num">
+                    <td className="rep-num rep-num--centrado">
+                      {Number(fila.total_ventas)}
+                    </td>
+                    <td className="rep-num rep-num--centrado">
+                      {formatearMoneda(fila.efectivo)}
+                    </td>
+                    <td className="rep-num rep-num--centrado">
+                      {formatearMoneda(fila.tarjeta)}
+                    </td>
+                    <td className="rep-num rep-num--centrado">
                       {formatearMoneda(fila.transferencia)}
                     </td>
                     <td className="rep-num rep-total">
@@ -244,33 +267,27 @@ export default function ReportesVentas() {
         <h1>Reportes de ventas</h1>
       </div>
 
-      <div className="rep-filtros">
-        <div className="rep-filtro-grupo">
-          <label className="rep-label" htmlFor="rep-desde">
-            Desde
-          </label>
-          <input
-            id="rep-desde"
-            type="date"
-            className="search-input"
-            value={fechaDesde}
-            onChange={(e) => setFechaDesde(e.target.value)}
-          />
-        </div>
-
-        <div className="rep-filtro-grupo">
-          <label className="rep-label" htmlFor="rep-hasta">
-            Hasta
-          </label>
-          <input
-            id="rep-hasta"
-            type="date"
-            className="search-input"
-            value={fechaHasta}
-            onChange={(e) => setFechaHasta(e.target.value)}
-          />
-        </div>
-
+      <div className="fecha-filtro rep-filtros">
+        <label className="fecha-label fecha-label--desde" htmlFor="rep-desde">
+          Desde
+        </label>
+        <input
+          id="rep-desde"
+          type="date"
+          className="search-input fecha-input fecha-input--desde"
+          value={fechaDesde}
+          onChange={(e) => setFechaDesde(e.target.value)}
+        />
+        <label className="fecha-label fecha-label--hasta" htmlFor="rep-hasta">
+          Hasta
+        </label>
+        <input
+          id="rep-hasta"
+          type="date"
+          className="search-input fecha-input fecha-input--hasta"
+          value={fechaHasta}
+          onChange={(e) => setFechaHasta(e.target.value)}
+        />
         <button type="button" className="btn-reset" onClick={hoy}>
           Hoy
         </button>

@@ -1,9 +1,14 @@
+.modal:has(.nueva-venta) {
+  overflow-y: auto;
+}
+
 .nueva-venta .card {
   box-sizing: border-box;
   width: 100%;
   max-width: 720px;
-  max-height: calc(100vh - 180px);
-  overflow-y: auto;
+  max-height: none;
+  overflow: visible;
+  margin: 0 auto;
   padding: 36px 32px;
   border-radius: 16px;
   background: #fff;
@@ -253,7 +258,7 @@
   display: flex;
   width: fit-content;
   max-width: 100%;
-  margin: 16px 0 0;
+  margin: 16px 0 0 auto;
   padding: 14px 16px;
   border: 1px solid #e5e7eb;
   border-radius: 10px;
@@ -269,6 +274,7 @@
 
 .nueva-venta .actions {
   display: flex;
+  justify-content: flex-end;
   flex-wrap: wrap;
   gap: 10px;
   margin-top: 8px;
@@ -303,9 +309,44 @@
   color: #111;
 }
 
+.nueva-venta .actions .btn:not(.btn-secondary) {
+  min-width: 140px;
+  min-height: 42px;
+  padding: 0 20px;
+  border: 0;
+  border-radius: 8px;
+  background: var(--vet-purple);
+  box-shadow: 0 2px 8px rgba(125, 31, 153, 0.25);
+  font-size: 0.92rem;
+  font-weight: 600;
+  transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+}
+
+.nueva-venta .actions .btn:not(.btn-secondary):hover:not(:disabled) {
+  background: var(--vet-purple-light);
+  box-shadow: 0 4px 14px rgba(125, 31, 153, 0.3);
+}
+
+.nueva-venta .actions .btn-secondary {
+  min-width: 140px;
+  min-height: 42px;
+  padding: 0 20px;
+  border: 1px solid var(--vet-purple);
+  border-radius: 8px;
+  background: #fff;
+  color: var(--vet-purple);
+  font-size: 0.92rem;
+  font-weight: 600;
+}
+
+.nueva-venta .actions .btn-secondary:hover:not(:disabled) {
+  border-color: var(--vet-purple-light);
+  background: var(--vet-purple-bg);
+  color: var(--vet-purple);
+}
+
 @media (max-width: 640px) {
   .nueva-venta .card {
-    max-height: calc(100vh - 120px);
     padding: 24px 18px;
   }
 
@@ -328,11 +369,12 @@
 
   .nueva-venta .actions {
     flex-direction: column;
+    align-items: flex-end;
   }
 
   .nueva-venta .actions .btn {
-    width: 100%;
-    max-width: none;
+    width: auto;
+    max-width: 180px;
   }
 
   .nueva-venta .field {

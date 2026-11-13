@@ -6,12 +6,19 @@ import { normalizarTexto } from "../utils/normalizarTexto.js";
 const formatearFecha = (fecha) => {
   if (!fecha) return "-";
 
-  const [fechaParte] = String(fecha).split("T");
-  const [anio, mes, dia] = fechaParte.split("-");
+  const fechaParte =
+    fecha instanceof Date
+      ? [
+          fecha.getFullYear(),
+          String(fecha.getMonth() + 1).padStart(2, "0"),
+          String(fecha.getDate()).padStart(2, "0"),
+        ].join("-")
+      : String(fecha).trim().split(/[T\s]/)[0];
+  const componentes = /^(\d{4})-(\d{2})-(\d{2})$/.exec(fechaParte);
 
-  if (!anio || !mes || !dia) return "-";
+  if (!componentes) return "-";
 
-  return `${dia}/${mes}/${anio}`;
+  return `${componentes[3]}/${componentes[2]}/${componentes[1]}`;
 };
 
 export default function DetalleMascota({
@@ -268,7 +275,7 @@ export default function DetalleMascota({
               className="btn-primary"
               disabled={guardando || cargandoClientes}
             >
-              {guardando ? "Guardando..." : "Guardar cambios"}
+              {guardando ? "Guardando..." : "Guardar"}
             </button>
           </div>
         </form>

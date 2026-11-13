@@ -5,8 +5,20 @@ import EstudiosConsulta from "./EstudiosConsulta.jsx";
 
 const formatearFecha = (fecha) => {
   if (!fecha) return "-";
-  const [anio, mes, dia] = String(fecha).split("T")[0].split("-");
-  return anio && mes && dia ? `${dia}/${mes}/${anio}` : "-";
+
+  const fechaSinHora =
+    fecha instanceof Date
+      ? [
+          fecha.getFullYear(),
+          String(fecha.getMonth() + 1).padStart(2, "0"),
+          String(fecha.getDate()).padStart(2, "0"),
+        ].join("-")
+      : String(fecha).trim().split(/[T\s]/)[0];
+  const componentes = /^(\d{4})-(\d{2})-(\d{2})$/.exec(fechaSinHora);
+
+  return componentes
+    ? `${componentes[3]}/${componentes[2]}/${componentes[1]}`
+    : "-";
 };
 
 export default function DetalleConsulta({ idConsulta, onClose }) {

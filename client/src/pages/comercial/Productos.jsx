@@ -207,7 +207,7 @@ export default function Productos() {
           <p className="productos-empty">No se encontraron productos.</p>
         ) : (
           <div className="tabla-wrapper">
-            <table className="productos-tabla">
+            <table className="productos-tabla productos-tabla--productos">
               <thead>
                 <tr>
                   <th>Nombre</th>
@@ -261,7 +261,7 @@ export default function Productos() {
           <p className="productos-empty">No se encontraron lotes.</p>
         ) : (
           <div className="tabla-wrapper">
-            <table className="productos-tabla">
+            <table className="productos-tabla productos-tabla--lotes">
               <thead>
                 <tr>
                   <th>Código lote</th>
@@ -281,7 +281,7 @@ export default function Productos() {
                     <td>{l.marca_producto}</td>
                     <td>{l.stock_inicial}</td>
                     <td>{badgeStock(l.stock_actual, 0)}</td>
-                    <td>{l.fecha_vencimiento}</td>
+                    <td>{String(l.fecha_vencimiento ?? "").split("T")[0]}</td>
                     <td>
                       <span
                         className={`badge ${l.activo ? "badge-ok" : "badge-danger"}`}

@@ -209,6 +209,114 @@
   vertical-align: middle;
 }
 
+.productos-tabla--productos {
+  min-width: 900px;
+  table-layout: fixed;
+}
+
+.productos-tabla--productos thead th:nth-child(1) {
+  width: 31%;
+}
+
+.productos-tabla--productos thead th:nth-child(2) {
+  width: 13%;
+}
+
+.productos-tabla--productos thead th:nth-child(3),
+.productos-tabla--productos thead th:nth-child(4) {
+  width: 9%;
+}
+
+.productos-tabla--productos thead th:nth-child(5),
+.productos-tabla--productos thead th:nth-child(6) {
+  width: 8%;
+}
+
+.productos-tabla--productos thead th:nth-child(7) {
+  width: 10%;
+}
+
+.productos-tabla--productos thead th:nth-child(8) {
+  width: 12%;
+}
+
+.productos-tabla--productos thead th:nth-child(3),
+.productos-tabla--productos thead th:nth-child(4),
+.productos-tabla--productos thead th:nth-child(5),
+.productos-tabla--productos thead th:nth-child(6) {
+  padding-right: 8px;
+  padding-left: 8px;
+  font-size: 0.72rem;
+  text-align: center;
+}
+
+.productos-tabla--productos tbody td:nth-child(1) {
+  overflow-wrap: anywhere;
+}
+
+.productos-tabla--productos tbody td:nth-child(3),
+.productos-tabla--productos tbody td:nth-child(4),
+.productos-tabla--productos tbody td:nth-child(5),
+.productos-tabla--productos tbody td:nth-child(6) {
+  text-align: center;
+}
+
+.productos-tabla--productos tbody td:nth-child(7),
+.productos-tabla--productos tbody td:nth-child(8) {
+  padding: 8px;
+}
+
+.productos-tabla--productos .btn-editar {
+  padding-right: 8px;
+  padding-left: 8px;
+}
+
+.productos-tabla--lotes {
+  table-layout: fixed;
+}
+
+.productos-tabla--lotes thead th:nth-child(1) {
+  width: 15%;
+}
+
+.productos-tabla--lotes thead th:nth-child(2) {
+  width: 33%;
+}
+
+.productos-tabla--lotes thead th:nth-child(3) {
+  width: 9%;
+}
+
+.productos-tabla--lotes thead th:nth-child(4),
+.productos-tabla--lotes thead th:nth-child(5) {
+  width: 10%;
+}
+
+.productos-tabla--lotes thead th:nth-child(6) {
+  width: 13%;
+}
+
+.productos-tabla--lotes thead th:nth-child(7) {
+  width: 10%;
+}
+
+.productos-tabla--lotes thead th:nth-child(4),
+.productos-tabla--lotes thead th:nth-child(5) {
+  padding-right: 8px;
+  padding-left: 8px;
+  font-size: 0.72rem;
+  text-align: center;
+}
+
+.productos-tabla--lotes tbody td:nth-child(2) {
+  overflow-wrap: anywhere;
+}
+
+.productos-tabla--lotes tbody td:nth-child(4),
+.productos-tabla--lotes tbody td:nth-child(5) {
+  text-align: center;
+}
+
 .btn-editar {
   font-size: 0.83rem;
   font-weight: 600;

@@ -39,51 +39,81 @@
 }
 
 .mascota-edicion {
-  display: grid;
-  gap: 16px;
+  box-sizing: border-box;
+  display: flex;
+  width: 100%;
+  max-width: 720px;
+  flex-direction: column;
+  gap: 5px;
+  margin: 0 auto;
+  padding: 24px 32px 36px;
+  border-radius: 16px;
+  background: #fff;
   color: var(--text);
 }
 
+.modal:has(.mascota-edicion) {
+  overflow-y: auto;
+}
+
+.modal:has(.mascota-edicion) .modal__content {
+  padding-top: 10px;
+}
+
 .mascota-edicion h2 {
-  margin: 0;
-  color: var(--vet-purple);
+  margin: 0 0 12px;
+  color: #111;
+  font-size: 40px;
+  font-weight: 500;
+  text-align: center;
 }
 
 .mascota-edicion__field {
   position: relative;
   display: grid;
-  gap: 7px;
+  grid-template-columns: minmax(140px, 0.35fr) minmax(0, 1fr);
+  align-items: center;
+  gap: 6px 12px;
+  margin-bottom: 10px;
 }
 
 .mascota-edicion__field > label {
-  color: var(--text);
-  font-size: 0.9rem;
-  font-weight: 600;
+  color: #374151;
+  font-size: 12px;
+  font-weight: 500;
 }
 
 .mascota-edicion__field input:not([type="checkbox"]),
 .mascota-edicion__field textarea,
 .mascota-edicion__field select {
   width: 100%;
-  min-height: 42px;
   box-sizing: border-box;
-  padding: 9px 12px;
-  border: 1.5px solid var(--vet-purple-border);
-  border-radius: var(--radius-sm);
-  background: #fff;
-  color: var(--text);
-  font: inherit;
+  min-width: 0;
+  padding: 10px 12px;
+  color: #111;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  background: #f9fafb;
+  font-size: 13px;
+  font-family: inherit;
 }
 
 .mascota-edicion__field textarea {
+  min-height: 81px;
   resize: vertical;
+}
+
+.mascota-edicion__field > p {
+  grid-column: 2;
+  margin: 0;
 }
 
 .mascota-edicion__field input:focus,
 .mascota-edicion__field textarea:focus,
 .mascota-edicion__field select:focus {
-  border-color: var(--vet-purple);
-  outline: 3px solid rgba(125, 31, 153, 0.12);
+  outline: none;
+  border-color: #8b5cf6;
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.16);
 }
 
 .mascota-edicion__field input:disabled {
@@ -93,18 +123,21 @@
 }
 
 .mascota-edicion__checkbox {
-  display: flex;
-  align-items: center;
-  gap: 9px;
+  grid-template-columns: minmax(140px, 0.35fr) minmax(0, 1fr);
 }
 
 .mascota-edicion__checkbox input {
+  grid-column: 2;
+  grid-row: 1;
   width: 17px;
   height: 17px;
   accent-color: var(--vet-purple);
+  justify-self: start;
 }
 
 .mascota-edicion__checkbox > label {
+  grid-column: 1;
+  grid-row: 1;
   cursor: pointer;
 }
 
@@ -158,26 +191,47 @@
   display: flex;
   justify-content: flex-end;
   gap: 10px;
-  padding-top: 4px;
+  margin-top: 4px;
 }
 
 .mascota-edicion__actions .btn-primary {
+  box-sizing: border-box;
+  width: 140px;
+  min-width: 140px;
+  height: 42px;
+  padding: 0 20px;
   margin: 0;
+  border: none;
+  border-radius: 8px;
+  background: var(--vet-purple);
+  color: #fff;
+  font-size: 0.92rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+  box-shadow: 0 2px 8px rgba(125, 31, 153, 0.25);
+}
+
+.mascota-edicion__actions .btn-primary:hover:not(:disabled) {
+  background: var(--vet-purple-light);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(125, 31, 153, 0.3);
 }
 
 .mascota-edicion__actions button {
-  min-height: 40px;
+  min-height: 42px;
 }
 
 .mascota-edicion__cancel {
-  padding: 0 16px;
-  border: 1px solid var(--vet-purple-border);
+  padding: 0 20px;
+  border: 1px solid var(--vet-purple);
   border-radius: 8px;
   background: #fff;
   color: var(--vet-purple);
-  font: inherit;
+  font-size: 0.92rem;
   font-weight: 600;
   cursor: pointer;
+  transition: background 0.2s, color 0.2s;
 }
 
 .mascota-edicion__cancel:hover:not(:disabled) {
@@ -194,8 +248,26 @@
     grid-template-columns: 1fr;
   }
 
+  .mascota-edicion {
+    padding: 18px 18px 24px;
+  }
+
+  .mascota-edicion h2 {
+    font-size: 32px;
+  }
+
+  .mascota-edicion__field,
+  .mascota-edicion__checkbox {
+    grid-template-columns: minmax(100px, 0.4fr) minmax(0, 1fr);
+    column-gap: 8px;
+  }
+
   .mascota-edicion__actions {
     flex-direction: column-reverse;
+  }
+
+  .mascota-edicion__actions .btn-primary {
+    width: 100%;
   }
 }
 

@@ -6,7 +6,7 @@ import useSystemFeedback from "../hooks/useSystemFeedback.js";
 // const API_URL = 'http://localhost:3000/clientes'
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
-export default function FormularioClientes({ clienteInicial, onClose }) {
+export default function FormularioClientes({ clienteInicial, onClose, onEliminar }) {
   const { mostrarAlerta } = useSystemFeedback();
   const esEdicion = Boolean(clienteInicial)
 
@@ -122,10 +122,11 @@ export default function FormularioClientes({ clienteInicial, onClose }) {
   }, [])
 
   return (
-    <div className="card">
-      <h2 className="card-title">{esEdicion ? 'Editar Cliente' : 'Registrar Cliente'}</h2>
+    <div className="formulario-clientes">
+      <div className="card formulario-clientes-card">
+        <h2 className="card-title">{esEdicion ? 'Editar Cliente' : 'Registrar Cliente'}</h2>
 
-      <form onSubmit={handleSubmit}>
+      <form className="formulario-clientes-form" onSubmit={handleSubmit}>
         <div className="field">
           <label htmlFor="nombre">
             Nombre <span className="obligatorio">*</span>
@@ -254,71 +255,107 @@ export default function FormularioClientes({ clienteInicial, onClose }) {
         </div>
 
         {/* NUEVO CAMPO: Checkbox de notificaciones */}
-        <div className="field checkbox-field">
-          <label htmlFor="recibe_notificaciones" className="checkbox-label">
-            <input
-              id="recibe_notificaciones"
-              type="checkbox"
-              name="recibe_notificaciones"
-              checked={cliente.recibe_notificaciones}
-              onChange={handleChange}
-            />
-            Desea recibir notificaciones por WhatsApp
-          </label>
-        </div>
+        <div className="formulario-clientes__preferencias-acciones">
+          <div className="field checkbox-field">
+            <label htmlFor="recibe_notificaciones" className="checkbox-label">
+              <input
+                id="recibe_notificaciones"
+                type="checkbox"
+                name="recibe_notificaciones"
+                checked={cliente.recibe_notificaciones}
+                onChange={handleChange}
+              />
+              Desea recibir notificaciones por WhatsApp
+            </label>
+          </div>
 
-        <button className="btn" type="submit" disabled={enviando}>
-          {enviando ? 'Guardando...' : esEdicion ? 'Guardar cambios' : 'Guardar'}
-        </button>
+          <div className="formulario-clientes__acciones">
+            <button
+              className="producto-form__guardar"
+              type="submit"
+              disabled={enviando}
+            >
+              {enviando ? 'Guardando...' : 'Guardar'}
+            </button>
+            {esEdicion && onEliminar && (
+              <button
+                className="formulario-clientes__eliminar"
+                type="button"
+                onClick={onEliminar}
+              >
+                Eliminar
+              </button>
+            )}
+          </div>
+        </div>
       </form>
+      </div>
     </div>
   )
 }
 
 const formStyles = `
-.card {
+.modal:has(.formulario-clientes) {
+  overflow-y: auto;
+}
+
+.modal:has(.formulario-clientes) .modal__content {
+  padding-top: 4px;
+}
+
+.formulario-clientes .formulario-clientes-card {
+  box-sizing: border-box;
   background: #fff;
   border-radius: 16px;
-  padding: 36px 32px;
+  padding: 18px 32px 36px;
   width: 100%;
   max-width: 720px;
-  max-height: calc(100vh - 180px);
-  overflow-y: auto;
+  max-height: none;
+  overflow: visible;
+  margin: 0 auto;
   -webkit-overflow-scrolling: touch;
   box-shadow: 0 0 40px rgba(255, 255, 255, 0.35);
 }
 
-.card-title {
+.formulario-clientes .card-title {
   font-size: 40px;
   font-weight: 500;
   color: #111;
   text-align: center;
-  margin: 0 0 4px;
+  margin: 0 0 16px;
 }
 
-.field {
+.formulario-clientes-form {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+}
+
+.formulario-clientes .field {
+  display: grid;
+  grid-template-columns: minmax(125px, 0.3fr) minmax(0, 1fr);
+  align-items: center;
+  gap: 6px 12px;
   margin-bottom: 14px;
 }
 
-.field label {
+.formulario-clientes .field > label {
   font-size: 12px;
   font-weight: 500;
   color: #374151;
 }
 
-.obligatorio {
+.formulario-clientes .obligatorio {
   color: #dc2626;
   font-weight: 700;
 }
 
-.field input,
-.field select,
-.field textarea {
+.formulario-clientes .field input:not([type="checkbox"]),
+.formulario-clientes .field select,
+.formulario-clientes .field textarea {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
   color: #111;
-  flex: 1;
   border-radius: 8px;
   border: 1px solid #e5e7eb;
   background: #f9fafb;
@@ -326,15 +363,19 @@ const formStyles = `
   font-size: 13px;
 }
 
-/* Estilos específicos para que el checkbox quede alineado */
-.checkbox-field {
-  flex-direction: row;
-  align-items: center;
-  margin-top: 10px;
-  margin-bottom: 20px;
+.formulario-clientes .field .error {
+  grid-column: 2;
 }
 
-.checkbox-label {
+.formulario-clientes__preferencias-acciones {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 8px;
+}
+
+.formulario-clientes .checkbox-label {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -342,7 +383,18 @@ const formStyles = `
   font-size: 14px !important;
 }
 
-.checkbox-field input[type="checkbox"] {
+.formulario-clientes .checkbox-field {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+}
+
+.formulario-clientes__preferencias-acciones .checkbox-label {
+  grid-column: auto;
+}
+
+.formulario-clientes .checkbox-field input[type="checkbox"] {
   flex: none; /* Para que el checkbox no intente ocupar todo el ancho */
   width: 16px;
   height: 16px;
@@ -350,13 +402,13 @@ const formStyles = `
   margin: 0;
 }
 
-.field .hint {
+.formulario-clientes .field .hint {
   font-size: 11px;
   color: #6b7280;
   margin: 2px 0 0;
 }
 
-.error {
+.formulario-clientes .error {
   background: #fef2f2;
   border: 1px solid #fecaca;
   color: #b91c1c;
@@ -366,18 +418,109 @@ const formStyles = `
   margin-top: 4px;
 }
 
-.btn {
-  width: 100%;
-  height: 42px;
-  background: #534ab7;
-  color: #fff;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
+.formulario-clientes__acciones {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 8px;
+  flex: 0 0 auto;
 }
 
-.btn:disabled {
-  opacity: 0.7;
+.formulario-clientes__eliminar {
+  box-sizing: border-box;
+  width: 140px;
+  min-width: 140px;
+  height: 42px;
+  min-height: 42px;
+  margin: 0;
+  padding: 0 12px;
+  border: 1.5px solid var(--danger, #a32d2d);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--danger, #a32d2d);
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s, transform 0.15s;
+}
+
+.formulario-clientes__eliminar:hover {
+  transform: translateY(-1px);
+  background: var(--danger, #a32d2d);
+  color: #fff;
+}
+
+.formulario-clientes .producto-form__guardar {
+  box-sizing: border-box;
+  width: 140px;
+  min-width: 140px;
+  height: 42px;
+  min-height: 42px;
+  padding: 0 20px;
+  border: 0;
+  border-radius: 8px;
+  background: var(--vet-purple, #7d1f99);
+  color: #fff;
+  font-size: 0.92rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+  box-shadow: 0 2px 8px rgba(125, 31, 153, 0.25);
+}
+
+.formulario-clientes .producto-form__guardar:hover:not(:disabled) {
+  background: var(--vet-purple-light, #9b3db8);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(125, 31, 153, 0.3);
+}
+
+.formulario-clientes .producto-form__guardar:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.formulario-clientes .producto-form__guardar:disabled {
+  opacity: 0.6;
   cursor: not-allowed;
+}
+
+@media (max-width: 640px) {
+  .formulario-clientes .formulario-clientes-card {
+    padding: 16px 18px 24px;
+  }
+
+  .formulario-clientes .card-title {
+    font-size: 30px;
+  }
+
+  .formulario-clientes .field {
+    grid-template-columns: minmax(105px, 0.45fr) minmax(0, 1fr);
+    column-gap: 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  .formulario-clientes__preferencias-acciones {
+    flex-wrap: wrap;
+  }
+
+  .formulario-clientes .checkbox-field {
+    flex-basis: 100%;
+  }
+
+  .formulario-clientes__acciones {
+    width: 100%;
+  }
+
+  .formulario-clientes__acciones > button {
+    min-width: 0;
+    flex: 1;
+    padding-right: 8px;
+    padding-left: 8px;
+    font-size: 0.78rem;
+  }
+
+  .formulario-clientes .formulario-clientes__acciones > .producto-form__guardar {
+    min-width: 0;
+  }
 }
 `
