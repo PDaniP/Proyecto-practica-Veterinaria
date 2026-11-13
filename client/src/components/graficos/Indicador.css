@@ -1,16 +1,16 @@
 .indicador-container {
   width: 100%;
-  padding: 20px 24px;
-  background: linear-gradient(135deg, #f7f0fa 0%, #fff 100%);
-  border: 1.5px solid #e0c8ea;
-  border-radius: 10px;
+  padding: 16px 18px;
+  border: 1px solid #dce8e2;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #edf6f2 0%, #fff 78%);
   box-sizing: border-box;
-  transition: all 0.3s ease;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .indicador-container:hover {
-  border-color: #d4b9e8;
-  box-shadow: 0 4px 12px rgba(125, 31, 153, 0.08);
+  border-color: #b7d5c8;
+  box-shadow: 0 7px 18px rgba(27, 62, 53, 0.08);
 }
 
 .indicador-contenido {
@@ -20,20 +20,21 @@
 }
 
 .indicador-label {
-  font-size: 0.85rem;
+  color: #27776a;
+  font-size: 0.74rem;
   font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.04em;
-  color: #7d1f99;
+  letter-spacing: 0.07em;
   margin: 0;
 }
 
 .indicador-valor {
   font-size: 2rem;
   font-weight: 700;
-  color: #1a1a2e;
+  color: #1f3530;
   margin: 0;
   line-height: 1.2;
+  letter-spacing: -0.04em;
 }
 
 .indicador-valor-pequeño {
@@ -42,7 +43,7 @@
 
 .indicador-subtexto {
   font-size: 0.88rem;
-  color: #6b6b80;
+  color: #71817a;
   margin: 0;
   margin-top: 4px;
 }
@@ -54,10 +55,10 @@
   width: 36px;
   height: 36px;
   margin-right: 12px;
-  background: rgba(125, 31, 153, 0.1);
-  border-radius: 8px;
-  color: #7d1f99;
-  font-size: 1.2rem;
+  background: #e3f1ea;
+  border-radius: 9px;
+  color: #27776a;
+  font-size: 1.1rem;
 }
 
 .indicador-con-icono {
@@ -71,45 +72,45 @@
 }
 
 .indicador-positivo {
-  border-color: #bbf7d0;
-  background: linear-gradient(135deg, #f0fdf4 0%, #fff 100%);
+  border-color: #b9ddc9;
+  background: linear-gradient(135deg, #eff9f2 0%, #fff 100%);
 }
 
 .indicador-positivo .indicador-label {
-  color: #166534;
+  color: #287149;
 }
 
 .indicador-positivo .indicador-icono {
-  background: rgba(22, 101, 52, 0.1);
-  color: #166534;
+  background: #e4f3e8;
+  color: #287149;
 }
 
 .indicador-negativo {
-  border-color: #f3c5c5;
-  background: linear-gradient(135deg, #fdf0f0 0%, #fff 100%);
+  border-color: #f0d0c8;
+  background: linear-gradient(135deg, #fff6f3 0%, #fff 100%);
 }
 
 .indicador-negativo .indicador-label {
-  color: #991b1b;
+  color: #a23d32;
 }
 
 .indicador-negativo .indicador-icono {
-  background: rgba(153, 27, 27, 0.1);
-  color: #991b1b;
+  background: #fde9e3;
+  color: #a23d32;
 }
 
 .indicador-neutro {
-  border-color: #e5e7eb;
-  background: linear-gradient(135deg, #f9fafb 0%, #fff 100%);
+  border-color: #dfe7e3;
+  background: linear-gradient(135deg, #f4f7f5 0%, #fff 100%);
 }
 
 .indicador-neutro .indicador-label {
-  color: #6b7280;
+  color: #687871;
 }
 
 .indicador-neutro .indicador-icono {
-  background: rgba(107, 114, 128, 0.1);
-  color: #6b7280;
+  background: #e9efeb;
+  color: #687871;
 }
 
 @media (max-width: 768px) {

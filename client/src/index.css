@@ -46,8 +46,15 @@
   }
 }
 
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
 html,
 body {
+  width: 100%;
   margin: 0;
   padding: 0;
   height: 100%;
@@ -56,8 +63,8 @@ body {
 }
 
 #root {
-  width: 1126px;
-  max-width: 100%;
+  width: 100%;
+  max-width: none;
   margin: 0 auto;
   text-align: center;
   min-height: 100svh;
@@ -93,5 +100,12 @@ h2 {
 }
 p {
   margin: 0;
+}
+
+img,
+svg,
+video,
+canvas {
+  max-width: 100%;
 }
 

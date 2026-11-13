@@ -165,8 +165,39 @@
     align-items: flex-start;
   }
 
+  .ventas-toolbar h2 {
+    font-size: 1.35rem;
+  }
+
   .fecha-filtro {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
     width: 100%;
+    min-width: 0;
+    gap: 8px;
+  }
+
+  .fecha-label {
+    font-size: 1rem;
+  }
+
+  .fecha-filtro .search-input {
+    min-width: 0;
+  }
+
+  .fecha-hasta-group {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .fecha-hasta-group .search-input {
+    min-width: 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .ventas-resumen {
+    grid-template-columns: 1fr;
   }
 }
 .ventas-aviso-mock {

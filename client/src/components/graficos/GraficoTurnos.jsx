@@ -16,6 +16,8 @@ import {
 import api from '../../../config/api.js';
 import './GraficoTurnos.css';
 
+const COLORES_TURNOS = ['#176f65', '#daa15c', '#55879a', '#9d879e'];
+
 const formatearFecha = (fecha) => {
     const año = fecha.getFullYear();
     const mes = String(fecha.getMonth() + 1).padStart(2, '0');
@@ -26,25 +28,24 @@ const formatearFecha = (fecha) => {
 
 
 const GraficoTurnos = ({ data }) => {
-  const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"];
-
   return (
     <div className="grafico-turnos-grafico-item">
       <h3 className="grafico-turnos-grafico-titulo">Distribución de Turnos</h3>
       <div className="grafico-turnos-chart">
-        <PieChart width={400} height={400}>
+        <PieChart width={340} height={260} responsive={true}>
           <Pie
             data={data}
             dataKey="cantidad"
             nameKey="estado"
             cx="50%"
-            cy="50%"
-            outerRadius={100}
-            fill="#8884d8"
+            cy="46%"
+            innerRadius={36}
+            outerRadius={74}
+            fill="#176f65"
             label
           >
             {data.map((entry, index) => (
-              <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+              <Cell key={`cell-${index}`} fill={COLORES_TURNOS[index % COLORES_TURNOS.length]} />
             ))}
           </Pie>
           <Tooltip />
@@ -55,19 +56,17 @@ const GraficoTurnos = ({ data }) => {
   );
 };
 const GraficoProfesional = ({ data }) => {
-  const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"];
-
   return (
     <div className="grafico-turnos-grafico-item">
       <h3 className="grafico-turnos-grafico-titulo">Turnos por Profesional</h3>
       <div className="grafico-turnos-chart">
-        <BarChart width={400} height={400} data={data} layout='vertical'>
-          <CartesianGrid strokeDasharray="3 3" />
+        <BarChart width={420} height={260} responsive={true} data={data} layout='vertical'>
+          <CartesianGrid stroke="#e7efeb" strokeDasharray="3 3" />
           <XAxis type="number" />
           <YAxis type="category" dataKey="profesional" />
           <Tooltip />
           <Legend />
-          <Bar dataKey="turnos_asignados" fill="#8884d8" />
+          <Bar dataKey="turnos_asignados" fill="#176f65" radius={[0, 5, 5, 0]} />
         </BarChart>
       </div>
     </div>

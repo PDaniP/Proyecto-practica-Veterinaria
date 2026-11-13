@@ -1,99 +1,108 @@
 .graficos-ventas-container {
   width: 100%;
-  padding: 24px;
-  background: #f7f0fa;
-  border: 1.5px solid #e0c8ea;
-  border-radius: 10px;
+  min-width: 0;
+  padding: 12px;
+  border: 1px solid #e2ece7;
+  border-radius: 11px;
+  background: #f5f9f7;
   box-sizing: border-box;
 }
 
 .graficos-ventas-controles {
   display: flex;
-  gap: 12px;
-  margin-bottom: 24px;
+  gap: 8px;
+  margin-bottom: 14px;
   flex-wrap: wrap;
-  align-items: center;
+  align-items: stretch;
 }
 
 .graficos-ventas-boton {
-  padding: 10px 18px;
-  border: 1.5px solid #e0c8ea;
-  border-radius: 8px;
+  padding: 8px 15px;
+  border: 1px solid #d7e5de;
+  border-radius: 999px;
   background: #fff;
-  color: #7d1f99;
-  font-size: 0.95rem;
+  color: #27776a;
+  font: inherit;
+  font-size: 0.82rem;
   font-weight: 600;
   cursor: pointer;
-  transition: background 0.2s, border-color 0.2s, transform 0.15s;
+  transition: background 0.18s ease, border-color 0.18s ease, color 0.18s ease;
 }
 
 .graficos-ventas-boton:hover {
-  background: #7d1f99;
-  color: #fff;
-  border-color: #7d1f99;
-  transform: translateY(-1px);
+  border-color: #168477;
+  background: #edf6f2;
+  color: #14594f;
 }
 
 .graficos-ventas-boton.active {
-  background: #7d1f99;
+  border-color: #176f65;
+  background: #176f65;
   color: #fff;
-  border-color: #7d1f99;
+}
+
+.graficos-ventas-boton:focus-visible {
+  outline: 3px solid rgba(22, 132, 119, 0.18);
+  outline-offset: 2px;
 }
 
 .graficos-ventas-filtro {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 10px 14px;
+  padding: 6px 9px;
   background: #fff;
-  border: 1.5px solid #e0c8ea;
+  border: 1px solid #dfe9e4;
   border-radius: 8px;
 }
 
 .graficos-ventas-filtro label {
-  font-size: 0.9rem;
+  color: #52635b;
+  font-size: 0.78rem;
   font-weight: 600;
-  color: #1a1a2e;
   margin: 0;
   white-space: nowrap;
 }
 
 .graficos-ventas-filtro input {
-  padding: 6px 10px;
-  border: 1px solid #d4b9e8;
-  border-radius: 6px;
-  font-size: 0.9rem;
-  color: #1a1a2e;
-  background: #fff;
+  min-width: 125px;
+  padding: 6px 8px;
+  border: 1px solid #d9e5df;
+  border-radius: 7px;
+  background: #f8fbf9;
+  color: #344b43;
+  font: inherit;
+  font-size: 0.78rem;
 }
 
-.graficos-ventas-filtro input:focus {
-  outline: none;
-  border-color: #7d1f99;
-  box-shadow: 0 0 0 3px rgba(125, 31, 153, 0.1);
+.graficos-ventas-filtro input:focus-visible {
+  border-color: #168477;
+  outline: 3px solid rgba(22, 132, 119, 0.15);
+  outline-offset: 1px;
 }
 
 .graficos-ventas-graficos {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-  gap: 24px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
 }
 
 .graficos-ventas-grafico-item {
   display: flex;
+  min-width: 0;
   flex-direction: column;
   align-items: center;
-  gap: 12px;
-  padding: 16px;
+  gap: 8px;
+  padding: 10px;
   background: #fff;
-  border: 1px solid #e0c8ea;
-  border-radius: 8px;
+  border: 1px solid #e2ece7;
+  border-radius: 10px;
 }
 
 .graficos-ventas-grafico-titulo {
-  font-size: 1.1rem;
+  color: #344b43;
+  font-size: 0.88rem;
   font-weight: 700;
-  color: #7d1f99;
   margin: 0;
   text-align: center;
 }
@@ -102,41 +111,83 @@
   display: flex;
   justify-content: center;
   width: 100%;
+  min-width: 0;
   overflow-x: auto;
+  overscroll-behavior-x: contain;
+}
+
+.graficos-ventas-chart .recharts-wrapper {
+  max-width: 100%;
+}
+
+.graficos-ventas-chart .recharts-cartesian-axis-tick-value,
+.graficos-ventas-chart .recharts-legend-item-text {
+  fill: #596b63;
+  color: #596b63 !important;
+  font-size: 0.7rem;
+}
+
+.graficos-ventas-chart .recharts-cartesian-grid line {
+  stroke: #e7efeb;
+}
+
+.graficos-ventas-chart .recharts-tooltip-wrapper .recharts-default-tooltip {
+  border: 1px solid #dce8e2 !important;
+  border-radius: 8px;
+  box-shadow: 0 6px 18px rgba(27, 62, 53, 0.12);
 }
 
 .graficos-ventas-mensaje {
   text-align: center;
-  padding: 24px;
-  color: #6b6b80;
-  font-size: 0.95rem;
+  padding: 14px;
+  color: #71817a;
+  font-size: 0.84rem;
   background: #fff;
-  border: 1px solid #e0c8ea;
+  border: 1px dashed #cbdcd3;
   border-radius: 8px;
 }
 
 @media (max-width: 768px) {
-  .graficos-ventas-container {
-    padding: 16px;
-  }
-
   .graficos-ventas-controles {
-    gap: 8px;
+    gap: 7px;
   }
 
   .graficos-ventas-boton {
     flex: 1;
-    min-width: 80px;
-    padding: 8px 12px;
-    font-size: 0.85rem;
+    min-width: 70px;
+    padding: 8px 10px;
   }
 
   .graficos-ventas-filtro {
     flex: 1;
-    min-width: 150px;
+    min-width: min(100%, 210px);
+    justify-content: space-between;
   }
 
+  .graficos-ventas-filtro input {
+    min-width: 0;
+  }
+}
+
+@media (max-width: 600px) {
   .graficos-ventas-graficos {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 420px) {
+  .graficos-ventas-filtro {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .graficos-ventas-filtro input {
+    width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .graficos-ventas-boton {
+    transition: none;
   }
 }

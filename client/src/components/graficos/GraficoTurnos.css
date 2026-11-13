@@ -1,99 +1,139 @@
 .grafico-turnos-container {
   width: 100%;
-  padding: 24px;
-  background: #f7f0fa;
-  border: 1.5px solid #e0c8ea;
-  border-radius: 10px;
+  min-width: 0;
+  padding: 12px;
+  border: 1px solid #e2ece7;
+  border-radius: 11px;
+  background: #f5f9f7;
   box-sizing: border-box;
 }
 
 .grafico-turnos-filtros {
   display: flex;
-  gap: 16px;
-  margin-bottom: 24px;
+  gap: 10px;
+  margin-bottom: 14px;
   flex-wrap: wrap;
-  align-items: center;
+  align-items: stretch;
 }
 
 .grafico-turnos-filtro-grupo {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 10px 14px;
+  padding: 8px 10px;
   background: #fff;
-  border: 1.5px solid #e0c8ea;
+  border: 1px solid #dfe9e4;
   border-radius: 8px;
 }
 
 .grafico-turnos-filtro-grupo label {
-  font-size: 0.9rem;
+  color: #52635b;
+  font-size: 0.78rem;
   font-weight: 600;
-  color: #1a1a2e;
   margin: 0;
   white-space: nowrap;
 }
 
 .grafico-turnos-filtro-grupo input {
-  padding: 6px 10px;
-  border: 1px solid #d4b9e8;
-  border-radius: 6px;
-  font-size: 0.9rem;
-  color: #1a1a2e;
-  background: #fff;
+  min-width: 130px;
+  padding: 6px 8px;
+  border: 1px solid #d9e5df;
+  border-radius: 7px;
+  background: #f8fbf9;
+  color: #344b43;
+  font: inherit;
+  font-size: 0.78rem;
 }
 
-.grafico-turnos-filtro-grupo input:focus {
-  outline: none;
-  border-color: #7d1f99;
-  box-shadow: 0 0 0 3px rgba(125, 31, 153, 0.1);
+.grafico-turnos-filtro-grupo input:focus-visible {
+  border-color: #168477;
+  outline: 3px solid rgba(22, 132, 119, 0.15);
+  outline-offset: 1px;
 }
 
 .grafico-turnos-graficos {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 24px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
 }
 
 .grafico-turnos-grafico-item {
   display: flex;
+  min-width: 0;
   flex-direction: column;
   align-items: center;
-  gap: 12px;
-  padding: 16px;
+  gap: 8px;
+  padding: 10px;
   background: #fff;
-  border: 1px solid #e0c8ea;
-  border-radius: 8px;
+  border: 1px solid #e2ece7;
+  border-radius: 10px;
 }
 
 .grafico-turnos-grafico-titulo {
-  font-size: 1rem;
+  color: #344b43;
+  font-size: 0.86rem;
   font-weight: 700;
-  color: #7d1f99;
   margin: 0;
   text-align: center;
 }
 
 .grafico-turnos-chart {
   display: flex;
+  min-width: 0;
   justify-content: center;
   width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+}
+
+.grafico-turnos-chart .recharts-wrapper {
+  max-width: 100%;
+}
+
+.grafico-turnos-chart .recharts-pie-sector {
+  stroke: #fff;
+  stroke-width: 3px;
+}
+
+.grafico-turnos-chart .recharts-pie-label-text,
+.grafico-turnos-chart .recharts-legend-item-text,
+.grafico-turnos-chart .recharts-cartesian-axis-tick-value {
+  fill: #596b63;
+  color: #596b63 !important;
+  font-size: 0.7rem;
+}
+
+.grafico-turnos-chart .recharts-cartesian-grid line {
+  stroke: #e7efeb;
 }
 
 @media (max-width: 768px) {
-  .grafico-turnos-container {
-    padding: 16px;
-  }
-
   .grafico-turnos-filtros {
-    gap: 12px;
+    gap: 8px;
   }
 
   .grafico-turnos-filtro-grupo {
     flex: 1;
-    min-width: 150px;
+    min-width: 0;
+    justify-content: space-between;
+  }
+
+  .grafico-turnos-filtro-grupo input {
+    min-width: 0;
   }
 
   .grafico-turnos-graficos {
     grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 420px) {
+  .grafico-turnos-filtro-grupo {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .grafico-turnos-filtro-grupo input {
+    width: 100%;
   }
 }

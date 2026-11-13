@@ -16,7 +16,7 @@ import React, { useState, useEffect } from "react";
 import api from '../../../config/api.js'
 import './GraficosVentas.css';
 
-const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
+const COLORS = ['#176f65', '#55a98f', '#daa15c', '#55879a'];
 
 const formatearFecha = (fecha) => {
     const año = fecha.getFullYear();
@@ -58,12 +58,12 @@ function generarGraficoLinea(data, periodo) {
       <h3 className="graficos-ventas-grafico-titulo">Ventas del {periodo}</h3>
       <div className="graficos-ventas-chart">
         <LineChart
-          width={600}
-          height={300}
+          width={420}
+          height={250}
           responsive={true}
           data={datosGraficos}
         >
-          <CartesianGrid strokeDasharray="3 3" />
+          <CartesianGrid stroke="#e7efeb" strokeDasharray="3 3" />
           <XAxis dataKey="fecha" />
           <YAxis
             tickFormatter={(valor) =>
@@ -72,7 +72,7 @@ function generarGraficoLinea(data, periodo) {
             />
           <Tooltip formatter={(valor) => [`$${Number(valor).toLocaleString('es-AR')}`, 'Ingresos']} />
           <Legend />
-          <Line type="monotone" dataKey="total" stroke="#ff7300" />
+          <Line type="monotone" dataKey="total" stroke="#176f65" strokeWidth={3} dot={{ r: 3 }} activeDot={{ r: 5 }} />
         </LineChart>
       </div>
     </div>
@@ -102,8 +102,8 @@ const generarGraficoTorta = (data, periodo) => {
       <h3 className="graficos-ventas-grafico-titulo">Métodos de Pago - {periodo}</h3>
       <div className="graficos-ventas-chart">
         <PieChart
-          width={600}
-          height={300}
+          width={420}
+          height={250}
           responsive={true}
          
         >
@@ -112,9 +112,10 @@ const generarGraficoTorta = (data, periodo) => {
           <Pie data={datosGraficos} 
               dataKey="value"
               nameKey="name"
-              innerRadius={40} 
-              outerRadius={80} 
+              innerRadius={38}
+              outerRadius={70}
               label={({percent}) => `${(percent * 100).toFixed(1)}%`}
+              fill="#176f65"
           >
             {datosGraficos.map((entry, index) => (
               <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
@@ -139,18 +140,25 @@ const graficoProductoMasVendido = (data,periodo) => {
       <h3 className="graficos-ventas-grafico-titulo">Producto más vendido del {periodo}</h3>
       <div className="graficos-ventas-chart">
         <BarChart
-          width={600}
-          height={300}
+          width={480}
+          height={260}
+          responsive={true}
           data={datos}
           layout="vertical"
 
         >
-          <CartesianGrid strokeDasharray="3 3" />
+          <CartesianGrid stroke="#e7efeb" strokeDasharray="3 3" />
           <XAxis type="number" dataKey="total_vendido" />
-          <YAxis type="category" dataKey="producto_nombre" width={200} />
+          <YAxis
+            type="category"
+            dataKey="producto_nombre"
+            width={180}
+            interval={0}
+            tick={{ fill: '#52635b', fontSize: 11 }}
+          />
           <Tooltip />
           <Legend />
-          <Bar dataKey="total_vendido" fill="#8884d8" />
+          <Bar dataKey="total_vendido" fill="#176f65" radius={[0, 5, 5, 0]} />
         </BarChart>
       </div>
     </div>
@@ -203,9 +211,9 @@ const GraficosVentas = () => {
   return (
     <div className="graficos-ventas-container">
       <div className="graficos-ventas-controles">
-        <button className="graficos-ventas-boton" onClick={() => setPeriodo('dia')}>Día</button>
-        <button className="graficos-ventas-boton" onClick={() => setPeriodo('semana')}>Semana</button>
-        <button className="graficos-ventas-boton" onClick={() => setPeriodo('mes')}>Mes</button>
+        <button className={`graficos-ventas-boton ${periodo === 'dia' ? 'active' : ''}`} aria-pressed={periodo === 'dia'} onClick={() => setPeriodo('dia')}>Día</button>
+        <button className={`graficos-ventas-boton ${periodo === 'semana' ? 'active' : ''}`} aria-pressed={periodo === 'semana'} onClick={() => setPeriodo('semana')}>Semana</button>
+        <button className={`graficos-ventas-boton ${periodo === 'mes' ? 'active' : ''}`} aria-pressed={periodo === 'mes'} onClick={() => setPeriodo('mes')}>Mes</button>
         <div className="graficos-ventas-filtro">
           <label>Fecha Inicio</label>
           <input

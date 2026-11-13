@@ -1,9 +1,9 @@
 .navbar {
-  width: 100vw;
+  width: 100%;
   max-width: none;
   position: sticky;
   top: 0;
-  margin-left: calc((100vw - 100%) / -2);
+  margin-left: 0;
   background: #7d1f99;
   color: #fff;
   display: flex;
@@ -215,15 +215,44 @@
 .app-main {
   flex: 1;
   padding: 32px;
-  max-width: 1126px;
+  max-width: 1360px;
   width: 100%;
   margin: 0 auto;
+  box-sizing: border-box;
+}
+
+.app-main > * {
+  min-width: 0;
 }
 
 .page-shell {
   text-align: left;
-  max-width: 840px;
+  width: 100%;
+  max-width: 1360px;
   margin: 0 auto;
+  box-sizing: border-box;
+}
+
+@media (max-width: 1024px) {
+  .app-main {
+    padding: 24px 20px;
+  }
+}
+
+@media (max-width: 640px) {
+  .app-main {
+    padding: 16px 12px;
+  }
+
+  .navbar {
+    gap: 12px;
+    padding: 12px;
+  }
+
+  .brand-logo {
+    width: 52px;
+    height: 52px;
+  }
 }
 
 html:has(.productos-page),

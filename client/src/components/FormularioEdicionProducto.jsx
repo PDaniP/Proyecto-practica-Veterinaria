@@ -103,7 +103,7 @@ export default function FormularioEdicionProductos({
 }, []);
 
   return (
-    <div className="card">
+    <div className="card formulario-edicion-producto">
       <h2 className="card-title">Editar Producto</h2>
 
       <form onSubmit={handleSubmit}>
@@ -177,7 +177,7 @@ const formStyles = `
   display: flex;
   align-items: flex-start;
   justify-content: center;
-  padding: 110px 20px 20px 20px;
+  padding: 110px 0px 20px 20px;
   box-sizing: border-box;
 }
 
@@ -187,10 +187,16 @@ const formStyles = `
   padding: 36px 32px;
   width: 100%;
   max-width: 720px;
+  min-width: 0;
+  box-sizing: border-box;
   max-height: calc(100vh - 180px);
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   box-shadow: 0 0 40px rgba(255, 255, 255, 0.35);
+}
+
+.formulario-edicion-producto {
+  margin: 0 auto;
 }
 
 .card-title {
@@ -224,6 +230,9 @@ color: #111;
   background: #f9fafb;
   padding: 10px 12px;
   font-size: 13px;
+  width: 100%;
+  max-width: 700px;
+  box-sizing: border-box;
 }
 
 .field.checkbox-field {
@@ -272,4 +281,10 @@ color: #111;
   border-radius: 8px;
   cursor: pointer;
 }
+
+.producto-form__acciones {
+  padding-right: 0px;
+  box-sizing: border-box;
+}
+
 `;
